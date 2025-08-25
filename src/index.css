@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Global CSS variables */
+:root {
+  --color-primary: #f16f22;
+  --color-primary-light: #ebf2ff;
+  --color-primary-dark: #1E3A8A;
+
+  --color-secondary: #252364;
+  --color-secondary-light: #F87171;
+  --color-secondary-dark: #991B1B;
+}
+
+/* Map variables to Tailwind theme */
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-dark);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-light: var(--color-secondary-light);
+  --color-secondary-dark: var(--color-secondary-dark);
+}
