@@ -1,12 +1,34 @@
+import { useState } from "react";
 import Sidebar from "../components/Slidebar/Sidebar";
 import Navbar from "../components/Navbar/Navbar";
 
-const agents = [
+const initialAgents = [
   { id: 1, name: "John Doe", email: "john@example.com", phone: "01712345678", status: "Approved", active: true },
   { id: 2, name: "Jane Smith", email: "jane@example.com", phone: "01898765432", status: "Rejected", active: false },
 ];
 
+const statusOptions = ["Approved", "Rejected", "Pending"];
+const actionOptions = ["Activate", "Deactivate"];
+
 const Agents = () => {
+  const [agents, setAgents] = useState(initialAgents);
+
+  const handleStatusChange = (id, newStatus) => {
+    setAgents((prev) =>
+      prev.map((agent) => (agent.id === id ? { ...agent, status: newStatus } : agent))
+    );
+  };
+
+  const handleActionChange = (id, action) => {
+    setAgents((prev) =>
+      prev.map((agent) =>
+        agent.id === id
+          ? { ...agent, active: action === "Activate" ? true : false }
+          : agent
+      )
+    );
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -32,16 +54,31 @@ const Agents = () => {
                   <td className="p-3">{agent.name}</td>
                   <td className="p-3">{agent.email}</td>
                   <td className="p-3">{agent.phone}</td>
-                  <td className={`p-3 font-semibold ${agent.status === "Approved" ? "text-green-600" : "text-red-600"}`}>
-                    {agent.status}
-                  </td>
-                  <td className="p-3 flex gap-2">
-                    <button
-                      className={`px-3 py-1 rounded text-white ${agent.active ? "bg-red-500" : "bg-green-500"}`}
-                      onClick={() => alert(`${agent.active ? "Deactivated" : "Activated"} agent ID ${agent.id}`)}
+                  <td className="p-3">
+                    <select
+                      value={agent.status}
+                      onChange={(e) => handleStatusChange(agent.id, e.target.value)}
+                      className={`p-1 rounded border ${agent.status === "Approved" ? "text-green-600" : "text-red-600"}`}
                     >
-                      {agent.active ? "Deactivate" : "Activate"}
-                    </button>
+                      {statusOptions.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="p-3">
+                    <select
+                      value={agent.active ? "Deactivate" : "Activate"}
+                      onChange={(e) => handleActionChange(agent.id, e.target.value)}
+                      className={`p-1 rounded border ${agent.active ? "bg-red-500 text-white" : "bg-green-500 text-white"}`}
+                    >
+                      {actionOptions.map((action) => (
+                        <option key={action} value={action}>
+                          {action}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
               ))}
@@ -54,4 +91,3 @@ const Agents = () => {
 };
 
 export default Agents;
-
