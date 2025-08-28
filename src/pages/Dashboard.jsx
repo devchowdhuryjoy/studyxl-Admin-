@@ -12,7 +12,7 @@ const Dashboard = () => {
         <main className="p-6 space-y-6">
           <div className="grid md:grid-cols-3 gap-6">
             <Card title="Total Users" value="1300" />
-            <Card title="Total Students" value="$45K" />
+            <Card title="Total Students" value="$55K" />
             <Card title="Total Agents" value="320" />
           </div>
           <Chart />
