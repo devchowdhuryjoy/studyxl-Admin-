@@ -71,7 +71,7 @@ const Agents = () => {
                     <select
                       value={agent.active ? "Deactivate" : "Activate"}
                       onChange={(e) => handleActionChange(agent.id, e.target.value)}
-                      className={`p-1 rounded border ${agent.active ? "bg-red-500 text-white" : "bg-green-500 text-white"}`}
+                      className={`p-1 rounded border ${agent.active ? "bg-primary text-white" : "bg-green-500 text-white"}`}
                     >
                       {actionOptions.map((action) => (
                         <option key={action} value={action}>
