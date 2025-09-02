@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Agents from "./pages/Agents";
+import University from './components/University/University';
 
 function App() {
   return (
@@ -16,8 +17,9 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
 
         
-        <Route path="/users" element={<Users />} />
-        <Route path="/agents" element={<Agents />} />
+        <Route path="/student-register" element={<Users />} />
+        <Route path="/agent-register" element={<Agents />} />
+        <Route path="/university" element={<University />} />
 
         <Route
           path="/welcome"
