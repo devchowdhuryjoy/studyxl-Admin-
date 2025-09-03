@@ -56,13 +56,25 @@ const Sidebar = () => {
                   to="/student-register"
                   className="block p-2 text-sm hover:bg-gray-100 rounded"
                 >
-                  Student Register
+                  Student Registation
                 </Link>
                 <Link
                   to="/student-apply"
                   className="block p-2 text-sm hover:bg-gray-100 rounded"
                 >
-                  Student Apply
+                  Student Profile
+                </Link>
+                <Link
+                  to="/student-apply"
+                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                >
+                  University Choose
+                </Link>
+                <Link
+                  to="/student-apply"
+                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                >
+                  Student Tasks
                 </Link>
               </div>
             )}
@@ -96,7 +108,25 @@ const Sidebar = () => {
                   to="/agent-apply"
                   className="block p-2 text-sm hover:bg-gray-100 rounded"
                 >
-                  Agent Register 
+                  Agent all information 
+                </Link>
+                <Link
+                  to="/agent-apply"
+                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                >
+                  Agent Tasks 
+                </Link>
+                <Link
+                  to="/agent-apply"
+                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                >
+                  Student Profile
+                </Link>
+                <Link
+                  to="/agent-apply"
+                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                >
+                  Student University Choose
                 </Link>
               </div>
             )}
