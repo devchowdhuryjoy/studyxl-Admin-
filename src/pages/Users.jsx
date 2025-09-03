@@ -1,5 +1,3 @@
-import Sidebar from "../components/Slidebar/Sidebar";
-import Navbar from "../components/Navbar/Navbar";
 
 const users = [
   {
@@ -29,9 +27,9 @@ const users = [
 const Users = () => {
   return (
     <div className="flex">
-      <Sidebar />
+      
       <div className="flex-1 flex flex-col">
-        <Navbar />
+        
         <main className="p-6">
           <h2 className="text-xl font-semibold mb-4">Students</h2>
           <div className="overflow-x-auto">

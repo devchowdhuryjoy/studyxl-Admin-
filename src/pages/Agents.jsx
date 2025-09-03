@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Sidebar from "../components/Slidebar/Sidebar";
-import Navbar from "../components/Navbar/Navbar";
+
 
 const initialAgents = [
   { id: 1, name: "John Doe", email: "john@example.com", phone: "01712345678", status: "Approved", active: true },
@@ -31,9 +30,9 @@ const Agents = () => {
 
   return (
     <div className="flex">
-      <Sidebar />
+      
       <div className="flex-1 flex flex-col">
-        <Navbar />
+        
         <main className="p-6">
           <h2 className="text-xl font-semibold mb-4">Agents</h2>
           <table className="w-full bg-white shadow rounded overflow-hidden">

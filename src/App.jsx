@@ -5,35 +5,44 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Agents from "./pages/Agents";
 import University from './components/University/University';
+import StudentsProfile from './components/Students/StudentsProfile';
+import AgentStudentProfile from './components/Agents/AgentStudentProfile';
+
+
 
 function App() {
   return (
     <Router>
       <Routes>
-        
+        {/* Login */}
         <Route path="/" element={<Login />} />
 
-        
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Dashboard Layout with nested routes */}
+        <Route path="/dashboard/*" element={<Dashboard />}>
 
-        
-        <Route path="/student-register" element={<Users />} />
-        <Route path="/agent-register" element={<Agents />} />
-        <Route path="/university" element={<University />} />
+          {/* Students */}
+          <Route path="student-register" element={<Users />} />
+          <Route path="student-profile" element={<StudentsProfile />} />
+          {/* Students */}
+          
+          {/* Agents */}
+          <Route path="agent-register" element={<Agents />} />
+          <Route path="agent-student-profile" element={<AgentStudentProfile />} />
+          {/* Agents */}
+          
+          {/* University */}
+          <Route path="university" element={<University />} />
+          {/* University */}
 
-        <Route
-          path="/welcome"
-          element={
-            <div className="h-screen flex items-center justify-center bg-black">
-              <h1 className="text-5xl font-bold text-amber-600">
-                Welcome To Study-XL-Admin Dashboard
-              </h1>
-            </div>
-          }
-        />
+        </Route>
       </Routes>
     </Router>
   );
 }
 
 export default App;
+
+
+
+
+

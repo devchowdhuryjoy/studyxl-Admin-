@@ -1,12 +1,37 @@
-import { useState } from "react";
-import { Menu, X, Home, Users, ChevronDown } from "lucide-react";
-import { GraduationCap } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Menu, X, Home, Users, ChevronDown, GraduationCap } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
-  const [openStudent, setOpenStudent] = useState(false);
-  const [openAgent, setOpenAgent] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const savedMenu = sessionStorage.getItem("activeMenu");
+    if (savedMenu) {
+      setActiveMenu(savedMenu);
+    }
+  }, []);
+
+  const toggleMenu = (menu) => {
+    const newMenu = activeMenu === menu ? null : menu;
+    setActiveMenu(newMenu);
+    if (newMenu) {
+      sessionStorage.setItem("activeMenu", newMenu);
+    } else {
+      sessionStorage.removeItem("activeMenu");
+    }
+  };
+
+  const handleMainLinkClick = () => {
+    if (window.innerWidth < 768) {
+      setOpen(false);
+    }
+  };
+
+  // active link check function
+  const isActive = (path) => location.pathname === path;
 
   return (
     <>
@@ -29,7 +54,12 @@ const Sidebar = () => {
           {/* Dashboard */}
           <Link
             to="/dashboard"
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
+            onClick={handleMainLinkClick}
+            className={`flex items-center gap-2 p-2 rounded ${
+              isActive("/dashboard")
+                ? "bg-[#f16f22] text-white"
+                : "hover:bg-gray-100"
+            }`}
           >
             <Home size={20} /> Dashboard
           </Link>
@@ -37,7 +67,7 @@ const Sidebar = () => {
           {/* Students with submenu */}
           <div>
             <button
-              onClick={() => setOpenStudent(!openStudent)}
+              onClick={() => toggleMenu("students")}
               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
             >
               <span className="flex items-center gap-2">
@@ -46,33 +76,57 @@ const Sidebar = () => {
               <ChevronDown
                 size={16}
                 className={`transition-transform ${
-                  openStudent ? "rotate-180" : ""
+                  activeMenu === "students" ? "rotate-180" : ""
                 }`}
               />
             </button>
-            {openStudent && (
+
+            {activeMenu === "students" && (
               <div className="ml-6 mt-1 space-y-1">
                 <Link
-                  to="/student-register"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/student-register"
+                  onClick={handleMainLinkClick} 
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/student-register")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
-                  Student Registation
+                  Student Registration
                 </Link>
+
                 <Link
-                  to="/student-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/student-profile"
+                  onClick={handleMainLinkClick} 
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/student-profile")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
                   Student Profile
                 </Link>
+
                 <Link
-                  to="/student-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/student-apply"
+                  onClick={handleMainLinkClick} 
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/student-apply")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
                   University Choose
                 </Link>
+
                 <Link
-                  to="/student-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/student-tasks"
+                  onClick={handleMainLinkClick} 
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/student-tasks")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
                   Student Tasks
                 </Link>
@@ -83,7 +137,7 @@ const Sidebar = () => {
           {/* Agents with submenu */}
           <div>
             <button
-              onClick={() => setOpenAgent(!openAgent)}
+              onClick={() => toggleMenu("agents")}
               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
             >
               <span className="flex items-center gap-2">
@@ -92,39 +146,69 @@ const Sidebar = () => {
               <ChevronDown
                 size={16}
                 className={`transition-transform ${
-                  openAgent ? "rotate-180" : ""
+                  activeMenu === "agents" ? "rotate-180" : ""
                 }`}
               />
             </button>
-            {openAgent && (
+
+            {activeMenu === "agents" && (
               <div className="ml-6 mt-1 space-y-1">
                 <Link
-                  to="/agent-register"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/agent-register"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/agent-register")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
                   Agent Apply
                 </Link>
+
                 <Link
-                  to="/agent-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/agent-info"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/agent-info")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
-                  Agent all information 
+                  Agent All Information
                 </Link>
+
                 <Link
-                  to="/agent-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/agent-tasks"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/agent-tasks")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
-                  Agent Tasks 
+                  Agent Tasks
                 </Link>
+
                 <Link
-                  to="/agent-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/agent-student-profile"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/agent-student-profile")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
                   Student Profile
                 </Link>
+
                 <Link
-                  to="/agent-apply"
-                  className="block p-2 text-sm hover:bg-gray-100 rounded"
+                  to="/dashboard/agent-student-university"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/agent-student-university")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
                 >
                   Student University Choose
                 </Link>
@@ -134,11 +218,17 @@ const Sidebar = () => {
 
           {/* University */}
           <Link
-            to="/university"
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
+            to="/dashboard/university"
+            onClick={handleMainLinkClick}
+            className={`flex items-center gap-2 p-2 rounded ${
+              isActive("/dashboard/university")
+                ? "bg-[#f16f22] text-white"
+                : "hover:bg-gray-100"
+            }`}
           >
             <GraduationCap size={20} /> University
           </Link>
+          
         </nav>
       </aside>
     </>
