@@ -1,37 +1,131 @@
-// import { useState } from "react";
-
-// const initialAgents = [
-//   { id: 1, name: "John Doe", email: "john@example.com", phone: "01712345678", status: "Approved", active: true },
-//   { id: 2, name: "Jane Smith", email: "jane@example.com", phone: "01898765432", status: "Rejected", active: false },
-// ];
+// import { useState, useEffect } from "react";
+// import Swal from "sweetalert2";
+// import BASE_URL from "../Api/ApiBaseUrl";
+// import { Eye } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
 
 // const statusOptions = ["Approved", "Rejected", "Pending"];
 // const actionOptions = ["Activate", "Deactivate"];
 
 // const Agents = () => {
-//   const [agents, setAgents] = useState(initialAgents);
+//   const [agents, setAgents] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
 
-//   const handleStatusChange = (id, newStatus) => {
-//     setAgents((prev) =>
-//       prev.map((agent) => (agent.id === id ? { ...agent, status: newStatus } : agent))
-//     );
+//   // Fetch agents from backend
+//   useEffect(() => {
+//     const fetchAgents = async () => {
+//       try {
+//         const response = await fetch(`${BASE_URL}/admin/all-user`);
+//         if (!response.ok)
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//         const data = await response.json();
+//         console.log("Fetched agents:", data);
+
+//         // default Pending if backend has no status
+//         const formattedData = data.map((agent) => ({
+//           ...agent,
+//           status: agent.is_approved ? "Approved" : "Pending", // use is_approved from backend
+//           active: agent.status === "active" || agent.active === true, // handle active/deactivate
+//         }));
+
+//         setAgents(formattedData);
+//       } catch (error) {
+//         console.error("Error fetching agents:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAgents();
+//   }, []);
+
+//   // Status dropdown → only admin can change
+//   const handleStatusChange = async (id, newStatus) => {
+//     if (newStatus === "Pending") return; // Pending option is fixed/disabled
+
+//     let apiEndpoint = "";
+//     if (newStatus === "Approved")
+//       apiEndpoint = `${BASE_URL}/admin/approve-agent/${id}`;
+//     else if (newStatus === "Rejected")
+//       apiEndpoint = `${BASE_URL}/admin/reject-agent/${id}`;
+
+//     try {
+//       const response = await fetch(apiEndpoint, { method: "GET" });
+//       if (!response.ok)
+//         throw new Error(`HTTP error! status: ${response.status}`);
+//       const result = await response.text();
+//       console.log(result);
+
+//       // Update frontend state
+//       setAgents((prev) =>
+//         prev.map((agent) =>
+//           agent.id === id
+//             ? {
+//                 ...agent,
+//                 status: newStatus,
+//                 is_approved: newStatus === "Approved",
+//               }
+//             : agent
+//         )
+//       );
+
+//       Swal.fire({
+//         icon: "success",
+//         title: "Success",
+//         text: `Status changed to ${newStatus}`,
+//       });
+//     } catch (error) {
+//       console.error("Error updating status:", error);
+//       Swal.fire({
+//         icon: "error",
+//         title: "Error",
+//         text: "Failed to update status",
+//       });
+//     }
 //   };
 
-//   const handleActionChange = (id, action) => {
-//     setAgents((prev) =>
-//       prev.map((agent) =>
-//         agent.id === id
-//           ? { ...agent, active: action === "Activate" ? true : false }
-//           : agent
-//       )
-//     );
+//   // Action dropdown → Activate/Deactivate
+//   const handleActionChange = async (id, action) => {
+//     const apiEndpoint =
+//       action === "Activate"
+//         ? `${BASE_URL}/admin/activate-agent/${id}`
+//         : `${BASE_URL}/admin/deactivate-agent/${id}`;
+
+//     try {
+//       const response = await fetch(apiEndpoint, { method: "GET" });
+//       if (!response.ok)
+//         throw new Error(`HTTP error! status: ${response.status}`);
+//       const result = await response.text();
+//       console.log(result);
+
+//       // Update frontend state
+//       setAgents((prev) =>
+//         prev.map((agent) =>
+//           agent.id === id ? { ...agent, active: action === "Activate" } : agent
+//         )
+//       );
+
+//       Swal.fire({
+//         icon: "success",
+//         title: "Success",
+//         text: `Action changed to ${action}`,
+//       });
+//     } catch (error) {
+//       console.error("Error updating action:", error);
+//       Swal.fire({
+//         icon: "error",
+//         title: "Error",
+//         text: "Failed to update action",
+//       });
+//     }
 //   };
+
+//   if (loading) return <div className="p-6">Loading agents...</div>;
 
 //   return (
 //     <div className="flex">
-
 //       <div className="flex-1 flex flex-col">
-
 //         <main className="p-6">
 //           <h2 className="text-xl font-semibold mb-4">Agents</h2>
 //           <table className="w-full bg-white shadow rounded overflow-hidden">
@@ -43,23 +137,38 @@
 //                 <th className="p-3 text-left">Phone</th>
 //                 <th className="p-3 text-left">Status</th>
 //                 <th className="p-3 text-left">Action</th>
+//                 <th className="p-3 text-left">View Details</th>
 //               </tr>
 //             </thead>
 //             <tbody>
 //               {agents.map((agent) => (
 //                 <tr key={agent.id} className="border-b hover:bg-gray-50">
 //                   <td className="p-3">{agent.id}</td>
-//                   <td className="p-3">{agent.name}</td>
+//                   <td className="p-3">
+//                     {agent.first_name} {agent.last_name}
+//                   </td>
 //                   <td className="p-3">{agent.email}</td>
-//                   <td className="p-3">{agent.phone}</td>
+//                   <td className="p-3">{agent.phone_number}</td>
 //                   <td className="p-3">
 //                     <select
 //                       value={agent.status}
-//                       onChange={(e) => handleStatusChange(agent.id, e.target.value)}
-//                       className={`p-1 rounded border ${agent.status === "Approved" ? "text-green-600" : "text-red-600"}`}
+//                       onChange={(e) =>
+//                         handleStatusChange(agent.id, e.target.value)
+//                       }
+//                       className={`p-1 rounded border ${
+//                         agent.status === "Approved"
+//                           ? "text-green-600"
+//                           : agent.status === "Rejected"
+//                           ? "text-red-600"
+//                           : "text-gray-600"
+//                       }`}
 //                     >
 //                       {statusOptions.map((status) => (
-//                         <option key={status} value={status}>
+//                         <option
+//                           key={status}
+//                           value={status}
+//                           disabled={status === "Pending"} // disable pending option
+//                         >
 //                           {status}
 //                         </option>
 //                       ))}
@@ -67,9 +176,15 @@
 //                   </td>
 //                   <td className="p-3">
 //                     <select
-//                       value={agent.active ? "Deactivate" : "Activate"}
-//                       onChange={(e) => handleActionChange(agent.id, e.target.value)}
-//                       className={`p-1 rounded border ${agent.active ? "bg-primary text-white" : "bg-green-500 text-white"}`}
+//                       value={agent.active ? "Activate" : "Deactivate"}
+//                       onChange={(e) =>
+//                         handleActionChange(agent.id, e.target.value)
+//                       }
+//                       className={`p-1 rounded border ${
+//                         agent.active
+//                           ? "bg-primary text-white"
+//                           : "bg-green-500 text-white"
+//                       }`}
 //                     >
 //                       {actionOptions.map((action) => (
 //                         <option key={action} value={action}>
@@ -77,6 +192,17 @@
 //                         </option>
 //                       ))}
 //                     </select>
+//                   </td>
+
+//                   <td className="p-3">
+//                     <button
+//                       onClick={() =>
+//                         navigate(`/dashboard/agent-details/${agent.id}`)
+//                       }
+//                       className="text-blue-500 hover:text-blue-700 ml-7"
+//                     >
+//                       <Eye size={20} />
+//                     </button>
 //                   </td>
 //                 </tr>
 //               ))}
@@ -91,12 +217,11 @@
 // export default Agents;
 
 
-
-
-
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import BASE_URL from "../Api/ApiBaseUrl";
+import { Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const statusOptions = ["Approved", "Rejected", "Pending"];
 const actionOptions = ["Activate", "Deactivate"];
@@ -104,24 +229,21 @@ const actionOptions = ["Activate", "Deactivate"];
 const Agents = () => {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Fetch agents from backend
+  // Fetch agents
   useEffect(() => {
     const fetchAgents = async () => {
       try {
         const response = await fetch(`${BASE_URL}/admin/all-user`);
-        if (!response.ok)
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
+        console.log("Fetched agents:", data);
 
-        // default Pending if backend has no status
         const formattedData = data.map((agent) => ({
           ...agent,
-          status: agent.status || "Pending",
-          active:
-            agent.active === true ||
-            agent.status === "active" ||
-            agent.active === "active",
+          status: agent.is_approved === "1" ? "Approved" : "Pending",
+          active: agent.status === "active" || agent.active === true,
         }));
 
         setAgents(formattedData);
@@ -135,27 +257,35 @@ const Agents = () => {
     fetchAgents();
   }, []);
 
-  // Status dropdown → only admin can change
+  // Status change (Pending → Approved/Rejected)
   const handleStatusChange = async (id, newStatus) => {
-    if (newStatus === "Pending") return; // Pending option is fixed/disabled
+    if (newStatus === "Pending") return; // can't set back to Pending
 
     let apiEndpoint = "";
-    if (newStatus === "Approved")
+    if (newStatus === "Approved") {
       apiEndpoint = `${BASE_URL}/admin/approve-agent/${id}`;
-    else if (newStatus === "Rejected")
+    } else if (newStatus === "Rejected") {
       apiEndpoint = `${BASE_URL}/admin/reject-agent/${id}`;
+    }
+
+    console.log("📡 Status API:", apiEndpoint);
 
     try {
       const response = await fetch(apiEndpoint, { method: "GET" });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const result = await response.text();
-      console.log(result);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const result = await response.json();
+      console.log("✅ Status update response:", result);
 
-      // Update frontend state
+      // Update frontend state with backend response
       setAgents((prev) =>
         prev.map((agent) =>
-          agent.id === id ? { ...agent, status: newStatus } : agent
+          agent.id === id
+            ? {
+                ...agent,
+                status: newStatus,
+                is_approved: newStatus === "Approved" ? "1" : "0",
+              }
+            : agent
         )
       );
 
@@ -165,7 +295,7 @@ const Agents = () => {
         text: `Status changed to ${newStatus}`,
       });
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("🔥 Error updating status:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -174,24 +304,26 @@ const Agents = () => {
     }
   };
 
-  // Action dropdown → Activate/Deactivate
+  // Action change (Activate/Deactivate)
   const handleActionChange = async (id, action) => {
     const apiEndpoint =
       action === "Activate"
         ? `${BASE_URL}/admin/activate-agent/${id}`
         : `${BASE_URL}/admin/deactivate-agent/${id}`;
 
+    console.log("📡 Action API:", apiEndpoint);
+
     try {
       const response = await fetch(apiEndpoint, { method: "GET" });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const result = await response.text();
-      console.log(result);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const result = await response.json();
+      console.log("✅ Action update response:", result);
 
-      // Update frontend state
       setAgents((prev) =>
         prev.map((agent) =>
-          agent.id === id ? { ...agent, active: action === "Activate" } : agent
+          agent.id === id
+            ? { ...agent, active: action === "Activate", status: result.agent?.status || agent.status }
+            : agent
         )
       );
 
@@ -201,7 +333,7 @@ const Agents = () => {
         text: `Action changed to ${action}`,
       });
     } catch (error) {
-      console.error("Error updating action:", error);
+      console.error("🔥 Error updating action:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -226,6 +358,7 @@ const Agents = () => {
                 <th className="p-3 text-left">Phone</th>
                 <th className="p-3 text-left">Status</th>
                 <th className="p-3 text-left">Action</th>
+                <th className="p-3 text-left">View Details</th>
               </tr>
             </thead>
             <tbody>
@@ -240,9 +373,7 @@ const Agents = () => {
                   <td className="p-3">
                     <select
                       value={agent.status}
-                      onChange={(e) =>
-                        handleStatusChange(agent.id, e.target.value)
-                      }
+                      onChange={(e) => handleStatusChange(agent.id, e.target.value)}
                       className={`p-1 rounded border ${
                         agent.status === "Approved"
                           ? "text-green-600"
@@ -255,7 +386,7 @@ const Agents = () => {
                         <option
                           key={status}
                           value={status}
-                          disabled={status === "Pending"} // disable pending option
+                          disabled={status === "Pending"} // can't manually set Pending
                         >
                           {status}
                         </option>
@@ -265,9 +396,7 @@ const Agents = () => {
                   <td className="p-3">
                     <select
                       value={agent.active ? "Activate" : "Deactivate"}
-                      onChange={(e) =>
-                        handleActionChange(agent.id, e.target.value)
-                      }
+                      onChange={(e) => handleActionChange(agent.id, e.target.value)}
                       className={`p-1 rounded border ${
                         agent.active
                           ? "bg-primary text-white"
@@ -281,6 +410,14 @@ const Agents = () => {
                       ))}
                     </select>
                   </td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => navigate(`/dashboard/agent-details/${agent.id}`)}
+                      className="text-blue-500 hover:text-blue-700 ml-7"
+                    >
+                      <Eye size={20} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -292,5 +429,9 @@ const Agents = () => {
 };
 
 export default Agents;
+
+
+
+
 
 

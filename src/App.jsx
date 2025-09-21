@@ -7,7 +7,7 @@ import Agents from "./pages/Agents";
 import University from './components/University/University';
 import StudentsProfile from './components/Students/StudentsProfile';
 import AgentStudentProfile from './components/Agents/AgentStudentProfile';
-
+import AgentDetails from './pages/DetailsPage/AgentDetails';
 
 
 function App() {
@@ -27,7 +27,10 @@ function App() {
           
           {/* Agents */}
           <Route path="agent-register" element={<Agents />} />
+         
           <Route path="agent-student-profile" element={<AgentStudentProfile />} />
+          <Route path="agent-details/:id" element={<AgentDetails />} />
+
           {/* Agents */}
           
           {/* University */}

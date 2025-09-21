@@ -38,7 +38,7 @@ const StudentsProfile = () => {
     
 
       <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-      <p className="text-gray-600 mb-6">Complete your profile information below.</p>
+      <p className="text-black mb-6">Complete your profile information below.</p>
       
       <form onSubmit={handleSubmit}>
         {/* Personal Information */}
