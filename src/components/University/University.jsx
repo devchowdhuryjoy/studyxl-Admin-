@@ -66,7 +66,7 @@ const AdminUniversityForm = ({ onCreate }) => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Add University</h1>
         <p className="text-gray-600 mt-1">
-          Upload the banner image and fill the details to create a featured card.
+          Test
         </p>
       </div>
 
@@ -139,61 +139,143 @@ const AdminUniversityForm = ({ onCreate }) => {
 
         {/* Text fields */}
         <div className="lg:col-span-2 space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, name: e.target.value }))
-              }
-              className={`w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50 ${
-                errors.name ? "border-red-400" : "border-gray-300"
-              }`}
-              placeholder="Western University"
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-            )}
-          </div>
+         
 
           <div>
-            <label className="block text-sm font-medium mb-1">Location</label>
-            <input
-              type="text"
-              value={form.location}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, location: e.target.value }))
-              }
-              className={`w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50 ${
-                errors.location ? "border-red-400" : "border-gray-300"
-              }`}
-              placeholder="London, Ontario, CA"
-            />
-            {errors.location && (
-              <p className="text-red-500 text-sm mt-1">{errors.location}</p>
-            )}
-          </div>
+        <label className="block text-sm font-medium mb-1">University Name</label>
+        <input
+          type="text"
+          value={form.university_name}
+          onChange={(e) => setForm(p => ({ ...p, university_name: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="Western University"
+        />
+      </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Description
-            </label>
-            <textarea
-              rows={6}
-              value={form.description}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, description: e.target.value }))
-              }
-              className={`w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50 ${
-                errors.description ? "border-red-400" : "border-gray-300"
-              }`}
-              placeholder="Write a short highlight about the university..."
-            />
-            {errors.description && (
-              <p className="text-red-500 text-sm mt-1">{errors.description}</p>
-            )}
-          </div>
+      {/* Address */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Address</label>
+        <input
+          type="text"
+          value={form.address}
+          onChange={(e) => setForm(p => ({ ...p, address: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="123 Main St"
+        />
+      </div>
+
+      {/* Location */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Location</label>
+        <input
+          type="text"
+          value={form.location}
+          onChange={(e) => setForm(p => ({ ...p, location: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="London, Ontario, CA"
+        />
+      </div>
+
+      {/* Phone Number */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Phone Number</label>
+        <input
+          type="text"
+          value={form.phone_number}
+          onChange={(e) => setForm(p => ({ ...p, phone_number: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="+1 234 567 890"
+        />
+      </div>
+
+      {/* Founded Year */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Founded Year</label>
+        <input
+          type="number"
+          value={form.founded}
+          onChange={(e) => setForm(p => ({ ...p, founded: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="1878"
+        />
+      </div>
+
+      {/* School ID */}
+      <div>
+        <label className="block text-sm font-medium mb-1">School ID</label>
+        <input
+          type="text"
+          value={form.school_id}
+          onChange={(e) => setForm(p => ({ ...p, school_id: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="SCH12345"
+        />
+      </div>
+
+      {/* Institution Type */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Institution Type</label>
+        <select
+          value={form.institution_type}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, institution_type: e.target.value }))
+          }
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+        >
+          <option value="">Select Type</option>
+          <option value="Public">Public</option>
+          <option value="Private">Private</option>
+          {/* Add more options as needed */}
+        </select>
+      </div>
+
+      {/* DLI Number */}
+      <div>
+        <label className="block text-sm font-medium mb-1">DLI Number</label>
+        <input
+          type="text"
+          value={form.dli_number}
+          onChange={(e) => setForm(p => ({ ...p, dli_number: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="DLI-123456"
+        />
+      </div>
+
+      {/* Top Disciplines */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Top Disciplines</label>
+        <input
+          type="text"
+          value={form.top_disciplines}
+          onChange={(e) => setForm(p => ({ ...p, top_disciplines: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="Engineering, Business, Arts"
+        />
+        <p className="text-xs text-gray-400">Separate disciplines with commas</p>
+      </div>
+
+      {/* Application Fee */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Application Fee</label>
+        <input
+          type="text"
+          value={form.application_fee}
+          onChange={(e) => setForm(p => ({ ...p, application_fee: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+          placeholder="$100"
+        />
+      </div>
+
+      {/* Application Short Description */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Application Short Description</label>
+        <textarea
+          rows={3}
+          value={form.application_short_desc}
+          onChange={(e) => setForm(p => ({ ...p, application_short_desc: e.target.value }))}
+          className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+        />
+      </div>
 
           <div className="flex items-center gap-3">
             <button

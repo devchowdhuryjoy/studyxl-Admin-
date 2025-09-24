@@ -1,78 +1,106 @@
-import React, { useState } from 'react';
-
+import React, { useState } from "react";
+import { ChevronDown, ChevronRight, Eye, User, School } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AgentStudentProfile = () => {
-  
-  const [formData, setFormData] = useState({
-    fullName: '',
-    dob: '',
-    gender: '',
-    phone: '',
-    email: '',
-    address: '',
-    passportNumber: '',
-    passportExpiry: '',
-    nationality: '',
-    countryOfResidence: '',
-    desiredProgram: '',
-    preferredIntake: '',
-    studyLevel: '',
-    specialization: '',
-  });
+  const navigate = useNavigate();
+  const [expandedAgent, setExpandedAgent] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
+  // Demo Data
+  const agents = [
+    {
+      agentId: "123456",
+      agentName: "Global Education Agency",
+      students: [
+        {
+          studentId: "STU001",
+          fullName: "John Doe",
+        },
+        {
+          studentId: "STU002",
+          fullName: "Alice Smith",
+        },
+      ],
+    },
+    {
+      agentId: "654321",
+      agentName: "Study Abroad Consultants",
+      students: [
+        {
+          studentId: "STU003",
+          fullName: "Michael Brown",
+        },
+      ],
+    },
+  ];
 
   return (
-    <div className="container mx-auto p-6 bg-white rounded-lg shadow-md relative">
-     
+    <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-6">Agents & Students</h1>
 
-      <h1 className="text-2xl font-bold mb-6">Agent My Profile</h1>
-      <p className="text-gray-600 mb-6">Complete your profile information below.</p>
-      
-      <form onSubmit={handleSubmit}>
-        {/* Personal Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-6 bg-gray-50 rounded-lg">
-          <h2 className="text-xl font-semibold col-span-full mb-4">Personal Information</h2>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="Enter full name"
-            />
-          </div>
-          {/* Add other fields as before */}
-        </div>
+      <table className="table-auto w-full border-collapse">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="p-3 border text-left">Agent ID</th>
+            <th className="p-3 border text-left">Agent Name</th>
+            <th className="p-3 border text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {agents.map((agent, index) => (
+            <React.Fragment key={index}>
+              {/* Agent Row */}
+              <tr className="hover:bg-gray-50">
+                <td className="p-3 border">{agent.agentId}</td>
+                <td className="p-3 border">{agent.agentName}</td>
+                <td
+                  className="p-3 border text-center cursor-pointer"
+                  onClick={() =>
+                    setExpandedAgent(
+                      expandedAgent === agent.agentId ? null : agent.agentId
+                    )
+                  }
+                >
+                  {expandedAgent === agent.agentId ? (
+                    <ChevronDown />
+                  ) : (
+                    <ChevronRight />
+                  )}
+                </td>
+              </tr>
 
-        {/* Passport / Program Details sections here ... */}
+              {/* Student Rows */}
+              {expandedAgent === agent.agentId &&
+                agent.students.map((student, sIndex) => (
+                  <tr key={sIndex} className="bg-gray-50">
+                    <td className="p-3 border pl-10" colSpan={2}>
+                      {student.studentId} - {student.fullName}
+                    </td>
+                    <td className="p-3 border text-center whitespace-nowrap">
+                      <div className="flex items-center gap-4">
+                        <span
+                          className="cursor-pointer hover:text-blue-600"
+                          onClick={() => navigate("/dashboard/agent-student-profile-university")}
+                        >
+                          <User size={18} />
+                        </span>
+                        <span
+                          className="cursor-pointer hover:text-blue-600"
+                          onClick={() => navigate("/university")}
+                        >
+                          <School size={18} />
+                        </span>
+                      </div>
+                    </td>
 
-        <div className="flex justify-end mt-6">
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Save Profile
-          </button>
-        </div>
-      </form>
+                  </tr>
+                ))}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
 
 export default AgentStudentProfile;
-

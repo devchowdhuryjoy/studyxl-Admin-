@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 
-const StudentsProfile = () => {
+const AgentsStudent = () => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     fullName: "",
     dob: "",
@@ -48,6 +47,7 @@ const StudentsProfile = () => {
       </div>
 
       <h1 className="text-2xl font-bold mb-6">Student Profile</h1>
+
       <p className="text-black mb-6">Complete your profile information below</p>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -504,4 +504,4 @@ const StudentsProfile = () => {
   );
 };
 
-export default StudentsProfile;
+export default AgentsStudent;

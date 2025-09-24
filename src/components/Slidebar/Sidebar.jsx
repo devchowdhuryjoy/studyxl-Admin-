@@ -95,29 +95,7 @@ const Sidebar = () => {
                   Student Registration
                 </Link>
 
-                <Link
-                  to="/dashboard/student-profile"
-                  onClick={handleMainLinkClick} 
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/student-profile")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  Student Profile
-                </Link>
-
-                <Link
-                  to="/dashboard/student-apply"
-                  onClick={handleMainLinkClick} 
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/student-apply")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  University Choose
-                </Link>
+              
 
                 <Link
                   to="/dashboard/student-tasks"
@@ -162,19 +140,19 @@ const Sidebar = () => {
                       : "hover:bg-gray-100"
                   }`}
                 >
-                  Agent Apply
+                  Agent Registration
                 </Link>
 
-                <Link
-                  to="/dashboard/agent-info"
+                 <Link
+                  to="/dashboard/agent-student-profile"
                   onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-info")
+                    isActive("/dashboard/agent-student-profile")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
                   }`}
                 >
-                  Agent All Information
+                  Agent Student Profile
                 </Link>
 
                 <Link
@@ -189,29 +167,6 @@ const Sidebar = () => {
                   Agent Tasks
                 </Link>
 
-                <Link
-                  to="/dashboard/agent-student-profile"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-student-profile")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  Student Profile
-                </Link>
-
-                <Link
-                  to="/dashboard/agent-student-university"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-student-university")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  Student University Choose
-                </Link>
               </div>
             )}
           </div>
