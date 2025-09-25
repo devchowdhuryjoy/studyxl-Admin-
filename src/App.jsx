@@ -23,7 +23,7 @@ function App() {
 
           {/* Students */}
           <Route path="student-register" element={<Users />} />
-          <Route path="student-profile" element={<StudentsProfile />} />
+          <Route path="student-profile/:id" element={<StudentsProfile />} />
           {/* Students */}
           
           {/* Agents */}
