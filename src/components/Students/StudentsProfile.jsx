@@ -513,13 +513,13 @@ import BASE_URL from "../../Api/ApiBaseUrl";
 
 const StudentsProfile = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get ID from URL params
+  const { id } = useParams();
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Check if ID is available
+    
     if (!id || id === "undefined") {
       setError("Invalid student ID");
       setLoading(false);
@@ -571,14 +571,14 @@ const StudentsProfile = () => {
           <h1 className="text-2xl font-bold">Student Profile</h1>
           <button
             onClick={() => navigate(-1)}
-            className="text-red-500 hover:text-gray-800"
+            className="text-red-500 hover:text-black"
           >
             <X size={24} />
           </button>
         </div>
         <div className="text-center py-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading student profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f16f22] mx-auto"></div>
+          <p className="mt-4 text-black">Loading student profile...</p>
         </div>
       </div>
     );
@@ -603,7 +603,7 @@ const StudentsProfile = () => {
           </p>
           <button
             onClick={() => navigate(-1)}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            className="mt-4 bg-[#f16f22] text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             Go Back
           </button>
@@ -630,7 +630,7 @@ const StudentsProfile = () => {
         <h1 className="text-2xl font-bold">Student Profile</h1>
         <button
           onClick={() => navigate(-1)}
-          className="text-red-500 hover:text-gray-800 transition-colors"
+          className="text-red-500 hover:text-black transition-colors"
         >
           <X size={24} />
         </button>
@@ -641,21 +641,21 @@ const StudentsProfile = () => {
         <img
           src="/profileright.jpg"
           alt="Student Avatar"
-          className="w-32 h-32 object-cover rounded-full border-4 border-indigo-500 shadow-md"
+          className="w-32 h-32 object-cover rounded-full border-4 border-[#f16f22] shadow-md"
         />
 
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-black">
             {displayValue(student.name)}
           </h1>
-          <p className="text-gray-600">{displayValue(student.email)}</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-black">{displayValue(student.email)}</p>
+          <p className="text-sm text-black">
             Destination: {displayValue(student.destination)}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-black">
             Program: {displayValue(student.program)}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-black">
             Study Level: {displayValue(student.study_level)}
           </p>
         </div>
@@ -665,7 +665,7 @@ const StudentsProfile = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Personal Information */}
         <div className="bg-gray-50 p-6 rounded-xl shadow-md">
-          <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+          <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
             Personal Information
           </h2>
           <div className="space-y-2">
@@ -694,7 +694,7 @@ const StudentsProfile = () => {
 
         {/* Passport Information */}
         <div className="bg-gray-50 p-6 rounded-xl shadow-md">
-          <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+          <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
             Passport Information
           </h2>
           <div className="space-y-2">
@@ -716,7 +716,7 @@ const StudentsProfile = () => {
 
       {/* Study Information */}
       <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
-        <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+        <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
           Study Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -747,12 +747,12 @@ const StudentsProfile = () => {
       {student.academic_qualifications &&
         student.academic_qualifications.length > 0 && (
           <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
-            <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+            <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
               Academic Qualifications
             </h2>
             <div className="space-y-4">
               {student.academic_qualifications.map((qualification, index) => (
-                <div key={index} className="border-l-4 border-indigo-400 pl-4">
+                <div key={index} className="border-l-4 border-[#f16f22] pl-4">
                   <p>
                     <span className="font-medium">Qualification:</span>{" "}
                     {displayValue(qualification.qualification)}
@@ -778,12 +778,12 @@ const StudentsProfile = () => {
       {/* Test Scores */}
       {student.test_scores && student.test_scores.length > 0 && (
         <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
-          <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+          <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
             Test Scores
           </h2>
           <div className="space-y-4">
             {student.test_scores.map((test, index) => (
-              <div key={index} className="border-l-4 border-green-400 pl-4">
+              <div key={index} className="border-l-4 border-[#f16f22] pl-4">
                 <p>
                   <span className="font-medium">Test:</span>{" "}
                   {displayValue(test.test_name)}
@@ -805,12 +805,12 @@ const StudentsProfile = () => {
       {/* Work Experience */}
       {student.work_experiences && student.work_experiences.length > 0 && (
         <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
-          <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+          <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
             Work Experience
           </h2>
           <div className="space-y-4">
             {student.work_experiences.map((work, index) => (
-              <div key={index} className="border-l-4 border-blue-400 pl-4">
+              <div key={index} className="border-l-4 border-[#f16f22] pl-4">
                 <p>
                   <span className="font-medium">Organization:</span>{" "}
                   {displayValue(work.organization)}
@@ -836,7 +836,7 @@ const StudentsProfile = () => {
 
       {/* Documents Section */}
       <div className="bg-gray-50 p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-3 text-indigo-600">
+        <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
           Documents
         </h2>
         <div className="space-y-2">
@@ -847,7 +847,7 @@ const StudentsProfile = () => {
                 href={getFileUrl(student.resume)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-[#f16f22] hover:underline"
               >
                 View Resume
               </a>
@@ -860,7 +860,7 @@ const StudentsProfile = () => {
                 href={getFileUrl(student.transcripts)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-[#f16f22] hover:underline"
               >
                 View Transcripts
               </a>
@@ -873,7 +873,7 @@ const StudentsProfile = () => {
                 href={getFileUrl(student.passport_copy)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-[#f16f22] hover:underline"
               >
                 View Passport
               </a>
