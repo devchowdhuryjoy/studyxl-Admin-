@@ -294,12 +294,31 @@ useEffect(() => {
   const displayValue = (value) => value || "Not provided";
 
   // Helper function to format file URLs
+  // const getFileUrl = (filePath) => {
+  //   if (!filePath) return null;
+  //   return filePath.startsWith("http")
+  //     ? filePath
+  //     : `${BASE_URL}/${filePath.replace(/^\//, "")}`;
+  // };
+
   const getFileUrl = (filePath) => {
-    if (!filePath) return null;
-    return filePath.startsWith("http")
-      ? filePath
-      : `${BASE_URL}/${filePath.replace(/^\//, "")}`;
-  };
+  if (!filePath) return null;
+  
+  // If it's already a full URL, return as is
+  if (filePath.startsWith("http")) {
+    return filePath;
+  }
+  
+  // Remove leading slashes
+  let cleanPath = filePath.replace(/^\//, '');
+  
+  // If the path already starts with uploads/, use it as is
+  if (cleanPath.startsWith('uploads/')) {
+    return `${BASE_URL.replace('/api', '')}/${cleanPath}`;
+  }
+  
+
+};
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
