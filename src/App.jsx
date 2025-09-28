@@ -38,7 +38,7 @@ function App() {
           />
           <Route path="agent-details/:id" element={<AgentDetails />} />
           <Route
-            path="agent-student-profile-two-/:id"
+            path="agent-student-profile-two/:id"
             element={<AgentsStudentProfile />}
           />
 

@@ -1,3 +1,166 @@
+// import React from "react";
+// import { X } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
+
+// const AgentsStudentProfile = () => {
+//   const navigate = useNavigate();
+
+//   // Dummy student data
+//   const student = {
+//     name: "John Doe",
+//     email: "john@example.com",
+//     phone: "+1234567890",
+//     gender: "Male",
+//     dob: "1995-06-15",
+//     nationality: "USA",
+//     address: "123 Main St, City, Country",
+//     destination: "Canada",
+//     program: "Computer Science",
+//     study_level: "Bachelor",
+//     intake: "Fall 2025",
+//     specialization: "AI & ML",
+//     passport: "A1234567",
+//     passport_expiry: "2030-05-10",
+//     country_of_residence: "USA",
+//     academic_qualifications: [
+//       { qualification: "High School", institution: "ABC School", year: "2013", cgpa: "4.0" },
+//       { qualification: "Bachelor", institution: "XYZ University", year: "2017", cgpa: "3.8" },
+//     ],
+//     work_experiences: [
+//       { organization: "Tech Corp", position: "Developer", start_date: "2018", end_date: "2021", description: "Worked on web apps" },
+//     ],
+//     test_scores: [
+//       { test_name: "IELTS", score: "7.5", year: "2022" },
+//     ],
+//     resume: "/resume.pdf",
+//     transcripts: "/transcripts.pdf",
+//     passport_copy: "/passport.pdf",
+//   };
+
+//   const displayValue = (value) => value || "Not provided";
+//   const getFileUrl = (file) => file ? file : "#";
+
+//   return (
+//     <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
+//       {/* Header */}
+//       <div className="flex justify-between items-center mb-6">
+//         <h1 className="text-2xl font-bold">Student Profile</h1>
+//         <button
+//           onClick={() => navigate(-1)}
+//           className="text-red-500 hover:text-black transition-colors"
+//         >
+//           <X size={24} />
+//         </button>
+//       </div>
+
+//       {/* Profile Section */}
+//       <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-6 mb-6">
+//         <img
+//           src="/profileright.jpg"
+//           alt="Student Avatar"
+//           className="w-32 h-32 object-cover rounded-full border-4 border-[#f16f22] shadow-md"
+//         />
+//         <div>
+//           <h1 className="text-2xl font-bold text-black">{displayValue(student.name)}</h1>
+//           <p className="text-black">{displayValue(student.email)}</p>
+//           <p className="text-sm text-black">Destination: {displayValue(student.destination)}</p>
+//           <p className="text-sm text-black">Program: {displayValue(student.program)}</p>
+//           <p className="text-sm text-black">Study Level: {displayValue(student.study_level)}</p>
+//         </div>
+//       </div>
+
+//       {/* Basic Info Grid */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+//         {/* Personal Info */}
+//         <div className="bg-gray-50 p-6 rounded-xl shadow-md">
+//           <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Personal Information</h2>
+//           <div className="space-y-2">
+//             <p><span className="font-medium">Phone:</span> {displayValue(student.phone)}</p>
+//             <p><span className="font-medium">Gender:</span> {displayValue(student.gender)}</p>
+//             <p><span className="font-medium">Date of Birth:</span> {displayValue(student.dob)}</p>
+//             <p><span className="font-medium">Nationality:</span> {displayValue(student.nationality)}</p>
+//             <p><span className="font-medium">Address:</span> {displayValue(student.address)}</p>
+//           </div>
+//         </div>
+
+//         {/* Passport Info */}
+//         <div className="bg-gray-50 p-6 rounded-xl shadow-md">
+//           <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Passport Information</h2>
+//           <div className="space-y-2">
+//             <p><span className="font-medium">Passport Number:</span> {displayValue(student.passport)}</p>
+//             <p><span className="font-medium">Expiry Date:</span> {displayValue(student.passport_expiry)}</p>
+//             <p><span className="font-medium">Country of Residence:</span> {displayValue(student.country_of_residence)}</p>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Study Information */}
+//       <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
+//         <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Study Information</h2>
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//           <p><span className="font-medium">Destination:</span> {displayValue(student.destination)}</p>
+//           <p><span className="font-medium">Study Level:</span> {displayValue(student.study_level)}</p>
+//           <p><span className="font-medium">Program:</span> {displayValue(student.program)}</p>
+//           <p><span className="font-medium">Intake:</span> {displayValue(student.intake)}</p>
+//           <p><span className="font-medium">Specialization:</span> {displayValue(student.specialization)}</p>
+//         </div>
+//       </div>
+
+//       {/* Academic Qualifications */}
+//       {student.academic_qualifications.length > 0 && (
+//         <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
+//           <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Academic Qualifications</h2>
+//           <div className="space-y-4">
+//             {student.academic_qualifications.map((q, idx) => (
+//               <div key={idx} className="border-l-4 border-[#f16f22] pl-4">
+//                 <p><span className="font-medium">Qualification:</span> {displayValue(q.qualification)}</p>
+//                 <p><span className="font-medium">Institution:</span> {displayValue(q.institution)}</p>
+//                 <p><span className="font-medium">Year:</span> {displayValue(q.year)}</p>
+//                 <p><span className="font-medium">CGPA/Percentage:</span> {displayValue(q.cgpa)}</p>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Work Experience */}
+//       {student.work_experiences.length > 0 && (
+//         <div className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
+//           <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Work Experience</h2>
+//           <div className="space-y-4">
+//             {student.work_experiences.map((w, idx) => (
+//               <div key={idx} className="border-l-4 border-[#f16f22] pl-4">
+//                 <p><span className="font-medium">Organization:</span> {displayValue(w.organization)}</p>
+//                 <p><span className="font-medium">Position:</span> {displayValue(w.position)}</p>
+//                 <p><span className="font-medium">Duration:</span> {displayValue(w.start_date)} - {displayValue(w.end_date)}</p>
+//                 <p><span className="font-medium">Description:</span> {displayValue(w.description)}</p>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Documents */}
+//       <div className="bg-gray-50 p-6 rounded-xl shadow-md">
+//         <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Documents</h2>
+//         <div className="space-y-2">
+//           {student.resume && (
+//             <p><span className="font-medium">Resume:</span> <a href={getFileUrl(student.resume)} target="_blank" rel="noopener noreferrer" className="text-[#f16f22] hover:underline">View Resume</a></p>
+//           )}
+//           {student.transcripts && (
+//             <p><span className="font-medium">Transcripts:</span> <a href={getFileUrl(student.transcripts)} target="_blank" rel="noopener noreferrer" className="text-[#f16f22] hover:underline">View Transcripts</a></p>
+//           )}
+//           {student.passport_copy && (
+//             <p><span className="font-medium">Passport Copy:</span> <a href={getFileUrl(student.passport_copy)} target="_blank" rel="noopener noreferrer" className="text-[#f16f22] hover:underline">View Passport</a></p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AgentsStudentProfile;
+
 
 
 import React, { useEffect, useState } from "react";
@@ -12,7 +175,7 @@ const AgentsStudentProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+useEffect(() => {
   if (!id) {
     setError("Invalid student ID");
     setLoading(false);
@@ -21,8 +184,7 @@ const AgentsStudentProfile = () => {
 
   const fetchStudent = async () => {
     try {
-      const token = localStorage.getItem("authToken");
-
+      const token = localStorage.getItem("token");
       if (!token) {
         setError("Authorization token missing");
         setLoading(false);
@@ -31,53 +193,44 @@ const AgentsStudentProfile = () => {
 
       const response = await fetch(`${BASE_URL}/agent-student/edit/${id}`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      
 
-      if (data.success) {
-        
-        let found;
-        if (Array.isArray(data.data)) {
-          found = data.data.find((s) => String(s.id) === String(id));
-        } else {
-          found = data.data;
-        }
-
-        if (found) {
-         
-          const parsedStudent = {
-            ...found,
-            academic_qualifications: found.academic_qualifications
-              ? JSON.parse(found.academic_qualifications)
-              : [],
-            work_experiences: found.work_experiences
-              ? JSON.parse(found.work_experiences)
-              : [],
-            test_scores: found.test_scores
-              ? JSON.parse(found.test_scores)
-              : [],
-            references: found.references
-              ? JSON.parse(found.references)
-              : [],
-          };
-          setStudent(parsedStudent);
-        } else {
-          setError("Student not found");
-        }
-      } else {
-        setError(data.message || "Failed to fetch student data");
+      if (!response.ok || !data) {
+        setError(data?.message || "Failed to fetch student data");
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error("Error fetching student:", error);
+
+      const profile = data.profile || null;
+
+      if (!profile) {
+        setError("Student not found");
+        setLoading(false);
+        return;
+      }
+
+      const parsedStudent = {
+        ...profile,
+        academic_qualifications: profile.academic_qualifications
+          ? JSON.parse(profile.academic_qualifications)
+          : [],
+        work_experiences: profile.work_experiences
+          ? JSON.parse(profile.work_experiences)
+          : [],
+        test_scores: profile.test_scores
+          ? JSON.parse(profile.test_scores)
+          : [],
+        references: profile.references
+          ? JSON.parse(profile.references)
+          : [],
+      };
+
+      setStudent(parsedStudent);
+    } catch (err) {
+      console.error("Error fetching student:", err);
       setError("Error loading student profile");
     } finally {
       setLoading(false);
@@ -406,11 +559,17 @@ const AgentsStudentProfile = () => {
           )}
         </div>
       </div>
+      
     </div>
   );
 };
 
 export default AgentsStudentProfile;
+
+
+
+
+
 
 
 
