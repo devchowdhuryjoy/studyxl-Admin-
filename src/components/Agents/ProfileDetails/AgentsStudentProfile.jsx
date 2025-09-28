@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import BASE_URL from "../../Api/ApiBaseUrl";
+import BASE_URL from "../../../Api/ApiBaseUrl";
 
-const StudentsProfile = () => {
+const AgentsStudentProfile = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [student, setStudent] = useState(null);
@@ -13,49 +13,80 @@ const StudentsProfile = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    
-    if (!id || id === "undefined") {
-      setError("Invalid student ID");
-      setLoading(false);
-      return;
-    }
+  if (!id) {
+    setError("Invalid student ID");
+    setLoading(false);
+    return;
+  }
 
-    const fetchStudent = async () => {
-      try {
-        const token = localStorage.getItem("authToken") || "your-token-here";
+  const fetchStudent = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
 
-        const response = await fetch(
-          `${BASE_URL}/admin/students/detail/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          setStudent(data.data);
-        } else {
-          setError(data.message || "Failed to fetch student data");
-        }
-      } catch (error) {
-        console.error("Error fetching student:", error);
-        setError("Error loading student profile");
-      } finally {
+      if (!token) {
+        setError("Authorization token missing");
         setLoading(false);
+        return;
       }
-    };
 
-    fetchStudent();
-  }, [id]);
+      const response = await fetch(`${BASE_URL}/agent-student/edit/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+
+      if (data.success) {
+        
+        let found;
+        if (Array.isArray(data.data)) {
+          found = data.data.find((s) => String(s.id) === String(id));
+        } else {
+          found = data.data;
+        }
+
+        if (found) {
+         
+          const parsedStudent = {
+            ...found,
+            academic_qualifications: found.academic_qualifications
+              ? JSON.parse(found.academic_qualifications)
+              : [],
+            work_experiences: found.work_experiences
+              ? JSON.parse(found.work_experiences)
+              : [],
+            test_scores: found.test_scores
+              ? JSON.parse(found.test_scores)
+              : [],
+            references: found.references
+              ? JSON.parse(found.references)
+              : [],
+          };
+          setStudent(parsedStudent);
+        } else {
+          setError("Student not found");
+        }
+      } else {
+        setError(data.message || "Failed to fetch student data");
+      }
+    } catch (error) {
+      console.error("Error fetching student:", error);
+      setError("Error loading student profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStudent();
+}, [id]);
+
 
   // Loading state
   if (loading) {
@@ -379,4 +410,9 @@ const StudentsProfile = () => {
   );
 };
 
-export default StudentsProfile;
+export default AgentsStudentProfile;
+
+
+
+
+
