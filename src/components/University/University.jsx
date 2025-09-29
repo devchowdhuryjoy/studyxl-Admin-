@@ -665,7 +665,13 @@
 
 // export default University;
 
+
+
+
+
+
 // import React, { useRef, useState, useEffect } from "react";
+// import Swal from 'sweetalert2';
 // import BASE_URL from "../../Api/ApiBaseUrl";
 
 // const emptyForm = {
@@ -706,13 +712,6 @@
 
 //   const token = localStorage.getItem("token");
 
-//   // Static destinations
-//   const staticDestinations = [
-//     { id: "uk", destinations_name: "UK" },
-//     { id: "usa", destinations_name: "USA" },
-//     { id: "canada", destinations_name: "Canada" }
-//   ];
-
 //   useEffect(() => {
 //     fetchDestinations();
 //   }, []);
@@ -726,35 +725,41 @@
 //       const requestOptions = {
 //         method: "GET",
 //         headers: myHeaders,
-//         redirect: "follow"
+//         redirect: "follow",
 //       };
 
-//       const response = await fetch(`${BASE_URL}/admin/destinations/`, requestOptions);
-
-//       let allDestinations = [...staticDestinations];
+//       const response = await fetch(
+//         `${BASE_URL}/admin/destinations`,
+//         requestOptions
+//       );
 
 //       if (response.ok) {
 //         const result = await response.json();
-//         if (result.data && Array.isArray(result.data)) {
-//           // Combine static and API destinations, remove duplicates
-//           const apiDestinations = result.data.filter(apiDest =>
-//             !staticDestinations.some(staticDest => staticDest.id === apiDest.id)
-//           );
-//           allDestinations = [...staticDestinations, ...apiDestinations];
-//         }
+//         setDestinations(result.data || []);
+//       } else {
+//         Swal.fire({
+//           icon: 'error',
+//           title: 'Error',
+//           text: 'Failed to fetch destinations',
+//         });
 //       }
-
-//       setDestinations(allDestinations);
 //     } catch (error) {
 //       console.error("Error fetching destinations:", error);
-//       // Fallback to static destinations if API fails
-//       setDestinations(staticDestinations);
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Error',
+//         text: 'An error occurred while fetching destinations',
+//       });
 //     }
 //   };
 
 //   const addNewDestination = async () => {
 //     if (!newDestination.trim()) {
-//       alert("Please enter a destination name");
+//       Swal.fire({
+//         icon: 'warning',
+//         title: 'Warning',
+//         text: 'Please enter a destination name',
+//       });
 //       return;
 //     }
 
@@ -763,40 +768,45 @@
 //       const myHeaders = new Headers();
 //       myHeaders.append("Authorization", `Bearer ${token}`);
 //       myHeaders.append("Content-Type", "application/json");
-//       myHeaders.append("Accept", "application/json");
 
 //       const raw = JSON.stringify({
-//         destinations_name: newDestination.trim()
+//         destinations_name: newDestination.trim(),
 //       });
 
 //       const requestOptions = {
 //         method: "POST",
 //         headers: myHeaders,
 //         body: raw,
-//         redirect: "follow"
 //       };
 
-//       const response = await fetch(`${BASE_URL}/admin/destinations/create`, requestOptions);
+//       const response = await fetch(`${BASE_URL}/admin/destinations`, requestOptions);
 //       const result = await response.json();
 
 //       if (response.ok) {
-//         // Add new destination to the list
-//         const newDest = {
-//           id: result.data?.id || Date.now().toString(),
-//           destinations_name: newDestination.trim()
-//         };
-
-//         setDestinations(prev => [...prev, newDest]);
-//         setForm(prev => ({ ...prev, destinations: newDest.id }));
+//         setDestinations((prev) => [...prev, result.data]);
+//         setForm((prev) => ({ ...prev, destinations: result.data.id }));
 //         setNewDestination("");
 //         setShowAddDestination(false);
-//         alert("Destination added successfully!");
+        
+//         Swal.fire({
+//           icon: 'success',
+//           title: 'Success',
+//           text: 'Destination added successfully!',
+//         });
 //       } else {
-//         alert(`Failed to add destination: ${result.message || 'Unknown error'}`);
+//         Swal.fire({
+//           icon: 'error',
+//           title: 'Error',
+//           text: result.message || 'Failed to add destination',
+//         });
 //       }
 //     } catch (error) {
 //       console.error("Error adding destination:", error);
-//       alert("An error occurred while adding destination");
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Error',
+//         text: 'An error occurred while adding destination',
+//       });
 //     } finally {
 //       setAddingDestination(false);
 //     }
@@ -804,8 +814,7 @@
 
 //   const validate = () => {
 //     const e = {};
-//     if (!form.university_name.trim())
-//       e.university_name = "University name is required";
+//     if (!form.university_name.trim()) e.university_name = "University name is required";
 //     if (!form.location.trim()) e.location = "Location is required";
 //     if (!form.address.trim()) e.address = "Address is required";
 //     if (!form.destinations) e.destinations = "Destination is required";
@@ -839,52 +848,36 @@
 //     try {
 //       const myHeaders = new Headers();
 //       myHeaders.append("Authorization", `Bearer ${token}`);
-//       myHeaders.append("Accept", "application/json");
 
 //       const formdata = new FormData();
+      
+//       // Append all form data
+//       Object.keys(form).forEach(key => {
+//         if (key !== 'imageFile' && key !== 'imagePreview') {
+//           formdata.append(key, form[key]);
+//         }
+//       });
 
-//       // Basic information
-//       formdata.append("university_name", form.university_name);
-//       formdata.append("address", form.address);
-//       formdata.append("location", form.location);
-//       formdata.append("phone_number", form.phone_number);
-//       formdata.append("founded", form.founded);
-//       formdata.append("school_id", form.school_id);
-//       formdata.append("institution_type", form.institution_type);
-//       formdata.append("dli_number", form.dli_number);
-//       formdata.append("destinations", form.destinations);
-
-//       if (form.top_disciplines) {
-//         const disciplinesArray = form.top_disciplines.split(',').map(discipline => ({
-//           discipline: discipline.trim(),
-//           percentage: 0
-//         }));
-//         formdata.append("top_disciplines", JSON.stringify(disciplinesArray));
-//       }
-
-//       // Other fields
-//       formdata.append("application_fee", form.application_fee);
-//       formdata.append("application_short_desc", form.application_short_desc);
-//       formdata.append("average_graduate_program", form.average_graduate_program);
-//       formdata.append("average_graduate_program_short_desc", form.average_graduate_program_short_desc);
-//       formdata.append("average_undergraduate_program", form.average_undergraduate_program);
-//       formdata.append("average_undergraduate_program_short_desc", form.average_undergraduate_program_short_desc);
-//       formdata.append("cost_of_living", form.cost_of_living);
-//       formdata.append("cost_of_living_short_desc", form.cost_of_living_short_desc);
-//       formdata.append("average_gross_tuition", form.average_gross_tuition);
-//       formdata.append("average_gross_tuition_short_desc", form.average_gross_tuition_short_desc);
-//       formdata.append("featured", form.featured);
-
-//       // Image append
+//       // Handle images
 //       if (form.imageFile) {
 //         formdata.append("images[]", form.imageFile);
+//       }
+
+//       // Handle top_disciplines as JSON
+//       if (form.top_disciplines) {
+//         const disciplinesArray = form.top_disciplines
+//           .split(",")
+//           .map((discipline) => ({
+//             discipline: discipline.trim(),
+//             percentage: 0,
+//           }));
+//         formdata.append("top_disciplines", JSON.stringify(disciplinesArray));
 //       }
 
 //       const requestOptions = {
 //         method: "POST",
 //         headers: myHeaders,
 //         body: formdata,
-//         redirect: "follow"
 //       };
 
 //       const response = await fetch(
@@ -906,17 +899,52 @@
 //         setErrors({});
 //         fileInputRef.current.value = "";
 
-//         alert("University created successfully!");
+//         Swal.fire({
+//           icon: 'success',
+//           title: 'Success',
+//           text: 'University created successfully!',
+//         });
 //       } else {
 //         console.error("API Error:", result);
-//         alert(`Failed to create university: ${result.message || 'Unknown error'}`);
+//         Swal.fire({
+//           icon: 'error',
+//           title: 'Error',
+//           text: result.message || 'Failed to create university',
+//         });
 //       }
 //     } catch (error) {
 //       console.error("Error:", error);
-//       alert("An error occurred while creating university");
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Error',
+//         text: 'An error occurred while creating university',
+//       });
 //     } finally {
 //       setLoading(false);
 //     }
+//   };
+
+//   const handleReset = () => {
+//     Swal.fire({
+//       title: 'Are you sure?',
+//       text: "You will lose all form data!",
+//       icon: 'warning',
+//       showCancelButton: true,
+//       confirmButtonColor: '#3085d6',
+//       cancelButtonColor: '#d33',
+//       confirmButtonText: 'Yes, reset it!'
+//     }).then((result) => {
+//       if (result.isConfirmed) {
+//         setForm(emptyForm);
+//         setErrors({});
+//         fileInputRef.current.value = "";
+//         Swal.fire(
+//           'Reset!',
+//           'Form has been reset.',
+//           'success'
+//         );
+//       }
+//     });
 //   };
 
 //   return (
@@ -927,7 +955,7 @@
 //       </div>
 
 //       <form onSubmit={onSubmit} className="grid lg:grid-cols-3 gap-6">
-//         {/* Image uploader - Unchanged */}
+//         {/* Image uploader */}
 //         <div className="lg:col-span-1">
 //           <div
 //             onDrop={onDrop}
@@ -1008,7 +1036,9 @@
 //               placeholder="Western University"
 //             />
 //             {errors.university_name && (
-//               <p className="text-red-500 text-sm mt-1">{errors.university_name}</p>
+//               <p className="text-red-500 text-sm mt-1">
+//                 {errors.university_name}
+//               </p>
 //             )}
 //           </div>
 
@@ -1018,7 +1048,9 @@
 //             <input
 //               type="text"
 //               value={form.address}
-//               onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
+//               onChange={(e) =>
+//                 setForm((p) => ({ ...p, address: e.target.value }))
+//               }
 //               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
 //               placeholder="123 Main St"
 //             />
@@ -1033,7 +1065,9 @@
 //             <input
 //               type="text"
 //               value={form.location}
-//               onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
+//               onChange={(e) =>
+//                 setForm((p) => ({ ...p, location: e.target.value }))
+//               }
 //               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
 //               placeholder="London, Ontario, CA"
 //             />
@@ -1042,9 +1076,11 @@
 //             )}
 //           </div>
 
-//           {/* Destinations dropdown with add option */}
+//           {/* Destinations dropdown */}
 //           <div>
-//             <label className="block text-sm font-medium mb-1">Destinations</label>
+//             <label className="block text-sm font-medium mb-1">
+//               Destinations
+//             </label>
 //             <div className="flex gap-2">
 //               <select
 //                 value={form.destinations}
@@ -1076,24 +1112,28 @@
 //             {showAddDestination && (
 //               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 //                 <div className="bg-white p-6 rounded-2xl w-96">
-//                   <h3 className="text-lg font-bold mb-4">Add New Destination</h3>
+//                   <h3 className="text-lg font-bold mb-4">
+//                     Add New Destination
+//                   </h3>
 //                   <input
 //                     type="text"
 //                     value={newDestination}
 //                     onChange={(e) => setNewDestination(e.target.value)}
 //                     className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50 mb-4"
 //                     placeholder="Enter destination name"
-//                     onKeyPress={(e) => e.key === 'Enter' && addNewDestination()}
+//                     onKeyPress={(e) => e.key === "Enter" && addNewDestination()}
 //                   />
 //                   <div className="flex gap-2">
 //                     <button
 //                       onClick={addNewDestination}
 //                       disabled={addingDestination}
 //                       className={`flex-1 py-3 rounded-xl text-white ${
-//                         addingDestination ? 'bg-gray-400' : 'bg-primary hover:bg-secondary'
+//                         addingDestination
+//                           ? "bg-gray-400"
+//                           : "bg-primary hover:bg-secondary"
 //                       }`}
 //                     >
-//                       {addingDestination ? 'Adding...' : 'Add'}
+//                       {addingDestination ? "Adding..." : "Add"}
 //                     </button>
 //                     <button
 //                       onClick={() => {
@@ -1110,10 +1150,12 @@
 //             )}
 //           </div>
 
-//           {/* Rest of the form fields - unchanged */}
+//           {/* Rest of the form fields */}
 //           {/* Phone Number */}
 //           <div>
-//             <label className="block text-sm font-medium mb-1">Phone Number</label>
+//             <label className="block text-sm font-medium mb-1">
+//               Phone Number
+//             </label>
 //             <input
 //               type="text"
 //               value={form.phone_number}
@@ -1127,11 +1169,15 @@
 
 //           {/* Founded Year */}
 //           <div>
-//             <label className="block text-sm font-medium mb-1">Founded Year</label>
+//             <label className="block text-sm font-medium mb-1">
+//               Founded Year
+//             </label>
 //             <input
 //               type="number"
 //               value={form.founded}
-//               onChange={(e) => setForm((p) => ({ ...p, founded: e.target.value }))}
+//               onChange={(e) =>
+//                 setForm((p) => ({ ...p, founded: e.target.value }))
+//               }
 //               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
 //               placeholder="1878"
 //             />
@@ -1143,7 +1189,9 @@
 //             <input
 //               type="text"
 //               value={form.school_id}
-//               onChange={(e) => setForm((p) => ({ ...p, school_id: e.target.value }))}
+//               onChange={(e) =>
+//                 setForm((p) => ({ ...p, school_id: e.target.value }))
+//               }
 //               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
 //               placeholder="SCH12345"
 //             />
@@ -1173,7 +1221,9 @@
 //             <input
 //               type="text"
 //               value={form.dli_number}
-//               onChange={(e) => setForm((p) => ({ ...p, dli_number: e.target.value }))}
+//               onChange={(e) =>
+//                 setForm((p) => ({ ...p, dli_number: e.target.value }))
+//               }
 //               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
 //               placeholder="DLI-123456"
 //             />
@@ -1181,7 +1231,9 @@
 
 //           {/* Top Disciplines */}
 //           <div>
-//             <label className="block text-sm font-medium mb-1">Top Disciplines</label>
+//             <label className="block text-sm font-medium mb-1">
+//               Top Disciplines
+//             </label>
 //             <input
 //               type="text"
 //               value={form.top_disciplines}
@@ -1198,7 +1250,9 @@
 
 //           {/* Application Fee */}
 //           <div>
-//             <label className="block text-sm font-medium mb-1">Application Fee</label>
+//             <label className="block text-sm font-medium mb-1">
+//               Application Fee
+//             </label>
 //             <input
 //               type="text"
 //               value={form.application_fee}
@@ -1304,7 +1358,9 @@
 
 //           {/* Cost of Living */}
 //           <div>
-//             <label className="block text-sm font-medium mb-1">Cost of Living</label>
+//             <label className="block text-sm font-medium mb-1">
+//               Cost of Living
+//             </label>
 //             <input
 //               type="text"
 //               value={form.cost_of_living}
@@ -1378,19 +1434,15 @@
 //               disabled={loading}
 //               className={`inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold shadow transition ${
 //                 loading
-//                   ? 'bg-gray-400 cursor-not-allowed'
-//                   : 'bg-primary text-white hover:bg-secondary'
+//                   ? "bg-gray-400 cursor-not-allowed"
+//                   : "bg-primary text-white hover:bg-secondary"
 //               }`}
 //             >
-//               {loading ? 'Creating...' : 'Save University'}
+//               {loading ? "Creating..." : "Save University"}
 //             </button>
 //             <button
 //               type="button"
-//               onClick={() => {
-//                 setForm(emptyForm);
-//                 setErrors({});
-//                 fileInputRef.current.value = "";
-//               }}
+//               onClick={handleReset}
 //               className="px-5 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50"
 //             >
 //               Reset
@@ -1406,7 +1458,11 @@
 // const Card = ({ uni }) => (
 //   <div className="bg-white rounded-2xl shadow-md overflow-hidden">
 //     <div className="relative">
-//       <img src={uni.image} alt={uni.university_name} className="w-full h-48 object-cover" />
+//       <img
+//         src={uni.image}
+//         alt={uni.university_name}
+//         className="w-full h-48 object-cover"
+//       />
 //       {uni.featured && (
 //         <span className="absolute top-2 left-2 bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
 //           • Featured
@@ -1416,7 +1472,9 @@
 //     <div className="p-4">
 //       <h2 className="text-lg font-bold">{uni.university_name}</h2>
 //       <p className="text-sm text-gray-600 mb-2">{uni.location}</p>
-//       <p className="text-gray-700 text-sm line-clamp-4">{uni.application_short_desc}</p>
+//       <p className="text-gray-700 text-sm line-clamp-4">
+//         {uni.application_short_desc}
+//       </p>
 //     </div>
 //   </div>
 // );
@@ -1444,7 +1502,13 @@
 
 // export default University;
 
+
+
+
+
+
 import React, { useRef, useState, useEffect } from "react";
+import Swal from 'sweetalert2';
 import BASE_URL from "../../Api/ApiBaseUrl";
 
 const emptyForm = {
@@ -1485,13 +1549,6 @@ const AdminUniversityForm = ({ onCreate }) => {
 
   const token = localStorage.getItem("token");
 
-  // Static destinations
-  const staticDestinations = [
-    { id: "uk", destinations_name: "UK" },
-    { id: "usa", destinations_name: "USA" },
-    { id: "canada", destinations_name: "Canada" },
-  ];
-
   useEffect(() => {
     fetchDestinations();
   }, []);
@@ -1509,37 +1566,51 @@ const AdminUniversityForm = ({ onCreate }) => {
       };
 
       const response = await fetch(
-        `${BASE_URL}/admin/destinations/`,
+        `${BASE_URL}/admin/university-destination`,
         requestOptions
       );
 
-      let allDestinations = [...staticDestinations];
-
       if (response.ok) {
         const result = await response.json();
-        if (result.data && Array.isArray(result.data)) {
-          // Combine static and API destinations, remove duplicates
-          const apiDestinations = result.data.filter(
-            (apiDest) =>
-              !staticDestinations.some(
-                (staticDest) => staticDest.id === apiDest.id
-              )
-          );
-          allDestinations = [...staticDestinations, ...apiDestinations];
+        if (result.status && result.data) {
+          setDestinations(result.data);
+        } else {
+          // Fallback destinations
+          setDestinations([
+            { id: 1, destinations_name: "UK" },
+            { id: 2, destinations_name: "USA" },
+            { id: 3, destinations_name: "Canada" },
+            { id: 4, destinations_name: "Australia" }
+          ]);
         }
+      } else {
+        // Fallback if API fails
+        setDestinations([
+          { id: 1, destinations_name: "UK" },
+          { id: 2, destinations_name: "USA" },
+          { id: 3, destinations_name: "Canada" },
+          { id: 4, destinations_name: "Australia" }
+        ]);
       }
-
-      setDestinations(allDestinations);
     } catch (error) {
       console.error("Error fetching destinations:", error);
-      // Fallback to static destinations if API fails
-      setDestinations(staticDestinations);
+      // Fallback destinations
+      setDestinations([
+        { id: 1, destinations_name: "UK" },
+        { id: 2, destinations_name: "USA" },
+        { id: 3, destinations_name: "Canada" },
+        { id: 4, destinations_name: "Australia" }
+      ]);
     }
   };
 
   const addNewDestination = async () => {
     if (!newDestination.trim()) {
-      alert("Please enter a destination name");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Please enter a destination name',
+      });
       return;
     }
 
@@ -1548,7 +1619,6 @@ const AdminUniversityForm = ({ onCreate }) => {
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Accept", "application/json");
 
       const raw = JSON.stringify({
         destinations_name: newDestination.trim(),
@@ -1558,36 +1628,36 @@ const AdminUniversityForm = ({ onCreate }) => {
         method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: "follow",
       };
 
-      // const response = await fetch(`${BASE_URL}/admin/destinations/create`, requestOptions);
-      const response = await fetch(
-        `${BASE_URL}/universities/create/${form.destinations}`,
-        requestOptions
-      );
+      const response = await fetch(`${BASE_URL}/admin/destinations`, requestOptions);
       const result = await response.json();
 
       if (response.ok) {
-        // Add new destination to the list
-        const newDest = {
-          id: result.data?.id || Date.now().toString(),
-          destinations_name: newDestination.trim(),
-        };
-
-        setDestinations((prev) => [...prev, newDest]);
-        setForm((prev) => ({ ...prev, destinations: newDest.id }));
+        // Refresh destinations list
+        fetchDestinations();
         setNewDestination("");
         setShowAddDestination(false);
-        alert("Destination added successfully!");
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Destination added successfully!',
+        });
       } else {
-        alert(
-          `Failed to add destination: ${result.message || "Unknown error"}`
-        );
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: result.message || 'Failed to add destination',
+        });
       }
     } catch (error) {
       console.error("Error adding destination:", error);
-      alert("An error occurred while adding destination");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while adding destination',
+      });
     } finally {
       setAddingDestination(false);
     }
@@ -1595,8 +1665,7 @@ const AdminUniversityForm = ({ onCreate }) => {
 
   const validate = () => {
     const e = {};
-    if (!form.university_name.trim())
-      e.university_name = "University name is required";
+    if (!form.university_name.trim()) e.university_name = "University name is required";
     if (!form.location.trim()) e.location = "Location is required";
     if (!form.address.trim()) e.address = "Address is required";
     if (!form.destinations) e.destinations = "Destination is required";
@@ -1630,21 +1699,38 @@ const AdminUniversityForm = ({ onCreate }) => {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
-      myHeaders.append("Accept", "application/json");
 
       const formdata = new FormData();
-
-      // Basic information
+      
+      // Append all form data
       formdata.append("university_name", form.university_name);
       formdata.append("address", form.address);
       formdata.append("location", form.location);
+      formdata.append("destinations", form.destinations);
       formdata.append("phone_number", form.phone_number);
       formdata.append("founded", form.founded);
       formdata.append("school_id", form.school_id);
       formdata.append("institution_type", form.institution_type);
       formdata.append("dli_number", form.dli_number);
-      formdata.append("destinations", form.destinations);
+      
+      formdata.append("application_fee", form.application_fee);
+      formdata.append("application_short_desc", form.application_short_desc);
+      formdata.append("average_graduate_program", form.average_graduate_program);
+      formdata.append("average_graduate_program_short_desc", form.average_graduate_program_short_desc);
+      formdata.append("average_undergraduate_program", form.average_undergraduate_program);
+      formdata.append("average_undergraduate_program_short_desc", form.average_undergraduate_program_short_desc);
+      formdata.append("cost_of_living", form.cost_of_living);
+      formdata.append("cost_of_living_short_desc", form.cost_of_living_short_desc);
+      formdata.append("average_gross_tuition", form.average_gross_tuition);
+      formdata.append("average_gross_tuition_short_desc", form.average_gross_tuition_short_desc);
+      formdata.append("featured", form.featured);
 
+      // Handle images
+      if (form.imageFile) {
+        formdata.append("images[]", form.imageFile);
+      }
+
+      // Handle top_disciplines as JSON
       if (form.top_disciplines) {
         const disciplinesArray = form.top_disciplines
           .split(",")
@@ -1655,115 +1741,83 @@ const AdminUniversityForm = ({ onCreate }) => {
         formdata.append("top_disciplines", JSON.stringify(disciplinesArray));
       }
 
-      // Other fields
-      formdata.append("application_fee", form.application_fee);
-      formdata.append("application_short_desc", form.application_short_desc);
-      formdata.append(
-        "average_graduate_program",
-        form.average_graduate_program
-      );
-      formdata.append(
-        "average_graduate_program_short_desc",
-        form.average_graduate_program_short_desc
-      );
-      formdata.append(
-        "average_undergraduate_program",
-        form.average_undergraduate_program
-      );
-      formdata.append(
-        "average_undergraduate_program_short_desc",
-        form.average_undergraduate_program_short_desc
-      );
-      formdata.append("cost_of_living", form.cost_of_living);
-      formdata.append(
-        "cost_of_living_short_desc",
-        form.cost_of_living_short_desc
-      );
-      formdata.append("average_gross_tuition", form.average_gross_tuition);
-      formdata.append(
-        "average_gross_tuition_short_desc",
-        form.average_gross_tuition_short_desc
-      );
-      formdata.append("featured", form.featured);
-
-      // Image append
-      if (form.imageFile) {
-        formdata.append("images[]", form.imageFile);
-      }
-
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: formdata,
-        redirect: "follow",
       };
 
-      // Correct API endpoint - remove the extra "api" from the URL
       const response = await fetch(
         `${BASE_URL}/admin/universities/create`,
         requestOptions
       );
 
-      // If still getting error, try alternative endpoints
-      if (!response.ok) {
-        // Try alternative endpoint
-        // const alternativeResponse = await fetch(`${BASE_URL}/admin/universities`,requestOptions);
-        const alternativeResponse = await fetch(
-          `${BASE_URL}/university-destination`,
-          requestOptions
-        );
+      const result = await response.json();
 
-        const result = await alternativeResponse.json();
+      if (response.ok && result.status) {
+        const card = {
+          id: crypto.randomUUID(),
+          ...form,
+          image: form.imagePreview,
+        };
+        onCreate?.(card);
 
-        if (alternativeResponse.ok) {
-          // Success case
-          const card = {
-            id: crypto.randomUUID(),
-            ...form,
-            image: form.imagePreview,
-          };
-          onCreate?.(card);
+        setForm(emptyForm);
+        setErrors({});
+        fileInputRef.current.value = "";
 
-          setForm(emptyForm);
-          setErrors({});
-          fileInputRef.current.value = "";
-
-          alert("University created successfully!");
-        } else {
-          console.error("API Error:", result);
-          alert(
-            `Failed to create university: ${result.message || "Unknown error"}`
-          );
-        }
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'University created successfully!',
+        });
       } else {
-        const result = await response.json();
-
-        if (response.ok) {
-          const card = {
-            id: crypto.randomUUID(),
-            ...form,
-            image: form.imagePreview,
-          };
-          onCreate?.(card);
-
-          setForm(emptyForm);
-          setErrors({});
-          fileInputRef.current.value = "";
-
-          alert("University created successfully!");
-        } else {
-          console.error("API Error:", result);
-          alert(
-            `Failed to create university: ${result.message || "Unknown error"}`
-          );
-        }
+        console.error("API Error:", result);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: result.message || 'Failed to create university',
+        });
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred while creating university");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while creating university',
+      });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will lose all form data!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, reset it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setForm(emptyForm);
+        setErrors({});
+        fileInputRef.current.value = "";
+        Swal.fire(
+          'Reset!',
+          'Form has been reset.',
+          'success'
+        );
+      }
+    });
+  };
+
+  // Get destination name by ID
+  const getDestinationName = (id) => {
+    const destination = destinations.find(dest => dest.id == id);
+    return destination ? destination.destinations_name : '';
   };
 
   return (
@@ -1774,7 +1828,7 @@ const AdminUniversityForm = ({ onCreate }) => {
       </div>
 
       <form onSubmit={onSubmit} className="grid lg:grid-cols-3 gap-6">
-        {/* Image uploader - Unchanged */}
+        {/* Image uploader */}
         <div className="lg:col-span-1">
           <div
             onDrop={onDrop}
@@ -1895,7 +1949,7 @@ const AdminUniversityForm = ({ onCreate }) => {
             )}
           </div>
 
-          {/* Destinations dropdown with add option */}
+          {/* Destinations dropdown - SHOWING NAMES */}
           <div>
             <label className="block text-sm font-medium mb-1">
               Destinations
@@ -1910,7 +1964,7 @@ const AdminUniversityForm = ({ onCreate }) => {
               >
                 <option value="">Select Destination</option>
                 {destinations.map((dest) => (
-                  <option key={dest.id} value={dest.id}>
+                  <option key={dest.id} value={dest.destinations_name}>
                     {dest.destinations_name}
                   </option>
                 ))}
@@ -1925,6 +1979,11 @@ const AdminUniversityForm = ({ onCreate }) => {
             </div>
             {errors.destinations && (
               <p className="text-red-500 text-sm mt-1">{errors.destinations}</p>
+            )}
+            {form.destinations && (
+              <p className="text-green-600 text-sm mt-1">
+                Selected: {form.destinations}
+              </p>
             )}
 
             {/* Add Destination Modal */}
@@ -1969,7 +2028,7 @@ const AdminUniversityForm = ({ onCreate }) => {
             )}
           </div>
 
-          {/* Rest of the form fields - unchanged */}
+          {/* Rest of the form fields */}
           {/* Phone Number */}
           <div>
             <label className="block text-sm font-medium mb-1">
@@ -2152,7 +2211,7 @@ const AdminUniversityForm = ({ onCreate }) => {
                   average_undergraduate_program: e.target.value,
                 }))
               }
-              className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
+              className="w-full rounded-xl border px-4py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
               placeholder="Bachelors in Business"
             />
           </div>
@@ -2261,11 +2320,7 @@ const AdminUniversityForm = ({ onCreate }) => {
             </button>
             <button
               type="button"
-              onClick={() => {
-                setForm(emptyForm);
-                setErrors({});
-                fileInputRef.current.value = "";
-              }}
+              onClick={handleReset}
               className="px-5 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Reset
@@ -2295,6 +2350,9 @@ const Card = ({ uni }) => (
     <div className="p-4">
       <h2 className="text-lg font-bold">{uni.university_name}</h2>
       <p className="text-sm text-gray-600 mb-2">{uni.location}</p>
+      <p className="text-sm text-gray-700 mb-2">
+        <strong>Destination:</strong> {uni.destinations}
+      </p>
       <p className="text-gray-700 text-sm line-clamp-4">
         {uni.application_short_desc}
       </p>
