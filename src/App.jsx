@@ -10,6 +10,10 @@ import AgentStudentProfile from "./components/Agents/AgentStudentProfile";
 import AgentDetails from "./pages/DetailsPage/AgentDetails";
 import AgentsStudent from "./components/AgentsStudent/AgentsStudent";
 import AgentsStudentProfile from "./components/Agents/ProfileDetails/AgentsStudentProfile";
+import ProgramCreate from "./components/Program/ProgramCreate";
+import UniversityShowing from "./components/University/UniversityShowing";
+import StudentTask from "./components/Students/StudentTask";
+import AgentTask from "./components/AgentsStudent/AgentTask";
 
 function App() {
   return (
@@ -23,6 +27,7 @@ function App() {
           {/* Students */}
           <Route path="student-register" element={<Users />} />
           <Route path="student-profile/:id" element={<StudentsProfile />} />
+          <Route path="student-task" element={<StudentTask />} />
           {/* Students */}
 
           {/* Agents */}
@@ -41,11 +46,14 @@ function App() {
             path="agent-student-profile-two/:id"
             element={<AgentsStudentProfile />}
           />
+          <Route path="agent-task" element={<AgentTask />} />
 
           {/* Agents */}
 
           {/* University */}
           <Route path="university" element={<University />} />
+          <Route path="universityshow" element={<UniversityShowing />} />
+          <Route path="program-create" element={<ProgramCreate />} />
           {/* University */}
         </Route>
       </Routes>

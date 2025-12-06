@@ -98,10 +98,10 @@ const Sidebar = () => {
               
 
                 <Link
-                  to="/dashboard/student-tasks"
+                  to="/dashboard/student-task"
                   onClick={handleMainLinkClick} 
                   className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/student-tasks")
+                    isActive("/dashboard/student-task")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
                   }`}
@@ -156,10 +156,10 @@ const Sidebar = () => {
                 </Link>
 
                 <Link
-                  to="/dashboard/agent-tasks"
+                  to="/dashboard/agent-task"
                   onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-tasks")
+                    isActive("/dashboard/agent-task")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
                   }`}
@@ -182,6 +182,31 @@ const Sidebar = () => {
             }`}
           >
             <GraduationCap size={20} /> University
+          </Link>
+
+          {/* University Showing */}
+          <Link
+            to="/dashboard/universityshow"
+            onClick={handleMainLinkClick}
+            className={`flex items-center gap-2 p-2 rounded ${
+              isActive("/dashboard/universityshow")
+                ? "bg-[#f16f22] text-white"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <GraduationCap size={20} /> University Showing
+          </Link>
+
+          <Link
+            to="/dashboard/program-create"
+            onClick={handleMainLinkClick}
+            className={`flex items-center gap-2 p-2 rounded ${
+              isActive("/dashboard/program-create")
+                ? "bg-[#f16f22] text-white"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <GraduationCap size={20} /> Program Create
           </Link>
           
         </nav>
