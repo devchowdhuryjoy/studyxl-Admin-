@@ -85,7 +85,7 @@ const Sidebar = () => {
               <div className="ml-6 mt-1 space-y-1">
                 <Link
                   to="/dashboard/student-register"
-                  onClick={handleMainLinkClick} 
+                  onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${
                     isActive("/dashboard/student-register")
                       ? "bg-[#f16f22] text-white"
@@ -95,11 +95,9 @@ const Sidebar = () => {
                   Student Registration
                 </Link>
 
-              
-
                 <Link
                   to="/dashboard/student-task"
-                  onClick={handleMainLinkClick} 
+                  onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${
                     isActive("/dashboard/student-task")
                       ? "bg-[#f16f22] text-white"
@@ -143,7 +141,7 @@ const Sidebar = () => {
                   Agent Registration
                 </Link>
 
-                 <Link
+                <Link
                   to="/dashboard/agent-student-profile"
                   onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${
@@ -153,6 +151,17 @@ const Sidebar = () => {
                   }`}
                 >
                   Agent Student Profile
+                </Link>
+                <Link
+                  to="/dashboard/agent-application"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/agent-application")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Application
                 </Link>
 
                 <Link
@@ -166,12 +175,11 @@ const Sidebar = () => {
                 >
                   Agent Tasks
                 </Link>
-
               </div>
             )}
           </div>
 
-{/*           
+          {/*           
           <Link
             to="/dashboard/university"
             onClick={handleMainLinkClick}
@@ -210,59 +218,65 @@ const Sidebar = () => {
           </Link> */}
 
           {/* University Menu with Submenu */}
-<div>
-  <button
-    onClick={() => toggleMenu("university")}
-    className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
-  >
-    <span className="flex items-center gap-2">
-      <GraduationCap size={20} /> University
-    </span>
-    <ChevronDown
-      size={16}
-      className={`transition-transform ${activeMenu === "university" ? "rotate-180" : ""}`}
-    />
-  </button>
+          <div>
+            <button
+              onClick={() => toggleMenu("university")}
+              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+            >
+              <span className="flex items-center gap-2">
+                <GraduationCap size={20} /> University
+              </span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${
+                  activeMenu === "university" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
 
-  {activeMenu === "university" && (
-    <div className="ml-6 mt-1 space-y-1">
-      {/* University Create */}
-      <Link
-        to="/dashboard/university"
-        onClick={handleMainLinkClick}
-        className={`block p-2 text-sm rounded ${
-          isActive("/dashboard/university") ? "bg-[#f16f22] text-white" : "hover:bg-gray-100"
-        }`}
-      >
-        University Create
-      </Link>
+            {activeMenu === "university" && (
+              <div className="ml-6 mt-1 space-y-1">
+                {/* University Create */}
+                <Link
+                  to="/dashboard/university"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/university")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  University Create
+                </Link>
 
-      {/* All Universities */}
-      <Link
-        to="/dashboard/universityshow"
-        onClick={handleMainLinkClick}
-        className={`block p-2 text-sm rounded ${
-          isActive("/dashboard/universityshow") ? "bg-[#f16f22] text-white" : "hover:bg-gray-100"
-        }`}
-      >
-        All University
-      </Link>
+                {/* All Universities */}
+                <Link
+                  to="/dashboard/universityshow"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/universityshow")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  All University
+                </Link>
 
-      {/* Program Create */}
-      <Link
-        to="/dashboard/program-create"
-        onClick={handleMainLinkClick}
-        className={`block p-2 text-sm rounded ${
-          isActive("/dashboard/program-create") ? "bg-[#f16f22] text-white" : "hover:bg-gray-100"
-        }`}
-      >
-        Program Create
-      </Link>
-    </div>
-  )}
-</div>
-
-          
+                {/* Program Create */}
+                <Link
+                  to="/dashboard/program-create"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/program-create")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Program Create
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
       </aside>
     </>
