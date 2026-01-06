@@ -1,172 +1,5 @@
 
-
-
-
-// import React, { useState } from "react";
-// import axios from "axios";
-// import Swal from "sweetalert2"; // SweetAlert2 import
-// import BASE_URL from "../../Api/ApiBaseUrl";
-
-// const ProgramCreate = () => {
-//   const [formData, setFormData] = useState({
-//     program_name: "",
-//     program_description: "",
-//     program_tag: "",
-//     application_fee: "",
-//     application_short_desc: "",
-//     average_graduate_program: "",
-//     average_graduate_program_short_desc: "",
-//     average_undergraduate_program: "",
-//     average_undergraduate_program_short_desc: "",
-//     cost_of_living: "",
-//     cost_of_living_short_desc: "",
-//     average_gross_tuition: "",
-//     duration: "",
-//     campus_city: "",
-//     success_chance: "",
-//     program_summary: "",
-//     average_gross_tuition_short_desc: "",
-//     open_date: "",
-//     submission_deadline: "",
-//     students_requirements: {
-//       study_permit_or_visa: "",
-//       nationality: "",
-//       education_country: "",
-//       last_level_of_study: "",
-//       grading_scheme: "",
-//       english_exam_status: {
-//         ielts: { required: false, reading: "", writing: "", listening: "", speaking: "", overall: "" },
-//         toefl: { required: false, reading: "", writing: "", listening: "", speaking: "", overall: "" },
-//         duolingo: { required: false, total: "" },
-//         pte: { required: false, reading: "", writing: "", listening: "", speaking: "", overall: "" },
-//         no_exam: { status: "" },
-//       },
-//     },
-//   });
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const response = await axios.post(
-//         `${BASE_URL}/admin/university-programs/1/1/1/1/1/1/store`,
-//         formData,
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: "Bearer 12|GglMcxnKVS5QnUWWKe6RU7LLmHfLeNnJWp1mrteE7373aa90",
-//           },
-//         }
-//       );
-
-//       // SweetAlert Success
-//       Swal.fire({
-//         icon: "success",
-//         title: "Success",
-//         text: "Program Created Successfully!",
-//         confirmButtonColor: "#3085d6",
-//       });
-
-//       console.log(response.data);
-//     } catch (error) {
-//       // SweetAlert Error
-//       Swal.fire({
-//         icon: "error",
-//         title: "Oops...",
-//         text: error.response?.data?.message || "Something went wrong!",
-//         confirmButtonColor: "#d33",
-//       });
-
-//       console.error(error.response ? error.response.data : error.message);
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-5xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
-//       <h2 className="text-3xl font-bold mb-8 text-black">Create New Program</h2>
-
-//       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//         {[
-//           { name: "program_name", placeholder: "Program Name" },
-//           { name: "program_description", placeholder: "Program Description" },
-//           { name: "program_tag", placeholder: "Program Tag" },
-//           { name: "application_fee", placeholder: "Application Fee" },
-//           { name: "application_short_desc", placeholder: "Application Short Description" },
-//           { name: "average_graduate_program", placeholder: "Avg Graduate Program" },
-//           { name: "average_graduate_program_short_desc", placeholder: "Avg Graduate Program Short Desc" },
-//           { name: "average_undergraduate_program", placeholder: "Avg Undergraduate Program" },
-//           { name: "average_undergraduate_program_short_desc", placeholder: "Avg Undergraduate Short Desc" },
-//           { name: "cost_of_living", placeholder: "Cost of Living" },
-//           { name: "cost_of_living_short_desc", placeholder: "Cost of Living Short Desc" },
-//           { name: "average_gross_tuition", placeholder: "Avg Tuition" },
-//           { name: "average_gross_tuition_short_desc", placeholder: "Avg Tuition Short Desc" },
-//           { name: "duration", placeholder: "Duration" },
-//           { name: "campus_city", placeholder: "Campus City" },
-//           { name: "success_chance", placeholder: "Success Chance" },
-//           { name: "program_summary", placeholder: "Program Summary" },
-//         ].map((field) => (
-//           <div key={field.name} className="flex flex-col">
-//             <label className="mb-1 text-black font-medium">{field.placeholder}</label>
-//             <input
-//               type="text"
-//               name={field.name}
-//               placeholder={field.placeholder}
-//               value={formData[field.name]}
-//               onChange={handleChange}
-//               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-//             />
-//           </div>
-//         ))}
-
-//         {/* Dates */}
-//         <div className="flex flex-col">
-//           <label className="mb-1 text-black font-medium">Open Date</label>
-//           <input
-//             type="date"
-//             name="open_date"
-//             value={formData.open_date}
-//             onChange={handleChange}
-//             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-//           />
-//         </div>
-
-//         <div className="flex flex-col">
-//           <label className="mb-1 text-black font-medium">Submission Deadline</label>
-//           <input
-//             type="datetime-local"
-//             name="submission_deadline"
-//             value={formData.submission_deadline}
-//             onChange={handleChange}
-//             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-//           />
-//         </div>
-//       </form>
-
-//       <button
-//         type="submit"
-//         onClick={handleSubmit}
-//         className="w-full mt-8 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all shadow-md"
-//       >
-//         Submit
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default ProgramCreate;
-
-
-
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import BASE_URL from "../../Api/ApiBaseUrl";
@@ -176,6 +9,22 @@ const ProgramCreate = () => {
   const authToken = localStorage.getItem("token") || "";
   
   const [loading, setLoading] = useState(false);
+  const [universities, setUniversities] = useState([]);
+  const [programLevels, setProgramLevels] = useState([]);
+  const [intakes, setIntakes] = useState([]);
+  const [programTags, setProgramTags] = useState([]);
+  const [fieldOfStudies, setFieldOfStudies] = useState([]);
+  const [months, setMonths] = useState([]);
+  
+  const [selectedIds, setSelectedIds] = useState({
+    university_id: "",
+    program_level_id: "",
+    intake_id: "",
+    program_tag_id: "",
+    field_of_study_id: "",
+    month_id: ""
+  });
+
   const [formData, setFormData] = useState({
     // Basic Program Info
     program_name: "",
@@ -237,6 +86,178 @@ const ProgramCreate = () => {
     no_exam_status: "",
   });
 
+  // Fetch all required data on component mount
+  useEffect(() => {
+    console.log("BASE_URL:", BASE_URL);
+    console.log("Token:", authToken);
+    fetchUniversities();
+    fetchProgramLevels();
+    fetchIntakes();
+    fetchProgramTags();
+    fetchFieldOfStudies();
+    fetchMonths();
+  }, []);
+
+  const fetchUniversities = async () => {
+    try {
+      console.log("Fetching universities...");
+      const response = await axios.get(
+        `${BASE_URL}/admin/alluniversities`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log("Universities response:", response.data);
+      // Different APIs return data in different structures
+      if (response.data.universities) {
+        setUniversities(response.data.universities || []);
+      } else if (response.data.data) {
+        setUniversities(response.data.data || []);
+      } else {
+        setUniversities(response.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching universities:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load universities",
+      });
+    }
+  };
+
+  const fetchProgramLevels = async () => {
+    try {
+      console.log("Fetching program levels...");
+      const response = await axios.get(
+        `${BASE_URL}/admin/all/program/level`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log("Program levels response:", response.data);
+      setProgramLevels(response.data || []);
+    } catch (error) {
+      console.error("Error fetching program levels:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load program levels",
+      });
+    }
+  };
+
+  const fetchIntakes = async () => {
+    try {
+      console.log("Fetching intakes...");
+      const response = await axios.get(
+        `${BASE_URL}/admin/intakes`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log("Intakes response:", response.data);
+      setIntakes(response.data || []);
+    } catch (error) {
+      console.error("Error fetching intakes:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load intakes",
+      });
+    }
+  };
+
+  const fetchProgramTags = async () => {
+    try {
+      console.log("Fetching program tags...");
+      const response = await axios.get(
+        `${BASE_URL}/admin/programtag`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log("Program tags response:", response.data);
+      // Fix: program tags API returns {data: Array} structure
+      if (response.data.data) {
+        setProgramTags(response.data.data || []);
+      } else {
+        setProgramTags(response.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching program tags:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load program tags",
+      });
+    }
+  };
+
+  const fetchFieldOfStudies = async () => {
+    try {
+      console.log("Fetching field of studies...");
+      const response = await axios.get(
+        `${BASE_URL}/admin/all/field/of/study/`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log("Field of studies response:", response.data);
+      setFieldOfStudies(response.data || []);
+    } catch (error) {
+      console.error("Error fetching field of studies:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load field of studies",
+      });
+    }
+  };
+
+  const fetchMonths = async () => {
+    try {
+      console.log("Fetching months...");
+      const response = await axios.get(
+        `${BASE_URL}/admin/intake/all/month`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log("Months response:", response.data);
+      setMonths(response.data || []);
+    } catch (error) {
+      console.error("Error fetching months:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load months",
+      });
+    }
+  };
+
+  // Handle dropdown changes
+  const handleDropdownChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedIds(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -258,6 +279,21 @@ const ProgramCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate that all IDs are selected
+    const missingIds = Object.entries(selectedIds)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key.replace(/_/g, ' '));
+    
+    if (missingIds.length > 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Missing Information",
+        text: `Please select: ${missingIds.join(', ')}`,
+        confirmButtonColor: "#d33",
+      });
+      return;
+    }
+    
     if (!authToken) {
       Swal.fire({
         icon: "error",
@@ -269,16 +305,6 @@ const ProgramCreate = () => {
     }
     
     setLoading(true);
-
-    // Fixed reference IDs (1/1/1/1/1/1 as per your working example)
-    const urlIds = {
-      university_id: "1",
-      program_level_id: "1",
-      intake_id: "1",
-      program_tag_id: "1",
-      field_of_study_id: "1",
-      month_id: "1"
-    };
 
     // Prepare data for API (nested structure)
     const submissionData = {
@@ -363,9 +389,12 @@ const ProgramCreate = () => {
       };
     }
 
+    console.log("Submitting data:", submissionData);
+    console.log("Selected IDs:", selectedIds);
+
     try {
       const response = await axios.post(
-        `${BASE_URL}/admin/university-programs/${urlIds.university_id}/${urlIds.program_level_id}/${urlIds.intake_id}/${urlIds.program_tag_id}/${urlIds.field_of_study_id}/${urlIds.month_id}/store`,
+        `${BASE_URL}/admin/university-programs/${selectedIds.university_id}/${selectedIds.program_level_id}/${selectedIds.intake_id}/${selectedIds.program_tag_id}/${selectedIds.field_of_study_id}/${selectedIds.month_id}/store`,
         submissionData,
         {
           headers: {
@@ -374,6 +403,8 @@ const ProgramCreate = () => {
           },
         }
       );
+
+      console.log("Response:", response.data);
 
       Swal.fire({
         icon: "success",
@@ -460,6 +491,15 @@ const ProgramCreate = () => {
       pte_overall: "",
       no_exam_status: "",
     });
+    
+    setSelectedIds({
+      university_id: "",
+      program_level_id: "",
+      intake_id: "",
+      program_tag_id: "",
+      field_of_study_id: "",
+      month_id: ""
+    });
   };
 
   const fillSampleData = () => {
@@ -513,15 +553,137 @@ const ProgramCreate = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
-      <h2 className="text-3xl font-bold mb-8 text-black text-center">Create New Program</h2>
+    <div className="w-full mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
+      <h2 className="text-3xl font-bold mb-8 text-secondary text-center underline">Program Create</h2>
 
-      {/* Fill Sample Data Button - Simple */}
+      
+
+      {/* ID Selection Section */}
+      <div className="mb-8 p-6 bg-gray-50 rounded-lg">
+        <h3 className="text-xl font-bold mb-4 text-black">Select Required IDs</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* University Dropdown */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-black font-medium">University</label>
+            <select
+              name="university_id"
+              value={selectedIds.university_id}
+              onChange={handleDropdownChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select University</option>
+              {universities.map((uni) => (
+                <option key={uni.id} value={uni.id}>
+                  {uni.university_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Program Level Dropdown */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-black font-medium">Program Level</label>
+            <select
+              name="program_level_id"
+              value={selectedIds.program_level_id}
+              onChange={handleDropdownChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Program Level</option>
+              {programLevels.map((level) => (
+                <option key={level.id} value={level.id}>
+                  {level.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Intake Dropdown */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-black font-medium">Intake</label>
+            <select
+              name="intake_id"
+              value={selectedIds.intake_id}
+              onChange={handleDropdownChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Intake</option>
+              {intakes.map((intake) => (
+                <option key={intake.id} value={intake.id}>
+                  {intake.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Program Tag Dropdown */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-black font-medium">Program Tag</label>
+            <select
+              name="program_tag_id"
+              value={selectedIds.program_tag_id}
+              onChange={handleDropdownChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Program Tag</option>
+              {programTags.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.program_tag || tag.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Field of Study Dropdown */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-black font-medium">Field of Study</label>
+            <select
+              name="field_of_study_id"
+              value={selectedIds.field_of_study_id}
+              onChange={handleDropdownChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Field of Study</option>
+              {fieldOfStudies.map((field) => (
+                <option key={field.id} value={field.id}>
+                  {field.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Month Dropdown */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-black font-medium">Month</label>
+            <select
+              name="month_id"
+              value={selectedIds.month_id}
+              onChange={handleDropdownChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Month</option>
+              {months.map((month) => (
+                <option key={month.id} value={month.id}>
+                  {month.month}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Fill Sample Data Button */}
       <div className="mb-6 flex justify-end">
         <button
           type="button"
           onClick={fillSampleData}
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+          className="bg-secondary hover:bg-primary text-white px-4 py-2 rounded-lg transition-colors"
         >
           Fill Sample Data
         </button>
@@ -812,10 +974,10 @@ const ProgramCreate = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full mt-8 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-md ${
+          className={`max-w-md mt-8 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-md ${
             loading
               ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700'
+              : 'bg-secondary hover:bg-primary'
           }`}
         >
           {loading ? (
@@ -836,4 +998,3 @@ const ProgramCreate = () => {
 };
 
 export default ProgramCreate;
-

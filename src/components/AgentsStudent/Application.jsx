@@ -27,7 +27,7 @@ const Application = () => {
         throw new Error("Unauthorized: Token not found");
       }
 
-      const response = await fetch(`${BASE_URL}/agent/my-applications`, {
+      const response = await fetch(`${BASE_URL}/admin/agent-applications`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

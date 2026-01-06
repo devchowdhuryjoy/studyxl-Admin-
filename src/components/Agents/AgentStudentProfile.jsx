@@ -11,7 +11,7 @@ const AgentStudentProfile = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/all/agent-student`, {
+        const response = await fetch(`${BASE_URL}/agent/all/agent-student`, {
           method: "GET",
           redirect: "follow",
         });
@@ -105,12 +105,7 @@ const AgentStudentProfile = () => {
                         >
                           <User size={18} />
                         </span>
-                        <span
-                          className="cursor-pointer hover:text-blue-600"
-                          onClick={() => navigate("/university")}
-                        >
-                          <School size={18} />
-                        </span>
+                       
                       </div>
                     </td>
                   </tr>

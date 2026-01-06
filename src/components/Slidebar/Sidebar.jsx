@@ -264,6 +264,17 @@ const Sidebar = () => {
 
                 {/* Program Create */}
                 <Link
+                  to="/dashboard/program-dropdown-create"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/program-dropdown-create")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Program Dropdown Create
+                </Link>
+                <Link
                   to="/dashboard/program-create"
                   onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${

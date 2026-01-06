@@ -39,7 +39,7 @@ const Users = () => {
   }, []);
 
   if (loading) return <div className="p-6">⏳ Loading students...</div>;
-  if (!users.length) return <div className="p-6">❌ No students found</div>;
+  if (!users.length) return <div className="p-6"> No students found</div>;
 
   return (
     <div className="flex">
@@ -82,12 +82,7 @@ const Users = () => {
                         >
                           <User size={18} />
                         </span>
-                        <span
-                          className="cursor-pointer hover:text-blue-600"
-                          onClick={() => navigate(`/dashboard/program/${u.id}`)}
-                        >
-                          <School size={18} />
-                        </span>
+                        
                       </div>
                     </td>
                   </tr>
