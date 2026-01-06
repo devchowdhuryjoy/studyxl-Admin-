@@ -11,7 +11,7 @@ const AgentStudentProfile = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/all/agent-student`, {
+        const response = await fetch(`${BASE_URL}/agent/all/agent-student`, {
           method: "GET",
           redirect: "follow",
         });

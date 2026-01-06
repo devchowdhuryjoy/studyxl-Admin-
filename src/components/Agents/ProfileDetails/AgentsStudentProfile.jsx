@@ -191,7 +191,7 @@ useEffect(() => {
         return;
       }
 
-      const response = await fetch(`${BASE_URL}/agent-student/edit/${id}`, {
+      const response = await fetch(`${BASE_URL}/agent/agent-student/edit/${id}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

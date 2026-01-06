@@ -25,8 +25,8 @@ const emptyForm = {
   average_gross_tuition: "",
   average_gross_tuition_short_desc: "",
   university_desc: "",
-  imageFiles: [],
-  imagePreviews: [],
+  imageFile: null,
+  imagePreview: "",
   featured: true,
 };
 
@@ -58,6 +58,7 @@ const AdminUniversityForm = ({ onCreate }) => {
         redirect: "follow",
       };
 
+      // Fetch destinations from the new endpoint
       const response = await fetch(
         `${BASE_URL}/admin/destinations`,
         requestOptions
@@ -65,16 +66,21 @@ const AdminUniversityForm = ({ onCreate }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Destinations API Response:", result);
+        console.log("Destinations API Response:", result); // Debug log
         
+        // Check different possible response structures
         if (Array.isArray(result)) {
+          // If response is directly an array
           setDestinations(result);
         } else if (result.data && Array.isArray(result.data)) {
+          // If response has data property with array
           setDestinations(result.data);
         } else if (result.status && result.data && Array.isArray(result.data)) {
+          // If response has status and data properties
           setDestinations(result.data);
         } else {
           console.error("Unexpected API response structure:", result);
+          // Fallback destinations
           setDestinations([
             { id: 1, destinations_name: "UK" },
             { id: 2, destinations_name: "USA" },
@@ -84,6 +90,7 @@ const AdminUniversityForm = ({ onCreate }) => {
         }
       } else {
         console.error("API response not OK:", response.status);
+        // Fallback if API fails
         setDestinations([
           { id: 1, destinations_name: "UK" },
           { id: 2, destinations_name: "USA" },
@@ -93,6 +100,7 @@ const AdminUniversityForm = ({ onCreate }) => {
       }
     } catch (error) {
       console.error("Error fetching destinations:", error);
+      // Fallback destinations
       setDestinations([
         { id: 1, destinations_name: "UK" },
         { id: 2, destinations_name: "USA" },
@@ -132,6 +140,7 @@ const AdminUniversityForm = ({ onCreate }) => {
       const result = await response.json();
 
       if (response.ok) {
+        // Refresh destinations list
         fetchDestinations();
         setNewDestination("");
         setShowAddDestination(false);
@@ -166,86 +175,26 @@ const AdminUniversityForm = ({ onCreate }) => {
     if (!form.location.trim()) e.location = "Location is required";
     if (!form.address.trim()) e.address = "Address is required";
     if (!form.destination_id) e.destination_id = "Destination is required";
-    if (form.imageFiles.length === 0) e.imageFiles = "At least one image is required";
-    
-    // Validate each image file size
-    form.imageFiles.forEach((file, index) => {
-      if (file.size >= 5 * 1024 * 1024) {
-        e.imageFiles = `Image ${index + 1} size should be less than 5MB`;
-      }
-    });
-    
+    if (!form.imageFile) e.imageFile = "An image is required";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const handleFiles = (files) => {
-    if (!files || files.length === 0) return;
-    
-    const validFiles = [];
-    const invalidFiles = [];
-    
-    Array.from(files).forEach(file => {
-      if (!file.type.startsWith("image/")) {
-        invalidFiles.push(`${file.name} is not an image file`);
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        invalidFiles.push(`${file.name} exceeds 5MB size limit`);
-        return;
-      }
-      validFiles.push(file);
-    });
-    
-    if (invalidFiles.length > 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Invalid Files',
-        html: invalidFiles.join('<br>'),
-      });
+  const handleFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setErrors((p) => ({ ...p, imageFile: "Please select an image file" }));
+      return;
     }
-    
-    if (validFiles.length > 0) {
-      const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-      setForm((p) => ({ 
-        ...p, 
-        imageFiles: [...p.imageFiles, ...validFiles],
-        imagePreviews: [...p.imagePreviews, ...newPreviews]
-      }));
-      setErrors((p) => ({ ...p, imageFiles: undefined }));
-    }
-  };
-
-  const removeImage = (index) => {
-    setForm((p) => {
-      const newFiles = [...p.imageFiles];
-      const newPreviews = [...p.imagePreviews];
-      
-      // Revoke the object URL to avoid memory leaks
-      URL.revokeObjectURL(newPreviews[index]);
-      
-      newFiles.splice(index, 1);
-      newPreviews.splice(index, 1);
-      
-      return {
-        ...p,
-        imageFiles: newFiles,
-        imagePreviews: newPreviews
-      };
-    });
+    const preview = URL.createObjectURL(file);
+    setForm((p) => ({ ...p, imageFile: file, imagePreview: preview }));
+    setErrors((p) => ({ ...p, imageFile: undefined }));
   };
 
   const onDrop = (e) => {
     e.preventDefault();
-    const files = e.dataTransfer.files;
-    handleFiles(files);
-  };
-
-  const onFileInputChange = (e) => {
-    const files = e.target.files;
-    handleFiles(files);
-    // Reset the file input
-    e.target.value = '';
+    const file = e.dataTransfer.files?.[0];
+    handleFile(file);
   };
 
   const handleDestinationChange = (e) => {
@@ -259,14 +208,6 @@ const AdminUniversityForm = ({ onCreate }) => {
     }));
   };
 
-  const logFormData = (formdata) => {
-    console.log("=== FORM DATA ===");
-    for (let [key, value] of formdata.entries()) {
-      console.log(`${key}:`, value);
-    }
-    console.log("=================");
-  };
-
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -278,51 +219,46 @@ const AdminUniversityForm = ({ onCreate }) => {
 
       const formdata = new FormData();
       
-      // Append all basic form data
-      const formFields = [
-        "university_name", "address", "location", "destinations", "destination_id",
-        "phone_number", "founded", "school_id", "institution_type", "dli_number",
-        "application_fee", "application_short_desc", "average_graduate_program",
-        "average_graduate_program_short_desc", "average_undergraduate_program",
-        "average_undergraduate_program_short_desc", "cost_of_living",
-        "cost_of_living_short_desc", "average_gross_tuition",
-        "average_gross_tuition_short_desc", "university_desc"
-      ];
+      // Append all form data
+      formdata.append("university_name", form.university_name);
+      formdata.append("address", form.address);
+      formdata.append("location", form.location);
+      formdata.append("destinations", form.destinations);
+      formdata.append("destination_id", form.destination_id);
+      formdata.append("phone_number", form.phone_number);
+      formdata.append("founded", form.founded);
+      formdata.append("school_id", form.school_id);
+      formdata.append("institution_type", form.institution_type);
+      formdata.append("dli_number", form.dli_number);
+      
+      formdata.append("application_fee", form.application_fee);
+      formdata.append("application_short_desc", form.application_short_desc);
+      formdata.append("average_graduate_program", form.average_graduate_program);
+      formdata.append("average_graduate_program_short_desc", form.average_graduate_program_short_desc);
+      formdata.append("average_undergraduate_program", form.average_undergraduate_program);
+      formdata.append("average_undergraduate_program_short_desc", form.average_undergraduate_program_short_desc);
+      formdata.append("cost_of_living", form.cost_of_living);
+      formdata.append("cost_of_living_short_desc", form.cost_of_living_short_desc);
+      formdata.append("average_gross_tuition", form.average_gross_tuition);
+      formdata.append("average_gross_tuition_short_desc", form.average_gross_tuition_short_desc);
+      formdata.append("university_desc", form.university_desc);
+      formdata.append("featured", form.featured);
 
-      formFields.forEach(field => {
-        formdata.append(field, form[field] || "");
-      });
-
-      formdata.append("featured", form.featured ? "1" : "0");
-
-      // Handle multiple images
-      if (form.imageFiles.length > 0) {
-        form.imageFiles.forEach(file => {
-          formdata.append("images[]", file);
-        });
+      // Handle images
+      if (form.imageFile) {
+        formdata.append("images[]", form.imageFile);
       }
 
-      // Handle top_disciplines - ensure it's properly formatted
-      if (form.top_disciplines && form.top_disciplines.length > 0) {
-        // Filter out empty disciplines and format properly
-        const validDisciplines = form.top_disciplines
-          .filter(item => item.discipline && item.discipline.trim() !== "")
-          .map(item => ({
-            discipline: item.discipline.trim(),
-            percentage: item.percentage || 0
+      // Handle top_disciplines as JSON
+      if (form.top_disciplines) {
+        const disciplinesArray = form.top_disciplines
+          .split(",")
+          .map((discipline) => ({
+            discipline: discipline.trim(),
+            percentage: 0,
           }));
-        
-        if (validDisciplines.length > 0) {
-          formdata.append("top_disciplines", JSON.stringify(validDisciplines));
-        } else {
-          formdata.append("top_disciplines", "[]");
-        }
-      } else {
-        formdata.append("top_disciplines", "[]");
+        formdata.append("top_disciplines", JSON.stringify(disciplinesArray));
       }
-
-      console.log("Submitting form data...");
-      logFormData(formdata);
 
       const requestOptions = {
         method: "POST",
@@ -330,29 +266,25 @@ const AdminUniversityForm = ({ onCreate }) => {
         body: formdata,
       };
 
+      // Use the destination_id in the URL for creating university
       const response = await fetch(
         `${BASE_URL}/admin/universities/create/${form.destination_id}`,
         requestOptions
       );
 
       const result = await response.json();
-      console.log("API Response:", result);
 
       if (response.ok && result.status) {
         const card = {
-          id: result.data?.id || crypto.randomUUID(),
+          id: crypto.randomUUID(),
           ...form,
-          // Store image previews for display
-          imagePreviews: [...form.imagePreviews], // Copy the array
+          image: form.imagePreview,
         };
         onCreate?.(card);
 
-        // Don't revoke URLs here as we need them for preview
-        // form.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
-        
         setForm(emptyForm);
         setErrors({});
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        fileInputRef.current.value = "";
 
         Swal.fire({
           icon: 'success',
@@ -360,27 +292,19 @@ const AdminUniversityForm = ({ onCreate }) => {
           text: 'University created successfully!',
         });
       } else {
-        console.error("API Error Response:", result);
-        let errorMessage = 'Failed to create university';
-        
-        if (result.errors) {
-          errorMessage = Object.values(result.errors).flat().join(', ');
-        } else if (result.message) {
-          errorMessage = result.message;
-        }
-        
+        console.error("API Error:", result);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: errorMessage,
+          text: result.message || 'Failed to create university',
         });
       }
     } catch (error) {
-      console.error("Network Error:", error);
+      console.error("Error:", error);
       Swal.fire({
         icon: 'error',
-        title: 'Network Error',
-        text: 'Unable to connect to server. Please check your connection.',
+        title: 'Error',
+        text: 'An error occurred while creating university',
       });
     } finally {
       setLoading(false);
@@ -398,12 +322,9 @@ const AdminUniversityForm = ({ onCreate }) => {
       confirmButtonText: 'Yes, reset it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Clean up object URLs
-        form.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
-        
         setForm(emptyForm);
         setErrors({});
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        fileInputRef.current.value = "";
         Swal.fire(
           'Reset!',
           'Form has been reset.',
@@ -411,24 +332,6 @@ const AdminUniversityForm = ({ onCreate }) => {
         );
       }
     });
-  };
-
-  const addDiscipline = () => {
-    setForm((p) => ({
-      ...p,
-      top_disciplines: [...p.top_disciplines, { discipline: "", percentage: 0 }],
-    }));
-  };
-
-  const updateDiscipline = (index, field, value) => {
-    const updated = [...form.top_disciplines];
-    updated[index][field] = field === 'percentage' ? Number(value) : value;
-    setForm((p) => ({ ...p, top_disciplines: updated }));
-  };
-
-  const removeDiscipline = (index) => {
-    const updated = form.top_disciplines.filter((_, i) => i !== index);
-    setForm((p) => ({ ...p, top_disciplines: updated }));
   };
 
   return (
@@ -439,59 +342,40 @@ const AdminUniversityForm = ({ onCreate }) => {
       </div>
 
       <form onSubmit={onSubmit} className="grid lg:grid-cols-3 gap-6">
-        {/* Image uploader - Updated for multiple images */}
+        {/* Image uploader */}
         <div className="lg:col-span-1">
           <div
             onDrop={onDrop}
             onDragOver={(e) => e.preventDefault()}
-            className={`group relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-6 min-h-64 cursor-pointer transition shadow-sm hover:shadow-md ${
-              errors.imageFiles ? "border-red-400" : "border-gray-300"
+            className={`group relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-6 h-64 cursor-pointer transition shadow-sm hover:shadow-md ${
+              errors.imageFile ? "border-red-400" : "border-gray-300"
             }`}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => fileInputRef.current.click()}
           >
-            {form.imagePreviews.length > 0 ? (
-              <div className="w-full">
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  {form.imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={preview}
-                        alt={`preview-${index}`}
-                        className="w-full h-20 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeImage(index);
-                        }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-center">
-                  <span className="text-gray-600 text-sm">
-                    Click to add more images • or drag & drop
+            {form.imagePreview ? (
+              <>
+                <img
+                  src={form.imagePreview}
+                  alt="preview"
+                  className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                />
+                <div className="absolute inset-0 rounded-2xl bg-black/30 flex items-end p-3">
+                  <span className="text-white text-sm">
+                    Click to replace • or drag & drop
                   </span>
-                  <div className="text-gray-500 text-xs mt-1">
-                    {form.imageFiles.length} image(s) selected
-                  </div>
                 </div>
-              </div>
+              </>
             ) : (
               <div className="text-center space-y-2">
                 <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
                   ⬆️
                 </div>
                 <div className="text-gray-800 font-medium">
-                  Drag & drop images here
+                  Drag & drop image here
                 </div>
                 <div className="text-gray-500 text-sm">or click to browse</div>
                 <div className="text-[11px] text-gray-400">
-                  JPG / PNG / WEBP • up to 5MB each
+                  JPG / PNG / WEBP • up to 5MB
                 </div>
               </div>
             )}
@@ -500,12 +384,11 @@ const AdminUniversityForm = ({ onCreate }) => {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={onFileInputChange}
-              multiple
+              onChange={(e) => handleFile(e.target.files?.[0])}
             />
           </div>
-          {errors.imageFiles && (
-            <p className="text-red-500 text-sm mt-2">{errors.imageFiles}</p>
+          {errors.imageFile && (
+            <p className="text-red-500 text-sm mt-2">{errors.imageFile}</p>
           )}
 
           <label className="mt-4 flex items-center gap-3">
@@ -528,7 +411,7 @@ const AdminUniversityForm = ({ onCreate }) => {
           {/* University Name */}
           <div>
             <label className="block text-sm font-medium mb-1">
-              University Name *
+              University Name
             </label>
             <input
               type="text"
@@ -548,7 +431,7 @@ const AdminUniversityForm = ({ onCreate }) => {
 
           {/* Address */}
           <div>
-            <label className="block text-sm font-medium mb-1">Address *</label>
+            <label className="block text-sm font-medium mb-1">Address</label>
             <input
               type="text"
               value={form.address}
@@ -565,7 +448,7 @@ const AdminUniversityForm = ({ onCreate }) => {
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium mb-1">Location *</label>
+            <label className="block text-sm font-medium mb-1">Location</label>
             <input
               type="text"
               value={form.location}
@@ -583,7 +466,7 @@ const AdminUniversityForm = ({ onCreate }) => {
           {/* Destinations dropdown */}
           <div>
             <label className="block text-sm font-medium mb-1">
-              Destinations *
+              Destinations
             </label>
             <div className="flex gap-2">
               <select
@@ -657,6 +540,7 @@ const AdminUniversityForm = ({ onCreate }) => {
             )}
           </div>
 
+          {/* Rest of the form fields remain the same */}
           {/* Phone Number */}
           <div>
             <label className="block text-sm font-medium mb-1">
@@ -686,8 +570,6 @@ const AdminUniversityForm = ({ onCreate }) => {
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
               placeholder="1878"
-              min="1000"
-              max="2024"
             />
           </div>
 
@@ -720,9 +602,6 @@ const AdminUniversityForm = ({ onCreate }) => {
               <option value="">Select Type</option>
               <option value="Public">Public</option>
               <option value="Private">Private</option>
-              <option value="Community College">Community College</option>
-              <option value="Technical Institute">Technical Institute</option>
-              <option value="Research University">Research University</option>
             </select>
           </div>
 
@@ -741,36 +620,41 @@ const AdminUniversityForm = ({ onCreate }) => {
           </div>
 
           {/* Top Disciplines */}
-          <div>
+           <div>
             <label className="block text-sm font-medium mb-1">Top Disciplines</label>
             {form.top_disciplines.length > 0 && (
-              <div className="space-y-3 mb-4 p-4 bg-gray-50 rounded-xl">
+              <div className="space-y-2 mb-3">
                 {form.top_disciplines.map((item, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={item.discipline}
-                        onChange={(e) => updateDiscipline(index, 'discipline', e.target.value)}
-                        placeholder="Discipline Name (e.g., Computer Science)"
-                        className="w-full rounded-xl border px-3 py-2 text-sm"
-                      />
-                    </div>
-                    <div className="w-20">
-                      <input
-                        type="number"
-                        value={item.percentage}
-                        onChange={(e) => updateDiscipline(index, 'percentage', e.target.value)}
-                        placeholder="%"
-                        className="w-full rounded-xl border px-3 py-2 text-sm"
-                        min="0"
-                        max="100"
-                      />
-                    </div>
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item.discipline}
+                      onChange={(e) => {
+                        const updated = [...form.top_disciplines];
+                        updated[index].discipline = e.target.value;
+                        setForm((p) => ({ ...p, top_disciplines: updated }));
+                      }}
+                      placeholder="Discipline Name"
+                      className="flex-1 rounded-xl border px-3 py-2"
+                    />
+                    <input
+                      type="number"
+                      value={item.percentage}
+                      onChange={(e) => {
+                        const updated = [...form.top_disciplines];
+                        updated[index].percentage = Number(e.target.value);
+                        setForm((p) => ({ ...p, top_disciplines: updated }));
+                      }}
+                      placeholder="%"
+                      className="w-24 rounded-xl border px-3 py-2"
+                    />
                     <button
                       type="button"
-                      onClick={() => removeDiscipline(index)}
-                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
+                      onClick={() => {
+                        const updated = form.top_disciplines.filter((_, i) => i !== index);
+                        setForm((p) => ({ ...p, top_disciplines: updated }));
+                      }}
+                      className="text-red-600 hover:text-red-800"
                     >
                       ✕
                     </button>
@@ -780,15 +664,19 @@ const AdminUniversityForm = ({ onCreate }) => {
             )}
             <button
               type="button"
-              onClick={addDiscipline}
-              className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 text-sm font-medium"
+              onClick={() =>
+                setForm((p) => ({
+                  ...p,
+                  top_disciplines: [...p.top_disciplines, { discipline: "", percentage: 0 }],
+                }))
+              }
+              className="px-3 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600"
             >
               + Add Discipline
             </button>
-            <p className="text-gray-500 text-xs mt-2">
-              Add the top disciplines offered by this university with their popularity percentage
-            </p>
           </div>
+          
+
 
           {/* Application Fee */}
           <div>
@@ -821,7 +709,6 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="Brief description about the application process..."
             />
           </div>
 
@@ -859,7 +746,6 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="Short description about graduate programs..."
             />
           </div>
 
@@ -897,7 +783,6 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="Short description about undergraduate programs..."
             />
           </div>
 
@@ -932,7 +817,6 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="Short description about cost of living..."
             />
           </div>
 
@@ -951,7 +835,7 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="$25,000 per year"
+              placeholder="$25,000"
             />
           </div>
 
@@ -970,17 +854,15 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="Short description about tuition fees..."
             />
           </div>
 
-          {/* University Description */}
           <div>
             <label className="block text-sm font-medium mb-1">
               University Description
             </label>
             <textarea
-              rows={4}
+              rows={2}
               value={form.university_desc}
               onChange={(e) =>
                 setForm((p) => ({
@@ -989,36 +871,28 @@ const AdminUniversityForm = ({ onCreate }) => {
                 }))
               }
               className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-purple-600/50"
-              placeholder="Comprehensive description about the university, its history, mission, and values..."
             />
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center gap-3 pt-4">
+          <div className="flex items-center gap-3">
             <button
               type="submit"
               disabled={loading}
-              className={`inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold shadow transition ${
+              className={`inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold shadow transition ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-primary text-white hover:bg-secondary"
               }`}
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating...
-                </>
-              ) : (
-                "Create University"
-              )}
+              {loading ? "Creating..." : "Save University"}
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
+              className="px-5 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50"
             >
-              Reset Form
+              Reset
             </button>
           </div>
         </div>
@@ -1031,24 +905,11 @@ const AdminUniversityForm = ({ onCreate }) => {
 const Card = ({ uni }) => (
   <div className="bg-white rounded-2xl shadow-md overflow-hidden">
     <div className="relative">
-      {uni.imagePreviews && uni.imagePreviews.length > 0 ? (
-        <>
-          <img
-            src={uni.imagePreviews[0]}
-            alt={uni.university_name}
-            className="w-full h-48 object-cover"
-          />
-          {uni.imagePreviews.length > 1 && (
-            <span className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
-              +{uni.imagePreviews.length - 1} more
-            </span>
-          )}
-        </>
-      ) : (
-        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-          <span className="text-gray-500">No Image</span>
-        </div>
-      )}
+      <img
+        src={uni.image}
+        alt={uni.university_name}
+        className="w-full h-48 object-cover"
+      />
       {uni.featured && (
         <span className="absolute top-2 left-2 bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
           • Featured
@@ -1064,9 +925,6 @@ const Card = ({ uni }) => (
       <p className="text-gray-700 text-sm line-clamp-4">
         {uni.application_short_desc}
       </p>
-      <div className="mt-2 text-xs text-gray-500">
-        {uni.imagePreviews?.length || 0} image(s)
-      </div>
     </div>
   </div>
 );
