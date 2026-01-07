@@ -96,6 +96,18 @@ const Sidebar = () => {
                 </Link>
 
                 <Link
+                  to="/dashboard/student-application"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/student-application")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Student Applications
+                </Link>
+
+                <Link
                   to="/dashboard/student-task"
                   onClick={handleMainLinkClick}
                   className={`block p-2 text-sm rounded ${
@@ -179,44 +191,6 @@ const Sidebar = () => {
             )}
           </div>
 
-          {/*           
-          <Link
-            to="/dashboard/university"
-            onClick={handleMainLinkClick}
-            className={`flex items-center gap-2 p-2 rounded ${
-              isActive("/dashboard/university")
-                ? "bg-[#f16f22] text-white"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            <GraduationCap size={20} /> University
-          </Link>
-
-         
-          <Link
-            to="/dashboard/universityshow"
-            onClick={handleMainLinkClick}
-            className={`flex items-center gap-2 p-2 rounded ${
-              isActive("/dashboard/universityshow")
-                ? "bg-[#f16f22] text-white"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            <GraduationCap size={20} />All University 
-          </Link>
-          
-          <Link
-            to="/dashboard/program-create"
-            onClick={handleMainLinkClick}
-            className={`flex items-center gap-2 p-2 rounded ${
-              isActive("/dashboard/program-create")
-                ? "bg-[#f16f22] text-white"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            <GraduationCap size={20} /> Program Create
-          </Link> */}
-
           {/* University Menu with Submenu */}
           <div>
             <button
@@ -284,6 +258,41 @@ const Sidebar = () => {
                   }`}
                 >
                   Program Create
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* notification with Submenu */}
+          <div>
+            <button
+              onClick={() => toggleMenu("Notification")}
+              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+            >
+              <span className="flex items-center gap-2">
+                <GraduationCap size={20} /> Notification
+              </span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${
+                  activeMenu === "Notification" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {activeMenu === "Notification" && (
+              <div className="ml-6 mt-1 space-y-1">
+                {/* Notification */}
+                <Link
+                  to="/dashboard/notification"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/notification")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  All Notifications
                 </Link>
               </div>
             )}

@@ -17,6 +17,9 @@ import AgentTask from "./components/AgentsStudent/AgentTask";
 import Application from "./components/AgentsStudent/Application";
 import Program from "./components/AgentsStudent/Program";
 import ProgramFilterCreate from "./components/Program/ProgramFilterCreate";
+import StudentApplication from "./components/Students/StudentApplication";
+import NotificationAll from "./components/Notification/NotificationAll";
+
 
 function App() {
   return (
@@ -32,6 +35,7 @@ function App() {
           <Route path="student-profile/:id" element={<StudentsProfile />} />
           <Route path="program/:id" element={<Program />} />
           <Route path="student-task" element={<StudentTask />} />
+          <Route path="student-application" element={<StudentApplication />} />
           {/* Students */}
 
           {/* Agents */}
@@ -61,6 +65,10 @@ function App() {
           <Route path="program-create" element={<ProgramCreate />} />
           <Route path="program-dropdown-create" element={<ProgramFilterCreate />} />
           {/* University */}
+
+          {/* notification */}
+          <Route path="notification" element={<NotificationAll />} />
+          {/* notification */}
         </Route>
       </Routes>
     </Router>
