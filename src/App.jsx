@@ -68,6 +68,7 @@ function App() {
 
           {/* notification */}
           <Route path="notification" element={<NotificationAll />} />
+          <Route path="notification/:id" element={<NotificationAll />} />
           {/* notification */}
         </Route>
       </Routes>
