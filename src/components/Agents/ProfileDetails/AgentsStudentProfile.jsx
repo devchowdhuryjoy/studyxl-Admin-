@@ -184,7 +184,7 @@ useEffect(() => {
 
   const fetchStudent = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("admin_token");
       if (!token) {
         setError("Authorization token missing");
         setLoading(false);

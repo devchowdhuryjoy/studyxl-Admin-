@@ -6,7 +6,7 @@ import BASE_URL from "../../Api/ApiBaseUrl";
 
 const ProgramCreate = () => {
   // Get token from localStorage (automatic from login)
-  const authToken = localStorage.getItem("token") || "";
+  const authToken = localStorage.getItem("admin_token") || "";
   
   const [loading, setLoading] = useState(false);
   const [universities, setUniversities] = useState([]);

@@ -19,8 +19,8 @@ const UniversityShowing = () => {
   const getToken = () => {
     const token = localStorage.getItem('auth_token') || 
                   localStorage.getItem('token') ||
-                  sessionStorage.getItem('auth_token') ||
-                  '12|GglMcxnKVS5QnUWWKe6RU7LLmHfLeNnJWp1mrteE7373aa90';
+                  sessionStorage.getItem('auth_token');
+                  
     
     return token;
   };

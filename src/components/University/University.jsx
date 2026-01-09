@@ -1021,7 +1021,7 @@ const AdminUniversityForm = ({ onCreate }) => {
   const [addingDestination, setAddingDestination] = useState(false);
   const fileInputRef = useRef();
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("admin_token");
 
   useEffect(() => {
     fetchDestinations();

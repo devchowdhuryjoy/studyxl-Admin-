@@ -11,7 +11,8 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem("token");
+        // const token = localStorage.getItem("token");
+        const token = localStorage.getItem("admin_token");
         if (!token) throw new Error("No auth token found");
 
         const myHeaders = new Headers();
@@ -27,6 +28,7 @@ const Users = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
+        console.log("Students API:", data);
         setUsers(data);
       } catch (error) {
         console.error("Error fetching students:", error);

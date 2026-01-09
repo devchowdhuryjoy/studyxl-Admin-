@@ -174,7 +174,7 @@ import BASE_URL from "../../Api/ApiBaseUrl";
 
 //EXACT token getter function
 const getAuthToken = () => {
-  return localStorage.getItem("token");
+  return localStorage.getItem("admin_token");
 };
 
 const Application = () => {
