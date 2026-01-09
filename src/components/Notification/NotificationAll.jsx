@@ -109,6 +109,9 @@ const NotificationAll = () => {
         },
       });
       const data = await res.json();
+      console.log("Notification response:", data);
+      console.log("ADMIN TOKEN:", token);
+
       if (data.success) {
         setNotifications(data.notifications);
       }
