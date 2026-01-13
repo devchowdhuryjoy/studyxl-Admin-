@@ -273,7 +273,7 @@ const Application = () => {
                   </td>
                   <td className="px-3 py-2 text-xs sm:text-sm">
                     <Link
-                      to={`application-details/${app.id}`}
+                      to={`application-details/${app.id}`} // relative to /dashboard/agent-application
                       className="flex items-center justify-center text-primary hover:text-secondary"
                       title="View Application"
                     >

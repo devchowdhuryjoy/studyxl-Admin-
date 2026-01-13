@@ -57,7 +57,7 @@ function App() {
           <Route path="agent-task" element={<AgentTask />} />
           <Route path="agent-application" element={<Application />} />
           <Route
-            path="application-details/:id"
+            path="agent-application/application-details/:id"
             element={<ApplicationDetails />}
           />
 
