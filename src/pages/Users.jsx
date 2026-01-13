@@ -11,7 +11,8 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem("token");
+        // const token = localStorage.getItem("token");
+        const token = localStorage.getItem("admin_token");
         if (!token) throw new Error("No auth token found");
 
         const myHeaders = new Headers();
@@ -27,6 +28,7 @@ const Users = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
+        console.log("Students API:", data);
         setUsers(data);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -39,7 +41,7 @@ const Users = () => {
   }, []);
 
   if (loading) return <div className="p-6">⏳ Loading students...</div>;
-  if (!users.length) return <div className="p-6">❌ No students found</div>;
+  if (!users.length) return <div className="p-6"> No students found</div>;
 
   return (
     <div className="flex">
@@ -82,12 +84,7 @@ const Users = () => {
                         >
                           <User size={18} />
                         </span>
-                        <span
-                          className="cursor-pointer hover:text-blue-600"
-                          onClick={() => navigate(`/dashboard/program/${u.id}`)}
-                        >
-                          <School size={18} />
-                        </span>
+                        
                       </div>
                     </td>
                   </tr>
