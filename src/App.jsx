@@ -19,7 +19,7 @@ import Program from "./components/AgentsStudent/Program";
 import ProgramFilterCreate from "./components/Program/ProgramFilterCreate";
 import StudentApplication from "./components/Students/StudentApplication";
 import NotificationAll from "./components/Notification/NotificationAll";
-
+import ApplicationDetails from "./components/AgentsStudent/ApplicationDetails";
 
 function App() {
   return (
@@ -56,6 +56,10 @@ function App() {
           />
           <Route path="agent-task" element={<AgentTask />} />
           <Route path="agent-application" element={<Application />} />
+          <Route
+            path="application-details/:id"
+            element={<ApplicationDetails />}
+          />
 
           {/* Agents */}
 
@@ -63,7 +67,10 @@ function App() {
           <Route path="university" element={<University />} />
           <Route path="universityshow" element={<UniversityShowing />} />
           <Route path="program-create" element={<ProgramCreate />} />
-          <Route path="program-dropdown-create" element={<ProgramFilterCreate />} />
+          <Route
+            path="program-dropdown-create"
+            element={<ProgramFilterCreate />}
+          />
           {/* University */}
 
           {/* notification */}
