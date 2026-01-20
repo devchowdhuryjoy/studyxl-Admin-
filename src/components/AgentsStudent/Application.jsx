@@ -272,8 +272,15 @@ const Application = () => {
                     {app.submittedAt}
                   </td>
                   <td className="px-3 py-2 text-xs sm:text-sm">
-                    <Link
+                    {/* <Link
                       to={`application-details/${app.id}`}
+                      className="flex items-center justify-center text-primary hover:text-secondary"
+                      title="View Application"
+                    >
+                      <Eye size={18} />
+                    </Link> */}
+                    <Link
+                      to={`application-details/${app.id}`} // relative to /dashboard/agent-application
                       className="flex items-center justify-center text-primary hover:text-secondary"
                       title="View Application"
                     >

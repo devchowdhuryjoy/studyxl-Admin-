@@ -20,6 +20,8 @@ import ProgramFilterCreate from "./components/Program/ProgramFilterCreate";
 import StudentApplication from "./components/Students/StudentApplication";
 import NotificationAll from "./components/Notification/NotificationAll";
 import ApplicationDetails from "./components/AgentsStudent/ApplicationDetails";
+import CommissionForm from "./components/ComissionForm/CommisionForm";
+import ManageCommision from "./components/ComissionForm/ManageCommision/ManageCommision";
 
 function App() {
   return (
@@ -77,6 +79,18 @@ function App() {
           <Route path="notification" element={<NotificationAll />} />
           <Route path="notification/:id" element={<NotificationAll />} />
           {/* notification */}
+
+          {/* Commision */}
+          <Route path="commision" element={<CommissionForm />} />
+          <Route path="commision/:id" element={<CommissionForm />} />
+          {/* Commision*/}
+          <Route path="manage-commision" element={<ManageCommision/>} />
+          <Route path="manage-commision/:id" element={<ManageCommision />} /> 
+
+          <Route
+            path="agent-application/application-details/:id"
+            element={<ApplicationDetails />}
+          />
         </Route>
       </Routes>
     </Router>

@@ -226,28 +226,37 @@ const ProgramCreate = () => {
     }
   };
 
-  const fetchMonths = async () => {
-    try {
-      console.log("Fetching months...");
-      const response = await axios.get(
-        `${BASE_URL}/admin/intake/all/month`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      console.log("Months response:", response.data);
-      setMonths(response.data || []);
-    } catch (error) {
-      console.error("Error fetching months:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Failed to load months",
-      });
+const fetchMonths = async () => {
+  try {
+    console.log("Fetching months...");
+    const response = await axios.get(
+      `${BASE_URL}/admin/intake/all/month`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }
+    );
+
+    console.log("Months response:", response.data);
+
+    // ✅ FIX: correct data extraction
+    if (response.data && Array.isArray(response.data.data)) {
+      setMonths(response.data.data);
+    } else {
+      setMonths([]);
     }
-  };
+
+  } catch (error) {
+    console.error("Error fetching months:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to load months",
+    });
+  }
+};
+
 
   // Handle dropdown changes
   const handleDropdownChange = (e) => {
