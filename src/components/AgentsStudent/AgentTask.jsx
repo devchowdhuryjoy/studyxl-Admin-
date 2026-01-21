@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import BASE_URL from '../../Api/ApiBaseUrl';
+import Swal from 'sweetalert2';
 
 const AgentTask = () => {
   const [agents, setAgents] = useState([]);
@@ -114,10 +115,24 @@ const AgentTask = () => {
       await axios.post(`${BASE_URL}/admin/tasks`, formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
       });
-      alert("Task Posted Successfully!");
+      // alert("Task Posted Successfully!");
+      Swal.fire({
+      icon: 'success',
+      title: 'Application Successful',
+      text: 'Task has been created and documents uploaded successfully!',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK'
+    });
       reset();
     } catch (error) {
-      alert("Failed to post task.");
+      // alert("Failed to post task.");
+      Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Failed to create task. Please try again!',
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'OK'
+    });
     }
   };
 

@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Home, Users, ChevronDown, GraduationCap } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  Users,
+  ChevronDown,
+  GraduationCap,
+  Receipt,
+  BellRing,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -270,7 +279,7 @@ const Sidebar = () => {
               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
             >
               <span className="flex items-center gap-2">
-                <GraduationCap size={20} /> Notification
+                <BellRing size={20} /> Notification
               </span>
               <ChevronDown
                 size={16}
@@ -297,6 +306,53 @@ const Sidebar = () => {
               </div>
             )}
           </div>
+          {/*  commision*/}
+          <div>
+            <button
+              onClick={() => toggleMenu("Commision")}
+              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+            >
+              <span className="flex items-center gap-2">
+                <Receipt size={20} /> Commision
+              </span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${
+                  activeMenu === "Commision" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {activeMenu === "Commision" && (
+              <div className="ml-6 mt-1 space-y-1">
+                {/* Add Commision */}
+                <Link
+                  to="/dashboard/commision"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/commision")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Add Commision
+                </Link>
+                {/* Manage Commision (New Item) */}
+                <Link
+                  to="/dashboard/manage-commision"
+                  onClick={handleMainLinkClick}
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/manage-commision")
+                      ? "bg-[#f16f22] text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Manage Commision
+                </Link>
+              </div>
+            )}
+          </div>
+          {/*  commision*/}
         </nav>
       </aside>
     </>

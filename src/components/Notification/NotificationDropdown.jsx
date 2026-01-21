@@ -114,28 +114,26 @@
 // export default NotificationDropdown;
 
 
-
 import React, { useEffect, useRef, useState } from "react";
-import { Bell, Check, CheckCheck, RefreshCw } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../Api/ApiBaseUrl";
 
 const NotificationDropdown = () => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const token = localStorage.getItem("admin_token");
 
-  const fetchNotifications = async () => {
+  // ✅ Fetch only new notifications
+  const fetchLatestNotification = async () => {
     if (!token) return;
 
-    setLoading(true);
     try {
       const res = await fetch(
-        `${BASE_URL}/admin/notifications?timestamp=${Date.now()}`,
+        `${BASE_URL}/admin/notifications/latest?timestamp=${Date.now()}`, // backend এ latest route বানাতে হবে
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -145,56 +143,66 @@ const NotificationDropdown = () => {
       );
 
       const data = await res.json();
-      console.log("Notification response:", data);
-      console.log("ADMIN TOKEN:", token);
 
       if (data.success && data.notifications) {
-        setNotifications(data.notifications);
+        // শুধু নতুন notification add করব
+        setNotifications((prev) => {
+          const newNotif = data.notifications.filter(
+            (n) => !prev.some((p) => p.id === n.id)
+          );
+          return [...newNotif, ...prev];
+        });
       }
     } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error("Fetch latest notification error:", err);
     }
   };
 
+  // ✅ Mark notification as read and remove from UI
   const markAsRead = async (id) => {
     if (!token || !id) return;
 
-    await fetch(`${BASE_URL}/admin/notifications/${id}/mark-read`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-    });
+    try {
+      await fetch(`${BASE_URL}/admin/notifications/${id}/mark-read`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
 
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, is_read: true } : n
-      )
-    );
+      // UI থেকে remove
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch (err) {
+      console.error("Mark as read error:", err);
+    }
   };
 
+  // ✅ Handle notification click
   const handleNotificationClick = async (notification) => {
     await markAsRead(notification.id);
 
     navigate(`/dashboard/notification/${notification.id}`, {
-      state: {
-        selectedNotificationId: notification.id,
-      },
+      state: { selectedNotificationId: notification.id },
     });
 
     setOpen(false);
   };
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const unreadCount = notifications.length;
 
+  // ✅ Polling every 5 seconds to get new notifications
   useEffect(() => {
-    if (!open) return;
-    fetchNotifications();
-  }, [open]);
+    fetchLatestNotification(); // initial check
 
+    const interval = setInterval(() => {
+      fetchLatestNotification();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // ✅ Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -207,6 +215,7 @@ const NotificationDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* Bell icon */}
       <button
         onClick={() => setOpen((p) => !p)}
         className="p-2 hover:bg-gray-100 rounded relative"
@@ -219,42 +228,50 @@ const NotificationDropdown = () => {
         )}
       </button>
 
+      {/* Dropdown UI */}
       {open && (
         <div className="absolute right-0 mt-4 w-96 bg-white border rounded-lg shadow-lg z-50">
           <div className="p-3 font-semibold border-b">Notifications</div>
 
-          {loading && <p className="p-4 text-sm text-center">Loading...</p>}
-
-          {!loading && notifications.length === 0 && (
-            <p className="p-4 text-sm text-center">No notifications</p>
+          {notifications.length === 0 && (
+            <p className="p-4 text-sm text-center text-gray-500">No notifications</p>
           )}
 
-          <ul className="max-h-80 overflow-y-auto">
-            {notifications.slice(0, 5).map((item) => (
-              <li
-                key={item.id}
-                onClick={() => handleNotificationClick(item)}
-                className={`p-3 cursor-pointer border-b ${
-                  item.is_read ? "bg-white" : "bg-blue-50"
-                } hover:bg-gray-100`}
-              >
-                <p className="text-sm font-medium">
-                  {item.type === "agent"
-                    ? "Agent Application"
-                    : item.type === "student"
-                    ? "Student Application"
-                    : "Notification"}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {new Date(item.created_at).toLocaleString()}
-                </p>
-              </li>
-            ))}
+          <ul className="max-h-80 overflow-y-auto divide-y divide-gray-200">
+            {notifications.map((item) => {
+              // যদি title না থাকে বা 'No Title' হয় তাহলে student_name ও agent_name দিয়ে title বানাও
+              let displayTitle = "Agent";
+              if (item.title && item.title.trim() !== "" && item.title !== "No Title") {
+                displayTitle = item.title;
+              } else if (item.application) {
+                displayTitle = `${item.application.student_name} registered by ${item.application.agent_name}`;
+              }
+
+              return (
+                <li
+                  key={item.id}
+                  onClick={() => handleNotificationClick(item)}
+                  className={`flex flex-col p-4 cursor-pointer transition-colors duration-200 ${
+                    item.is_read ? "bg-white hover:bg-gray-50" : "bg-blue-50 hover:bg-blue-100"
+                  }`}
+                >
+                  <p className="text-sm font-semibold text-gray-800">{displayTitle}</p>
+
+                  {item.message && (
+                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.message}</p>
+                  )}
+
+                  <p className="text-xs text-gray-400 mt-2">
+                    {new Date(item.created_at).toLocaleString()}
+                  </p>
+                </li>
+              );
+            })}
           </ul>
 
           <button
             onClick={() => navigate("/dashboard/notification")}
-            className="w-full text-sm py-2 text-blue-600 hover:bg-gray-50"
+            className="w-full text-sm py-2 text-blue-600 hover:bg-gray-50 border-t"
           >
             View all notifications
           </button>
