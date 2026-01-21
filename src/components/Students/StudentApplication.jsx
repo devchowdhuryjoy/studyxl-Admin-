@@ -34,8 +34,16 @@ const StudentApplication = () => {
         },
       });
 
+      // if (!response.ok) {
+      //   throw new Error(`HTTP Error: ${response.status}`);
+      // }
+
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        if (response.status === 404) {
+          throw new Error("Data not found");
+        } else {
+          throw new Error("Failed to fetch data");
+        }
       }
 
       const result = await response.json();
@@ -51,15 +59,22 @@ const StudentApplication = () => {
           ? item.status
           : "Pending",
         submittedAt:
-          item.submitted_at ||
-          item.created_at?.slice(0, 10) ||
-          "N/A",
+          item.submitted_at || item.created_at?.slice(0, 10) || "N/A",
       }));
 
       setApplications(formatted);
     } catch (err) {
+      // catch (err) {
+      //   console.error(err);
+      //   setError(err.message || "Something went wrong");
+      // }
       console.error(err);
-      setError(err.message || "Something went wrong");
+
+      if (err.message === "Failed to fetch") {
+        setError("Data not found");
+      } else {
+        setError(err.message || "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -69,7 +84,7 @@ const StudentApplication = () => {
   const totalPages = Math.ceil(applications.length / itemsPerPage);
   const paginatedApplications = applications.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   if (loading) {
@@ -129,10 +144,10 @@ const StudentApplication = () => {
                         app.status === "Accepted"
                           ? "bg-green-100 text-green-800"
                           : app.status === "Rejected"
-                          ? "bg-red-100 text-red-800"
-                          : app.status === "Submitted"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
+                            ? "bg-red-100 text-red-800"
+                            : app.status === "Submitted"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-gray-100 text-gray-800"
                       }`}
                     >
                       {app.status}
