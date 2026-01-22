@@ -606,25 +606,25 @@ const AgentTask = () => {
             <div className="block mt-6 p-6 bg-gray-50 rounded-2xl border animate-in zoom-in">
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="col-span-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Subject</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Subject</label>
                   <input {...register("subject")} className="block w-full bg-white p-2 border rounded-lg font-medium text-gray-700 outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Description</label>
-                  <textarea {...register("description")} className="block w-full bg-white p-2 border rounded-lg text-xs text-gray-600 outline-none resize-none" rows="2" />
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Description</label>
+                  <textarea {...register("description")} className="block w-full bg-white p-2 font-bold border rounded-lg text-xs text-gray-700 outline-none resize-none" rows="2" />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-orange-500 uppercase">Current App Status</label>
-                  <input {...register("status")} readOnly className="block w-full bg-transparent font-bold text-orange-600 outline-none" />
+                  <label className="text-[10px] font-bold text-gray-500  uppercase">Current App Status</label>
+                  <input {...register("status")} readOnly className="block w-full bg-transparent border text-gray-700 rounded-lg  p-2 font-bold  outline-none" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Due Date</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Due Date</label>
                   <input {...register("due_date")} className="block w-full bg-white p-2 border rounded-lg font-medium text-gray-700 outline-none" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Student ID</label>
-                  <input {...register("student_id")} readOnly className="block w-full bg-transparent font-medium text-gray-700 outline-none" />
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Student ID</label>
+                  <input {...register("student_id")} readOnly className="block w-full bg-transparent border rounded-lg  p-2 font-medium text-gray-700 outline-none" />
                 </div>
               </div>
 
