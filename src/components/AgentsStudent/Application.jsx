@@ -38,8 +38,11 @@ const Application = () => {
         },
       });
 
+      // if (!response.ok) {
+      //   throw new Error(`HTTP Error: ${response.status}`);
+      // }
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        throw new Error(`No applications found.`);
       }
 
       const result = await response.json();

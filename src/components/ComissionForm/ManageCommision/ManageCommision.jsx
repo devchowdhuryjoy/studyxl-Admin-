@@ -45,7 +45,7 @@ const ManageCommission = () => {
     const token = getAuthToken();
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/admin/transactions", {
+      const response = await fetch("https://studyxl.globalrouteway.com/api/admin/transactions", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -77,7 +77,7 @@ const ManageCommission = () => {
 
     const token = getAuthToken();
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/admin/transactions/${id}`, {
+      const response = await fetch(`https://studyxl.globalrouteway.com/api/admin/transactions/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -112,7 +112,7 @@ const ManageCommission = () => {
     const token = getAuthToken();
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/admin/transactions/${editData.id}`, {
+      const response = await fetch(`https://studyxl.globalrouteway.com/api/admin/transactions/${editData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

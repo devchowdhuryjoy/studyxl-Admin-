@@ -207,7 +207,7 @@ const ProgramCreate = () => {
     try {
       console.log("Fetching field of studies...");
       const response = await axios.get(
-        `${BASE_URL}/admin/all/field/of/study/`,
+        `${BASE_URL}/admin/all/field/of/study`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,

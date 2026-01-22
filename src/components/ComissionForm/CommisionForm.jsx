@@ -37,7 +37,7 @@ const CommissionForm = () => {
   // --- 1. FETCH AGENTS ---
   useEffect(() => {
     const token = getAuthToken();
-    fetch("http://127.0.0.1:8000/api/admin/all-user", {
+    fetch("https://studyxl.globalrouteway.com/api/admin/all-user", {
       headers: { "Authorization": `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -74,7 +74,7 @@ const CommissionForm = () => {
 
     if (selectedAgentId) {
       setLoadingStudents(true);
-      const url = `http://127.0.0.1:8000/api/admin/agent/${selectedAgentId}/all-aplication`;
+      const url = `https://studyxl.globalrouteway.com/api/admin/agent/${selectedAgentId}/all-aplication`;
       const token = getAuthToken();
 
       try {
@@ -167,7 +167,7 @@ const CommissionForm = () => {
         return;
     }
 
-    const apiUrl = "http://127.0.0.1:8000/api/admin/transactions";
+    const apiUrl = "https://studyxl.globalrouteway.com/api/admin/transactions";
 
     try {
         const response = await fetch(apiUrl, {

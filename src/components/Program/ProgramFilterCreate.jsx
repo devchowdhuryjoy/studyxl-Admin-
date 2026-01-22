@@ -172,7 +172,7 @@ const ProgramFilterCreate = () => {
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/admin/programtag/`,
+        `${BASE_URL}/admin/programtag`,
         {
           program_tag: formData.programTagName
         },
