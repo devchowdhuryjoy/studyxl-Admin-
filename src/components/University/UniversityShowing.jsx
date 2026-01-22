@@ -857,7 +857,7 @@ const UniversityShowing = () => {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800">University All</h1>
+              <h1 className="text-3xl  font-bold text-gray-800">University All</h1>
               <p className="text-gray-600 mt-2">Browse and manage all registered universities</p>
             </div>
           </div>

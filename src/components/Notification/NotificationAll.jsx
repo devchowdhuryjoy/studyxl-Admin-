@@ -162,7 +162,7 @@ const NotificationAll = () => {
 
   return (
     <div className="p-6 max-full mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">All Notifications</h2>
+      <h2 className="text-3xl font-semibold mb-4">All Notifications</h2>
 
       {loading && <p>Loading...</p>}
 

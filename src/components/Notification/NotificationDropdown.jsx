@@ -230,7 +230,7 @@ const NotificationDropdown = () => {
 
       {/* Dropdown UI */}
       {open && (
-        <div className="absolute right-0 mt-4 w-96 bg-white border rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 mt-4 w-70 lg:w-96 bg-white border rounded-lg shadow-lg z-50">
           <div className="p-3 font-semibold border-b">Notifications</div>
 
           {notifications.length === 0 && (

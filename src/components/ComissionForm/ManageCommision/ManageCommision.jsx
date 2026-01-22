@@ -168,7 +168,7 @@ const ManageCommission = () => {
   return (
     <div className="max-w-7xl mx-auto mt-10 p-4">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Manage Commissions</h2>
+        <h2 className="text-3xl font-bold text-gray-800">Manage Commissions</h2>
         <span className="text-sm text-gray-600 font-semibold border px-3 py-1 rounded">
            Total: {transactions.length}
         </span>
