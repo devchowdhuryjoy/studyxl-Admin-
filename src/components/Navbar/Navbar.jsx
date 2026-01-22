@@ -108,8 +108,8 @@ import React, { useRef, useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import NotificationDropdown from "../Notification/NotificationDropdown";
-
-const Navbar = () => {
+import { Menu } from "lucide-react";
+const Navbar = ({ onMenuClick }) => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState({});
   const dropdownRef = useRef(null);
@@ -155,13 +155,21 @@ const Navbar = () => {
 
   return (
     <header className="flex justify-between items-center bg-white shadow px-4 py-3">
-      <h1 className="text-lg font-semibold">Study-XL</h1>
+     <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden p-1 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          <Menu size={24} />
+        </button>
+        <h1 className="text-lg font-semibold">Study-XL</h1>
+      </div>
 
       <div className="flex items-center gap-4 relative" ref={dropdownRef}>
         <NotificationDropdown />
 
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setOpen(!open)}>
-          <span>{user?.name || "Admin"}</span>
+          <span className="hidden sm:block text-sm font-medium">{user?.name || "Admin"}</span>
           <img src="/profileright.jpg" alt="profile" className="w-10 h-10 rounded-full" />
         </div>
 

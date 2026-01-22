@@ -11,8 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
-  const [open, setOpen] = useState(false);
+const Sidebar = ({ open, setOpen }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const location = useLocation();
 
@@ -45,30 +44,34 @@ const Sidebar = () => {
   return (
     <>
       {/* Mobile toggle button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="md:hidden p-2 m-2 rounded bg-gray-200"
-      >
-        {open ? <X /> : <Menu />}
-      </button>
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-[40] md:hidden transition-opacity"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg transform 
+        className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform 
         ${open ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0 transition-transform duration-200`}
       >
-        <div className="p-4 text-2xl font-bold border-b">Study-XL</div>
+        <div className="p-4 text-2xl font-bold border-b flex justify-between items-center">
+          Study-XL
+          <button onClick={() => setOpen(false)} className="md:hidden">
+            <X size={24} />
+          </button>
+        </div>
         <nav className="p-4 space-y-2">
           {/* Dashboard */}
           <Link
             to="/dashboard"
             onClick={handleMainLinkClick}
-            className={`flex items-center gap-2 p-2 rounded ${
-              isActive("/dashboard")
+            className={`flex items-center gap-2 p-2 rounded ${isActive("/dashboard")
                 ? "bg-[#f16f22] text-white"
                 : "hover:bg-gray-100"
-            }`}
+              }`}
           >
             <Home size={20} /> Dashboard
           </Link>
@@ -84,9 +87,8 @@ const Sidebar = () => {
               </span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${
-                  activeMenu === "students" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform ${activeMenu === "students" ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -95,11 +97,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/student-register"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/student-register")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/student-register")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Student Registration
                 </Link>
@@ -107,11 +108,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/student-application"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/student-application")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/student-application")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Student Applications
                 </Link>
@@ -119,11 +119,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/student-task"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/student-task")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/student-task")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Student Tasks
                 </Link>
@@ -142,9 +141,8 @@ const Sidebar = () => {
               </span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${
-                  activeMenu === "agents" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform ${activeMenu === "agents" ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -153,11 +151,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/agent-register"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-register")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-register")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Agent Registration
                 </Link>
@@ -165,22 +162,20 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/agent-student-profile"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-student-profile")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-student-profile")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Agent Student Profile
                 </Link>
                 <Link
                   to="/dashboard/agent-application"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-application")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-application")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Application
                 </Link>
@@ -188,11 +183,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/agent-task"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/agent-task")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-task")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Agent Tasks
                 </Link>
@@ -211,9 +205,8 @@ const Sidebar = () => {
               </span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${
-                  activeMenu === "university" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform ${activeMenu === "university" ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -223,11 +216,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/university"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/university")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/university")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   University Create
                 </Link>
@@ -236,11 +228,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/universityshow"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/universityshow")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/universityshow")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   All University
                 </Link>
@@ -249,22 +240,20 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/program-dropdown-create"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/program-dropdown-create")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/program-dropdown-create")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Program Dropdown Create
                 </Link>
                 <Link
                   to="/dashboard/program-create"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/program-create")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/program-create")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Program Create
                 </Link>
@@ -283,9 +272,8 @@ const Sidebar = () => {
               </span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${
-                  activeMenu === "Notification" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform ${activeMenu === "Notification" ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -295,11 +283,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/notification"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/notification")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/notification")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   All Notifications
                 </Link>
@@ -317,9 +304,8 @@ const Sidebar = () => {
               </span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${
-                  activeMenu === "Commision" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform ${activeMenu === "Commision" ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -329,11 +315,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/commision"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/commision")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/commision")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Add Commision
                 </Link>
@@ -341,11 +326,10 @@ const Sidebar = () => {
                 <Link
                   to="/dashboard/manage-commision"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${
-                    isActive("/dashboard/manage-commision")
+                  className={`block p-2 text-sm rounded ${isActive("/dashboard/manage-commision")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   Manage Commision
                 </Link>

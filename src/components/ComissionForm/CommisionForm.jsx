@@ -207,8 +207,8 @@ const CommissionForm = () => {
   if (loading) return <div className="p-10">Loading Agents...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow-lg rounded border-t-4 border-blue-600 mb-20">
-      <h2 className="text-xl font-bold mb-6">Commission Form</h2>
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow-lg rounded border-t-4 border-primary mb-20">
+      <h2 className="text-3xl font-bold mb-6">Commission Form</h2>
 
       <form onSubmit={handleSubmit} className="grid gap-5">
         
@@ -324,7 +324,7 @@ const CommissionForm = () => {
                         type="submit"
                         disabled={submitting}
                         className={`w-full text-white font-bold py-3 px-4 rounded shadow-md transition-all 
-                            ${submitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                            ${submitting ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-blue-700"}`}
                     >
                         {submitting ? "Processing..." : "Submit Commission Data"}
                     </button>

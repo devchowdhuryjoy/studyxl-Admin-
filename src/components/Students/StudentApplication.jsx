@@ -105,7 +105,7 @@ const StudentApplication = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-black p-4 sm:p-6">
-      <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
+      <h2 className="text-3xl sm:text-3xl font-semibold mb-6">
         My Applications
       </h2>
 
