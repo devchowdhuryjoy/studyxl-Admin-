@@ -22,6 +22,7 @@ import NotificationAll from "./components/Notification/NotificationAll";
 import ApplicationDetails from "./components/AgentsStudent/ApplicationDetails";
 import CommissionForm from "./components/ComissionForm/CommisionForm";
 import ManageCommision from "./components/ComissionForm/ManageCommision/ManageCommision";
+import UserCreate from "./components/UserCreate/UserCreate";
 
 function App() {
   return (
@@ -91,7 +92,13 @@ function App() {
             path="agent-application/application-details/:id"
             element={<ApplicationDetails />}
           />
+           {/* Create User */}
+         <Route path="create-user" element={<UserCreate />} />
+         
         </Route>
+
+       
+
       </Routes>
     </Router>
   );

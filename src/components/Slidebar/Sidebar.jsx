@@ -72,6 +72,18 @@ const Sidebar = () => {
           >
             <Home size={20} /> Dashboard
           </Link>
+          {/* Create User*/}
+          <Link
+            to="/dashboard/create-user"
+            onClick={handleMainLinkClick}
+            className={`flex items-center gap-2 p-2 rounded ${
+              isActive("/dashboard/create-user")
+                ? "bg-[#f16f22] text-white"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <Home size={20} /> create User
+          </Link>
 
           {/* Students with submenu */}
           <div>
