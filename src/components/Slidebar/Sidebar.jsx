@@ -1,3 +1,364 @@
+// import { useState, useEffect } from "react";
+// import {
+//   Menu,
+//   X,
+//   Home,
+//   Users,
+//   ChevronDown,
+//   GraduationCap,
+//   Receipt,
+//   BellRing,
+// } from "lucide-react";
+// import { Link, useLocation } from "react-router-dom";
+
+// const Sidebar = ({ open, setOpen }) => {
+//   const [activeMenu, setActiveMenu] = useState(null);
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     const savedMenu = sessionStorage.getItem("activeMenu");
+//     if (savedMenu) {
+//       setActiveMenu(savedMenu);
+//     }
+//   }, []);
+
+//   const toggleMenu = (menu) => {
+//     const newMenu = activeMenu === menu ? null : menu;
+//     setActiveMenu(newMenu);
+//     if (newMenu) {
+//       sessionStorage.setItem("activeMenu", newMenu);
+//     } else {
+//       sessionStorage.removeItem("activeMenu");
+//     }
+//   };
+
+//   const handleMainLinkClick = () => {
+//     if (window.innerWidth < 768) {
+//       setOpen(false);
+//     }
+//   };
+
+//   // active link check function
+//   const isActive = (path) => location.pathname === path;
+
+//   return (
+//     <>
+//       {/* Mobile toggle button */}
+//       {open && (
+//         <div
+//           className="fixed inset-0 bg-black/50 z-[40] md:hidden transition-opacity"
+//           onClick={() => setOpen(false)}
+//         />
+//       )}
+
+//       {/* Sidebar */}
+//       <aside
+//         className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform 
+//         ${open ? "translate-x-0" : "-translate-x-full"} 
+//         md:translate-x-0 transition-transform duration-200`}
+//       >
+//         <div className="p-4 text-2xl font-bold border-b flex justify-between items-center">
+//           Study-XL
+//           <button onClick={() => setOpen(false)} className="md:hidden">
+//             <X size={24} />
+//           </button>
+//         </div>
+//         <nav className="p-4 space-y-2">
+//           {/* Dashboard */}
+//           <Link
+//             to="/dashboard"
+//             onClick={handleMainLinkClick}
+//             className={`flex items-center gap-2 p-2 rounded ${isActive("/dashboard")
+//                 ? "bg-[#f16f22] text-white"
+//                 : "hover:bg-gray-100"
+//               }`}
+//           >
+//             <Home size={20} /> Dashboard
+//           </Link>
+//           {/* Create User*/}
+//           <Link
+//             to="/dashboard/create-user"
+//             onClick={handleMainLinkClick}
+//             className={`flex items-center gap-2 p-2 rounded ${
+//               isActive("/dashboard/create-user")
+//                 ? "bg-[#f16f22] text-white"
+//                 : "hover:bg-gray-100"
+//             }`}
+//           >
+//             <Home size={20} /> create User
+//           </Link>
+
+//           {/* Students with submenu */}
+//           <div>
+//             <button
+//               onClick={() => toggleMenu("students")}
+//               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+//             >
+//               <span className="flex items-center gap-2">
+//                 <Users size={20} /> Students
+//               </span>
+//               <ChevronDown
+//                 size={16}
+//                 className={`transition-transform ${activeMenu === "students" ? "rotate-180" : ""
+//                   }`}
+//               />
+//             </button>
+
+//             {activeMenu === "students" && (
+//               <div className="ml-6 mt-1 space-y-1">
+//                 <Link
+//                   to="/dashboard/student-register"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/student-register")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Student Registration
+//                 </Link>
+
+//                 <Link
+//                   to="/dashboard/student-application"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/student-application")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Student Applications
+//                 </Link>
+
+//                 <Link
+//                   to="/dashboard/student-task"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/student-task")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Student Tasks
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Agents with submenu */}
+//           <div>
+//             <button
+//               onClick={() => toggleMenu("agents")}
+//               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+//             >
+//               <span className="flex items-center gap-2">
+//                 <Users size={20} /> Agents
+//               </span>
+//               <ChevronDown
+//                 size={16}
+//                 className={`transition-transform ${activeMenu === "agents" ? "rotate-180" : ""
+//                   }`}
+//               />
+//             </button>
+
+//             {activeMenu === "agents" && (
+//               <div className="ml-6 mt-1 space-y-1">
+//                 <Link
+//                   to="/dashboard/agent-register"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-register")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Agent Registration
+//                 </Link>
+
+//                 <Link
+//                   to="/dashboard/agent-student-profile"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-student-profile")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Agent Student Profile
+//                 </Link>
+//                 <Link
+//                   to="/dashboard/agent-application"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-application")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Application
+//                 </Link>
+
+//                 <Link
+//                   to="/dashboard/agent-task"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-task")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Agent Tasks
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* University Menu with Submenu */}
+//           <div>
+//             <button
+//               onClick={() => toggleMenu("university")}
+//               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+//             >
+//               <span className="flex items-center gap-2">
+//                 <GraduationCap size={20} /> University
+//               </span>
+//               <ChevronDown
+//                 size={16}
+//                 className={`transition-transform ${activeMenu === "university" ? "rotate-180" : ""
+//                   }`}
+//               />
+//             </button>
+
+//             {activeMenu === "university" && (
+//               <div className="ml-6 mt-1 space-y-1">
+//                 {/* University Create */}
+//                 <Link
+//                   to="/dashboard/university"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/university")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   University Create
+//                 </Link>
+
+//                 {/* All Universities */}
+//                 <Link
+//                   to="/dashboard/universityshow"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/universityshow")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   All University
+//                 </Link>
+
+//                 {/* Program Create */}
+//                 <Link
+//                   to="/dashboard/program-dropdown-create"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/program-dropdown-create")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Program Dropdown Create
+//                 </Link>
+//                 <Link
+//                   to="/dashboard/program-create"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/program-create")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Program Create
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* notification with Submenu */}
+//           <div>
+//             <button
+//               onClick={() => toggleMenu("Notification")}
+//               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+//             >
+//               <span className="flex items-center gap-2">
+//                 <BellRing size={20} /> Notification
+//               </span>
+//               <ChevronDown
+//                 size={16}
+//                 className={`transition-transform ${activeMenu === "Notification" ? "rotate-180" : ""
+//                   }`}
+//               />
+//             </button>
+
+//             {activeMenu === "Notification" && (
+//               <div className="ml-6 mt-1 space-y-1">
+//                 {/* Notification */}
+//                 <Link
+//                   to="/dashboard/notification"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/notification")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   All Notifications
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//           {/*  commision*/}
+//           <div>
+//             <button
+//               onClick={() => toggleMenu("Commision")}
+//               className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+//             >
+//               <span className="flex items-center gap-2">
+//                 <Receipt size={20} /> Commision
+//               </span>
+//               <ChevronDown
+//                 size={16}
+//                 className={`transition-transform ${activeMenu === "Commision" ? "rotate-180" : ""
+//                   }`}
+//               />
+//             </button>
+
+//             {activeMenu === "Commision" && (
+//               <div className="ml-6 mt-1 space-y-1">
+//                 {/* Add Commision */}
+//                 <Link
+//                   to="/dashboard/commision"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/commision")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Add Commision
+//                 </Link>
+//                 {/* Manage Commision (New Item) */}
+//                 <Link
+//                   to="/dashboard/manage-commision"
+//                   onClick={handleMainLinkClick}
+//                   className={`block p-2 text-sm rounded ${isActive("/dashboard/manage-commision")
+//                       ? "bg-[#f16f22] text-white"
+//                       : "hover:bg-gray-100"
+//                     }`}
+//                 >
+//                   Manage Commision
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//           {/*  commision*/}
+//         </nav>
+//       </aside>
+//     </>
+//   );
+// };
+
+// export default Sidebar;
+
+
+
 import { useState, useEffect } from "react";
 import {
   Menu,
@@ -8,19 +369,79 @@ import {
   GraduationCap,
   Receipt,
   BellRing,
+  UserPlus,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ open, setOpen }) => {
   const [activeMenu, setActiveMenu] = useState(null);
+  const [userPermissions, setUserPermissions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedMenu = sessionStorage.getItem("activeMenu");
     if (savedMenu) {
       setActiveMenu(savedMenu);
     }
+
+    fetchUserPermissions();
   }, []);
+
+  const fetchUserPermissions = async () => {
+    try {
+      const token = localStorage.getItem("admin_token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+
+      const response = await fetch("https://stdxl.globalrouteway.com/api/admin/my-permissions", {
+        method: "GET",
+        headers: myHeaders,
+      });
+
+      const result = await response.json();
+      if (result.permissions) {
+        setUserPermissions(result.permissions);
+        localStorage.setItem("admin_permissions", JSON.stringify(result.permissions));
+      } else {
+        // 
+        setUserPermissions([]);
+        localStorage.setItem("admin_permissions", JSON.stringify([]));
+      }
+    } catch (error) {
+      console.error("Error fetching permissions:", error);
+      setUserPermissions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 
+  const hasPermission = (permission) => {
+    return userPermissions.includes(permission);
+  };
+
+  // 
+  const hasAnyPermission = (permissionsArray) => {
+    if (!permissionsArray || permissionsArray.length === 0) return true; // 
+    return permissionsArray.some(permission => userPermissions.includes(permission));
+  };
+
+  // 
+  const menuPermissions = {
+    createUser: ["agent.employee.manage"],
+    students: ["student.view", "student.update", "application.view", "task.view.student"],
+    agents: ["agent.view", "agent.update", "application.view", "task.view.agent"],
+    university: ["university.create", "university.edit", "university.view", "program.create", "program.edit", "program.view"],
+    notification: [], // 
+    commission: ["transaction.view", "transaction.create"],
+  };
 
   const toggleMenu = (menu) => {
     const newMenu = activeMenu === menu ? null : menu;
@@ -38,8 +459,27 @@ const Sidebar = ({ open, setOpen }) => {
     }
   };
 
-  // active link check function
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
+    localStorage.removeItem("admin_permissions");
+    navigate("/");
+  };
+
+  if (loading) {
+    return (
+      <aside className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform 
+        ${open ? "translate-x-0" : "-translate-x-full"} 
+        md:translate-x-0 transition-transform duration-200`}>
+        <div className="p-4 text-2xl font-bold border-b">Study-XL</div>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f16f22]"></div>
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <>
@@ -63,217 +503,263 @@ const Sidebar = ({ open, setOpen }) => {
             <X size={24} />
           </button>
         </div>
+
         <nav className="p-4 space-y-2">
-          {/* Dashboard */}
+          {/* Dashboard -  */}
           <Link
             to="/dashboard"
             onClick={handleMainLinkClick}
-            className={`flex items-center gap-2 p-2 rounded ${isActive("/dashboard")
-                ? "bg-[#f16f22] text-white"
-                : "hover:bg-gray-100"
-              }`}
-          >
-            <Home size={20} /> Dashboard
-          </Link>
-          {/* Create User*/}
-          <Link
-            to="/dashboard/create-user"
-            onClick={handleMainLinkClick}
             className={`flex items-center gap-2 p-2 rounded ${
-              isActive("/dashboard/create-user")
+              isActive("/dashboard")
                 ? "bg-[#f16f22] text-white"
                 : "hover:bg-gray-100"
             }`}
           >
-            <Home size={20} /> create User
+            <Home size={20} /> Dashboard
           </Link>
 
-          {/* Students with submenu */}
-          <div>
-            <button
-              onClick={() => toggleMenu("students")}
-              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+          {/* Create User -*/}
+          {hasAnyPermission(menuPermissions.createUser) && (
+            <Link
+              to="/dashboard/create-user"
+              onClick={handleMainLinkClick}
+              className={`flex items-center gap-2 p-2 rounded ${
+                isActive("/dashboard/create-user")
+                  ? "bg-[#f16f22] text-white"
+                  : "hover:bg-gray-100"
+              }`}
             >
-              <span className="flex items-center gap-2">
-                <Users size={20} /> Students
-              </span>
-              <ChevronDown
-                size={16}
-                className={`transition-transform ${activeMenu === "students" ? "rotate-180" : ""
+              <UserPlus size={20} /> Create User
+            </Link>
+          )}
+
+          {/* Students with submenu -  */}
+          {hasAnyPermission(menuPermissions.students) && (
+            <div>
+              <button
+                onClick={() => toggleMenu("students")}
+                className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+              >
+                <span className="flex items-center gap-2">
+                  <Users size={20} /> Students
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    activeMenu === "students" ? "rotate-180" : ""
                   }`}
-              />
-            </button>
+                />
+              </button>
 
-            {activeMenu === "students" && (
-              <div className="ml-6 mt-1 space-y-1">
-                <Link
-                  to="/dashboard/student-register"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/student-register")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Student Registration
-                </Link>
+              {activeMenu === "students" && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {(hasPermission("student.view") || hasPermission("student.update")) && (
+                    <Link
+                      to="/dashboard/student-register"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/student-register")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Student Registration
+                    </Link>
+                  )}
 
-                <Link
-                  to="/dashboard/student-application"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/student-application")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Student Applications
-                </Link>
+                  {hasPermission("application.view") && (
+                    <Link
+                      to="/dashboard/student-application"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/student-application")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Student Applications
+                    </Link>
+                  )}
 
-                <Link
-                  to="/dashboard/student-task"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/student-task")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Student Tasks
-                </Link>
-              </div>
-            )}
-          </div>
+                  {(hasPermission("task.view.student") || hasPermission("task.view")) && (
+                    <Link
+                      to="/dashboard/student-task"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/student-task")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Student Tasks
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Agents with submenu */}
-          <div>
-            <button
-              onClick={() => toggleMenu("agents")}
-              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
-            >
-              <span className="flex items-center gap-2">
-                <Users size={20} /> Agents
-              </span>
-              <ChevronDown
-                size={16}
-                className={`transition-transform ${activeMenu === "agents" ? "rotate-180" : ""
+          {hasAnyPermission(menuPermissions.agents) && (
+            <div>
+              <button
+                onClick={() => toggleMenu("agents")}
+                className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+              >
+                <span className="flex items-center gap-2">
+                  <Users size={20} /> Agents
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    activeMenu === "agents" ? "rotate-180" : ""
                   }`}
-              />
-            </button>
+                />
+              </button>
 
-            {activeMenu === "agents" && (
-              <div className="ml-6 mt-1 space-y-1">
-                <Link
-                  to="/dashboard/agent-register"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-register")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Agent Registration
-                </Link>
+              {activeMenu === "agents" && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {(hasPermission("agent.view") || hasPermission("agent.update")) && (
+                    <Link
+                      to="/dashboard/agent-register"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/agent-register")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Agent Registration
+                    </Link>
+                  )}
 
-                <Link
-                  to="/dashboard/agent-student-profile"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-student-profile")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Agent Student Profile
-                </Link>
-                <Link
-                  to="/dashboard/agent-application"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-application")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Application
-                </Link>
+                  {hasPermission("agent.view") && (
+                    <Link
+                      to="/dashboard/agent-student-profile"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/agent-student-profile")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Agent Student Profile
+                    </Link>
+                  )}
 
-                <Link
-                  to="/dashboard/agent-task"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/agent-task")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Agent Tasks
-                </Link>
-              </div>
-            )}
-          </div>
+                  {hasPermission("application.view") && (
+                    <Link
+                      to="/dashboard/agent-application"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/agent-application")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Application
+                    </Link>
+                  )}
+
+                  {(hasPermission("task.view.agent") || hasPermission("task.view")) && (
+                    <Link
+                      to="/dashboard/agent-task"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/agent-task")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Agent Tasks
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* University Menu with Submenu */}
-          <div>
-            <button
-              onClick={() => toggleMenu("university")}
-              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
-            >
-              <span className="flex items-center gap-2">
-                <GraduationCap size={20} /> University
-              </span>
-              <ChevronDown
-                size={16}
-                className={`transition-transform ${activeMenu === "university" ? "rotate-180" : ""
+          {hasAnyPermission(menuPermissions.university) && (
+            <div>
+              <button
+                onClick={() => toggleMenu("university")}
+                className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+              >
+                <span className="flex items-center gap-2">
+                  <GraduationCap size={20} /> University
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    activeMenu === "university" ? "rotate-180" : ""
                   }`}
-              />
-            </button>
+                />
+              </button>
 
-            {activeMenu === "university" && (
-              <div className="ml-6 mt-1 space-y-1">
-                {/* University Create */}
-                <Link
-                  to="/dashboard/university"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/university")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  University Create
-                </Link>
+              {activeMenu === "university" && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {hasPermission("university.create") && (
+                    <Link
+                      to="/dashboard/university"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/university")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      University Create
+                    </Link>
+                  )}
 
-                {/* All Universities */}
-                <Link
-                  to="/dashboard/universityshow"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/universityshow")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  All University
-                </Link>
+                  {(hasPermission("university.view") || hasPermission("university.edit")) && (
+                    <Link
+                      to="/dashboard/universityshow"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/universityshow")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      All University
+                    </Link>
+                  )}
 
-                {/* Program Create */}
-                <Link
-                  to="/dashboard/program-dropdown-create"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/program-dropdown-create")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Program Dropdown Create
-                </Link>
-                <Link
-                  to="/dashboard/program-create"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/program-create")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Program Create
-                </Link>
-              </div>
-            )}
-          </div>
+                  {hasPermission("program.create") && (
+                    <Link
+                      to="/dashboard/program-create"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/program-create")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Program Create
+                    </Link>
+                  )}
 
-          {/* notification with Submenu */}
+                  {(hasPermission("program.create") || hasPermission("program.edit")) && (
+                    <Link
+                      to="/dashboard/program-dropdown-create"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/program-dropdown-create")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Program Dropdown Create
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Notification - */}
           <div>
             <button
               onClick={() => toggleMenu("Notification")}
@@ -284,71 +770,82 @@ const Sidebar = ({ open, setOpen }) => {
               </span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${activeMenu === "Notification" ? "rotate-180" : ""
-                  }`}
+                className={`transition-transform ${
+                  activeMenu === "Notification" ? "rotate-180" : ""
+                }`}
               />
             </button>
 
             {activeMenu === "Notification" && (
               <div className="ml-6 mt-1 space-y-1">
-                {/* Notification */}
                 <Link
                   to="/dashboard/notification"
                   onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/notification")
+                  className={`block p-2 text-sm rounded ${
+                    isActive("/dashboard/notification")
                       ? "bg-[#f16f22] text-white"
                       : "hover:bg-gray-100"
-                    }`}
+                  }`}
                 >
                   All Notifications
                 </Link>
               </div>
             )}
           </div>
-          {/*  commision*/}
-          <div>
-            <button
-              onClick={() => toggleMenu("Commision")}
-              className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
-            >
-              <span className="flex items-center gap-2">
-                <Receipt size={20} /> Commision
-              </span>
-              <ChevronDown
-                size={16}
-                className={`transition-transform ${activeMenu === "Commision" ? "rotate-180" : ""
-                  }`}
-              />
-            </button>
 
-            {activeMenu === "Commision" && (
-              <div className="ml-6 mt-1 space-y-1">
-                {/* Add Commision */}
-                <Link
-                  to="/dashboard/commision"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/commision")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Add Commision
-                </Link>
-                {/* Manage Commision (New Item) */}
-                <Link
-                  to="/dashboard/manage-commision"
-                  onClick={handleMainLinkClick}
-                  className={`block p-2 text-sm rounded ${isActive("/dashboard/manage-commision")
-                      ? "bg-[#f16f22] text-white"
-                      : "hover:bg-gray-100"
-                    }`}
-                >
-                  Manage Commision
-                </Link>
-              </div>
-            )}
-          </div>
-          {/*  commision*/}
+          {/* Commission -  */}
+          {hasAnyPermission(menuPermissions.commission) && (
+            <div>
+              <button
+                onClick={() => toggleMenu("Commision")}
+                className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+              >
+                <span className="flex items-center gap-2">
+                  <Receipt size={20} /> Commission
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    activeMenu === "Commision" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {activeMenu === "Commision" && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {hasPermission("transaction.create") && (
+                    <Link
+                      to="/dashboard/commision"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/commision")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Add Commission
+                    </Link>
+                  )}
+
+                  {hasPermission("transaction.view") && (
+                    <Link
+                      to="/dashboard/manage-commision"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/manage-commision")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Manage Commission
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+      
         </nav>
       </aside>
     </>
@@ -356,3 +853,6 @@ const Sidebar = ({ open, setOpen }) => {
 };
 
 export default Sidebar;
+
+
+
