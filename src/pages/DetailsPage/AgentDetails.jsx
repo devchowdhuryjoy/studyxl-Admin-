@@ -71,28 +71,59 @@ const AgentDetails = () => {
     "status",
   ];
 
+  // useEffect(() => {
+  //   const fetchAgents = async () => {
+  //     try {
+  //       const response = await fetch(`${BASE_URL}/admin/all-user`);
+  //       if (!response.ok)
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       const data = await response.json();
+
+  //       const selectedAgent = data.find((a) => a.id.toString() === id);
+  //       setAgent(selectedAgent || null);
+  //     } catch (error) {
+  //       console.error("Error fetching agents:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchAgents();
+  // }, [id]);
+
   useEffect(() => {
-    const fetchAgents = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/admin/all-user`);
-        if (!response.ok)
-          throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
+  const fetchAgents = async () => {
+    try {
+      const token = localStorage.getItem("admin_token"); //
+      const response = await fetch(`${BASE_URL}/admin/all-user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
 
-        const selectedAgent = data.find((a) => a.id.toString() === id);
-        setAgent(selectedAgent || null);
-      } catch (error) {
-        console.error("Error fetching agents:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
 
-    fetchAgents();
-  }, [id]);
+      const data = await response.json();
 
-  if (loading) return <div className="p-6">⏳ Loading agent details...</div>;
-  if (!agent) return <div className="p-6">❌ Agent not found</div>;
+      // Correct: agents array agent select
+      const selectedAgent = data.agents.find((a) => a.id.toString() === id);
+      setAgent(selectedAgent || null);
+
+    } catch (error) {
+      console.error("Error fetching agents:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAgents();
+}, [id]);
+
+
+  if (loading) return <div className="p-6">Loading agent details...</div>;
+  if (!agent) return <div className="p-6">Agent not found</div>;
 
   return (
     <div className="p-2">

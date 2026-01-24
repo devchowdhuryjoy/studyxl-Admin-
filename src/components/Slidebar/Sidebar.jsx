@@ -53,8 +53,8 @@
 
 //       {/* Sidebar */}
 //       <aside
-//         className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform 
-//         ${open ? "translate-x-0" : "-translate-x-full"} 
+//         className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform
+//         ${open ? "translate-x-0" : "-translate-x-full"}
 //         md:translate-x-0 transition-transform duration-200`}
 //       >
 //         <div className="p-4 text-2xl font-bold border-b flex justify-between items-center">
@@ -357,8 +357,6 @@
 
 // export default Sidebar;
 
-
-
 import { useState, useEffect } from "react";
 import {
   Menu,
@@ -372,6 +370,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import BASE_URL from "../../Api/ApiBaseUrl";
 
 const Sidebar = ({ open, setOpen }) => {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -400,17 +399,28 @@ const Sidebar = ({ open, setOpen }) => {
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
 
-      const response = await fetch("https://stdxl.globalrouteway.com/api/admin/my-permissions", {
+      // const response = await fetch("https://stdxl.globalrouteway.com/api/admin/my-permissions", {
+      //   method: "GET",
+      //   headers: myHeaders,
+      // });
+
+      const response = await fetch(`${BASE_URL}/admin/my-permissions`, {
         method: "GET",
-        headers: myHeaders,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
       });
 
       const result = await response.json();
       if (result.permissions) {
         setUserPermissions(result.permissions);
-        localStorage.setItem("admin_permissions", JSON.stringify(result.permissions));
+        localStorage.setItem(
+          "admin_permissions",
+          JSON.stringify(result.permissions),
+        );
       } else {
-        // 
+        //
         setUserPermissions([]);
         localStorage.setItem("admin_permissions", JSON.stringify([]));
       }
@@ -422,24 +432,43 @@ const Sidebar = ({ open, setOpen }) => {
     }
   };
 
-  // 
+  //
   const hasPermission = (permission) => {
     return userPermissions.includes(permission);
   };
 
-  // 
+  //
   const hasAnyPermission = (permissionsArray) => {
-    if (!permissionsArray || permissionsArray.length === 0) return true; // 
-    return permissionsArray.some(permission => userPermissions.includes(permission));
+    if (!permissionsArray || permissionsArray.length === 0) return true; //
+    return permissionsArray.some((permission) =>
+      userPermissions.includes(permission),
+    );
   };
 
-  // 
+  //
   const menuPermissions = {
     createUser: ["agent.employee.manage"],
-    students: ["student.view", "student.update", "application.view", "task.view.student"],
-    agents: ["agent.view", "agent.update", "application.view", "task.view.agent"],
-    university: ["university.create", "university.edit", "university.view", "program.create", "program.edit", "program.view"],
-    notification: [], // 
+    students: [
+      "student.view",
+      "student.update",
+      "application.view",
+      "task.view.student",
+    ],
+    agents: [
+      "agent.view",
+      "agent.update",
+      "application.view",
+      "task.view.agent",
+    ],
+    university: [
+      "university.create",
+      "university.edit",
+      "university.view",
+      "program.create",
+      "program.edit",
+      "program.view",
+    ],
+    notification: [], //
     commission: ["transaction.view", "transaction.create"],
   };
 
@@ -470,9 +499,11 @@ const Sidebar = ({ open, setOpen }) => {
 
   if (loading) {
     return (
-      <aside className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform 
+      <aside
+        className={`fixed md:static top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform 
         ${open ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 transition-transform duration-200`}>
+        md:translate-x-0 transition-transform duration-200`}
+      >
         <div className="p-4 text-2xl font-bold border-b">Study-XL</div>
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#f16f22]"></div>
@@ -553,7 +584,8 @@ const Sidebar = ({ open, setOpen }) => {
 
               {activeMenu === "students" && (
                 <div className="ml-6 mt-1 space-y-1">
-                  {(hasPermission("student.view") || hasPermission("student.update")) && (
+                  {(hasPermission("student.view") ||
+                    hasPermission("student.update")) && (
                     <Link
                       to="/dashboard/student-register"
                       onClick={handleMainLinkClick}
@@ -581,7 +613,8 @@ const Sidebar = ({ open, setOpen }) => {
                     </Link>
                   )}
 
-                  {(hasPermission("task.view.student") || hasPermission("task.view")) && (
+                  {(hasPermission("task.view.student") ||
+                    hasPermission("task.view")) && (
                     <Link
                       to="/dashboard/student-task"
                       onClick={handleMainLinkClick}
@@ -619,7 +652,8 @@ const Sidebar = ({ open, setOpen }) => {
 
               {activeMenu === "agents" && (
                 <div className="ml-6 mt-1 space-y-1">
-                  {(hasPermission("agent.view") || hasPermission("agent.update")) && (
+                  {(hasPermission("agent.view") ||
+                    hasPermission("agent.update")) && (
                     <Link
                       to="/dashboard/agent-register"
                       onClick={handleMainLinkClick}
@@ -661,7 +695,8 @@ const Sidebar = ({ open, setOpen }) => {
                     </Link>
                   )}
 
-                  {(hasPermission("task.view.agent") || hasPermission("task.view")) && (
+                  {(hasPermission("task.view.agent") ||
+                    hasPermission("task.view")) && (
                     <Link
                       to="/dashboard/agent-task"
                       onClick={handleMainLinkClick}
@@ -713,7 +748,8 @@ const Sidebar = ({ open, setOpen }) => {
                     </Link>
                   )}
 
-                  {(hasPermission("university.view") || hasPermission("university.edit")) && (
+                  {(hasPermission("university.view") ||
+                    hasPermission("university.edit")) && (
                     <Link
                       to="/dashboard/universityshow"
                       onClick={handleMainLinkClick}
@@ -741,7 +777,8 @@ const Sidebar = ({ open, setOpen }) => {
                     </Link>
                   )}
 
-                  {(hasPermission("program.create") || hasPermission("program.edit")) && (
+                  {(hasPermission("program.create") ||
+                    hasPermission("program.edit")) && (
                     <Link
                       to="/dashboard/program-dropdown-create"
                       onClick={handleMainLinkClick}
@@ -844,8 +881,6 @@ const Sidebar = ({ open, setOpen }) => {
               )}
             </div>
           )}
-
-      
         </nav>
       </aside>
     </>
@@ -853,6 +888,3 @@ const Sidebar = ({ open, setOpen }) => {
 };
 
 export default Sidebar;
-
-
-
