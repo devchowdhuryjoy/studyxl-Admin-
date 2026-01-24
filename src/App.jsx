@@ -23,6 +23,7 @@ import ApplicationDetails from "./components/AgentsStudent/ApplicationDetails";
 import CommissionForm from "./components/ComissionForm/CommisionForm";
 import ManageCommision from "./components/ComissionForm/ManageCommision/ManageCommision";
 import UserCreate from "./components/UserCreate/UserCreate";
+import EditApplication from "./components/AgentsStudent/EditApplication";
 
 function App() {
   return (
@@ -85,20 +86,20 @@ function App() {
           <Route path="commision" element={<CommissionForm />} />
           <Route path="commision/:id" element={<CommissionForm />} />
           {/* Commision*/}
-          <Route path="manage-commision" element={<ManageCommision/>} />
-          <Route path="manage-commision/:id" element={<ManageCommision />} /> 
+          <Route path="manage-commision" element={<ManageCommision />} />
+          <Route path="manage-commision/:id" element={<ManageCommision />} />
 
           <Route
             path="agent-application/application-details/:id"
             element={<ApplicationDetails />}
           />
-           {/* Create User */}
-         <Route path="create-user" element={<UserCreate />} />
-         
+          
+          
+          <Route path="admin/applications/edit/:id" element={<EditApplication />} />
+
+          {/* Create User */}
+          <Route path="create-user" element={<UserCreate />} />
         </Route>
-
-       
-
       </Routes>
     </Router>
   );
