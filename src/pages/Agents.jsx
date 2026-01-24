@@ -295,10 +295,10 @@ const Agents = () => {
         prev.map((agent) =>
           agent.id === id
             ? {
-              ...agent,
-              status: newStatus,
-              is_approved: newStatus === "Approved" ? "1" : "0",
-            }
+                ...agent,
+                status: newStatus,
+                is_approved: newStatus === "Approved" ? "1" : "0",
+              }
             : agent
         )
       );
@@ -364,9 +364,10 @@ const Agents = () => {
   return (
     <div className="w-full">
       <h2 className="text-3xl font-semibold mb-4">Agents</h2>
+
       <div className="bg-white shadow border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300">
-          <table className="w-full bg-white shadow rounded overflow-hidden">
+          <table className="w-full bg-white shadow rounded">
             <thead className="bg-gray-200">
               <tr>
                 <th className="p-3 text-left">ID</th>
@@ -396,13 +397,16 @@ const Agents = () => {
                   <td className="p-3">
                     <select
                       value={agent.status}
-                      onChange={(e) => handleStatusChange(agent.id, e.target.value)}
-                      className={`p-1 rounded border ${agent.status === "Approved"
+                      onChange={(e) =>
+                        handleStatusChange(agent.id, e.target.value)
+                      }
+                      className={`p-1 rounded border ${
+                        agent.status === "Approved"
                           ? "text-green-600"
                           : agent.status === "Rejected"
-                            ? "text-red-600"
-                            : "text-gray-600"
-                        }`}
+                          ? "text-red-600"
+                          : "text-gray-600"
+                      }`}
                     >
                       {statusOptions.map((status) => (
                         <option
@@ -420,11 +424,12 @@ const Agents = () => {
                   <td className="p-3">
                     <select
                       value={agent.active ? "Activate" : "Deactivate"}
-                      onChange={(e) => handleActionChange(agent.id, e.target.value)}
-                      className={`p-1 rounded border ${agent.active
-                          ? "bg-primary text-white"
-                          : "bg-green-500 text-white"
-                        }`}
+                      onChange={(e) =>
+                        handleActionChange(agent.id, e.target.value)
+                      }
+                      className={`p-1 rounded text-white ${
+                        agent.active ? "bg-primary" : "bg-green-500"
+                      }`}
                     >
                       {actionOptions.map((action) => (
                         <option key={action} value={action}>
