@@ -24,7 +24,9 @@ import CommissionForm from "./components/ComissionForm/CommisionForm";
 import ManageCommision from "./components/ComissionForm/ManageCommision/ManageCommision";
 import UserCreate from "./components/UserCreate/UserCreate";
 import EditApplication from "./components/AgentsStudent/EditApplication";
-
+import UniversityEdit from "./components/University/UniversityEdit/UniversityEdit"
+import AllProgram from "./components/Program/AllProgram"
+import ProgramEdit from "./components/Program/ProgramEdit"
 function App() {
   return (
     <Router>
@@ -81,7 +83,9 @@ function App() {
             element={<ProgramFilterCreate />}
           />
           {/* University */}
-
+           <Route path="universities/edit/:id" element={<UniversityEdit/>} />
+            <Route path="programshow" element={<AllProgram />} />
+             <Route path="programs/edit/:id" element={<ProgramEdit />} />
           {/* notification */}
           <Route path="notification" element={<NotificationAll />} />
           <Route path="notification/:id" element={<NotificationAll />} />
