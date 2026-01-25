@@ -441,6 +441,7 @@ const Sidebar = ({ open, setOpen }) => {
     university: ["university.create", "university.edit", "university.view", "program.create", "program.edit", "program.view"],
     notification: [], // 
     commission: ["transaction.view", "transaction.create"],
+    program: ["program.view", "program.edit"],
   };
 
   const toggleMenu = (menu) => {
@@ -740,6 +741,20 @@ const Sidebar = ({ open, setOpen }) => {
                       Program Create
                     </Link>
                   )}
+                    {(hasPermission("program.view") || hasPermission("program.edit")) && (
+                    <Link
+                      to="/dashboard/programshow"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/programshow")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      All Program
+                    </Link>
+                  )}
+             
 
                   {(hasPermission("program.create") || hasPermission("program.edit")) && (
                     <Link
