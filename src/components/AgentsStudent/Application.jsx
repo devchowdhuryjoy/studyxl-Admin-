@@ -124,7 +124,7 @@ const Application = () => {
   const totalPages = Math.ceil(applications.length / itemsPerPage);
   const paginatedApplications = applications.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   if (loading) {
@@ -148,62 +148,6 @@ const Application = () => {
       <h2 className="text-3xl sm:text-3xl font-semibold mb-6">
         My Applications
       </h2>
-
-      {/* <div className="overflow-x-auto bg-white rounded-xl shadow border border-gray-100">
-        <table className="min-w-full divide-y text-xs sm:text-base">
-          <thead className="bg-gray-50">
-            <tr className="text-left">
-              <th className="px-4 py-3">Application ID</th>
-              <th className="px-4 py-3">Agent Name</th>
-              <th className="px-4 py-3">Agent ID</th>
-              <th className="px-4 py-3">Student Name</th>
-              <th className="px-4 py-3">Student ID</th>
-              <th className="px-4 py-3">Program</th>
-              <th className="px-4 py-3">University Name</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Submitted Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {paginatedApplications.length === 0 ? (
-              <tr>
-                <td colSpan="9" className="px-4 py-6 text-center text-gray-500">
-                  No applications found
-                </td>
-              </tr>
-            ) : (
-              paginatedApplications.map((app) => (
-                <tr key={app.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2 font-medium">APP-{app.id}</td>
-                  <td className="px-4 py-2">{app.agent_name}</td>
-                  <td className="px-4 py-2 font-medium">{app.agent_id}</td>
-                  <td className="px-4 py-2">{app.studentName}</td>
-                  <td className="px-4 py-2">{app.studentId}</td>
-                  <td className="px-4 py-2">{app.program}</td>
-                  <td className="px-4 py-2">{app.university}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs sm:text-sm ${
-                        app.status === "Accepted"
-                          ? "bg-green-100 text-green-800"
-                          : app.status === "Rejected"
-                          ? "bg-red-100 text-red-800"
-                          : app.status === "Submitted"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {app.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2">{app.submittedAt}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div> */}
 
       <div className="overflow-x-auto bg-white rounded-xl shadow border border-gray-100">
         <table className="min-w-full divide-y text-xs sm:text-sm">
@@ -262,10 +206,10 @@ const Application = () => {
                         app.status === "Accepted"
                           ? "bg-green-100 text-green-800"
                           : app.status === "Rejected"
-                          ? "bg-red-100 text-red-800"
-                          : app.status === "Submitted"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
+                            ? "bg-red-100 text-red-800"
+                            : app.status === "Submitted"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-gray-100 text-gray-800"
                       }`}
                     >
                       {app.status}
@@ -274,18 +218,30 @@ const Application = () => {
                   <td className="px-3 py-2 text-xs sm:text-sm">
                     {app.submittedAt}
                   </td>
-                  <td className="px-3 py-2 text-xs sm:text-sm">
-                    {/* <Link
-                      to={`application-details/${app.id}`}
-                      className="flex items-center justify-center text-primary hover:text-secondary"
-                      title="View Application"
-                    >
-                      <Eye size={18} />
-                    </Link> */}
+                  {/* <td className="px-3 py-2 text-xs sm:text-sm">
+                    
                     <Link
                       to={`application-details/${app.id}`} // relative to /dashboard/agent-application
                       className="flex items-center justify-center text-primary hover:text-secondary"
                       title="View Application"
+                    >
+                      <Eye size={18} />
+                    </Link>
+                  </td> */}
+
+                  <td className="px-3 py-2 text-xs sm:text-sm">
+                    <Link
+                      to={`/dashboard/agent-application/application-details/${app.id}`}
+                      className="flex items-center justify-center text-primary hover:text-secondary"
+                      title="View Application"
+                      onClick={(e) => {
+                        console.log("Clicked application ID:", app.id);
+                        console.log(
+                          "Navigating to:",
+                          `/dashboard/agent-application/application-details/${app.id}`,
+                        );
+                        console.log("Full application object:", app);
+                      }}
                     >
                       <Eye size={18} />
                     </Link>

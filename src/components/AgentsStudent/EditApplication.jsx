@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -9,6 +10,11 @@ const EditApplication = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  
+  // Debug logs
+  console.log("🔍 EditApplication Component Mounted");
+  console.log("🔍 ID from URL:", id);
+  console.log("🔍 Current path:", window.location.pathname);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -89,11 +95,16 @@ const EditApplication = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
+        console.log("🔄 Fetching application with ID:", id);
+        
         const token = localStorage.getItem("admin_token");
         if (!token) {
+          console.log("❌ No token found, redirecting to login");
           navigate("/login");
           return;
         }
+
+        console.log("📡 API URL:", `${BASE_URL}/admin/agent-applications/${id}`);
 
         const res = await fetch(`${BASE_URL}/admin/agent-applications/${id}`, {
           headers: {
@@ -102,82 +113,158 @@ const EditApplication = () => {
           },
         });
 
-        const result = await res.json();
+        console.log("📡 Response Status:", res.status);
 
         if (!res.ok) {
-          console.error("API Error:", result);
-          throw new Error(result.message || "Failed to fetch application");
+          const errorText = await res.text();
+          console.error("❌ API Error Response:", errorText);
+          throw new Error("Failed to fetch application");
         }
 
-        // 
-        console.log("API Response:", result);
+        const result = await res.json();
+        console.log("✅ API Response:", result);
         
         if (!result.data) {
+          console.error("❌ No data in response:", result);
           throw new Error("No application data found");
         }
 
         const application = result.data;
+        console.log("📝 Application Data:", application);
         
-        // Parse complex fields
+        // Parse complex fields - IMPROVED VERSION
         const parsed = {
           academicQualifications: [],
           workExperiences: [],
           references: []
         };
 
-        // Parse Academic Qualifications
+        // Parse Academic Qualifications - SAFER
         if (application.academic_qualifications) {
           try {
-            if (typeof application.academic_qualifications === 'string') {
-              parsed.academicQualifications = JSON.parse(application.academic_qualifications);
-            } else if (Array.isArray(application.academic_qualifications)) {
-              parsed.academicQualifications = application.academic_qualifications;
+            let quals = application.academic_qualifications;
+            console.log("📚 Academic Qualifications raw:", quals, "Type:", typeof quals);
+            
+            // If it's a string
+            if (typeof quals === 'string') {
+              // Remove extra quotes and whitespace
+              quals = quals.trim();
+              // Remove surrounding quotes if present
+              if ((quals.startsWith('"') && quals.endsWith('"')) || 
+                  (quals.startsWith("'") && quals.endsWith("'"))) {
+                quals = quals.slice(1, -1);
+              }
+              
+              try {
+                // Try to parse as JSON
+                quals = JSON.parse(quals);
+              } catch (parseError) {
+                console.warn("⚠️ JSON parse failed, treating as plain text:", parseError.message);
+                console.warn("⚠️ Raw string value:", quals);
+                // If it's not valid JSON, treat as description
+                quals = [{ description: quals }];
+              }
             }
+            
+            // Ensure it's an array
+            if (Array.isArray(quals)) {
+              parsed.academicQualifications = quals;
+            } else if (quals && typeof quals === 'object') {
+              // If it's a single object, wrap in array
+              parsed.academicQualifications = [quals];
+            } else {
+              // If it's something else (number, boolean, etc)
+              parsed.academicQualifications = [{ description: String(quals) }];
+            }
+            
+            console.log("📚 Parsed Academic Qualifications:", parsed.academicQualifications);
           } catch (err) {
-            console.error('Error parsing academic qualifications:', err);
-            parsed.academicQualifications = application.academic_qualifications ? 
-              [{ description: application.academic_qualifications }] : [];
+            console.error('❌ Error parsing academic qualifications:', err);
+            parsed.academicQualifications = [];
           }
         }
 
-        // Parse Work Experiences
+        // Parse Work Experiences - SIMILAR LOGIC
         if (application.work_experiences) {
           try {
-            if (typeof application.work_experiences === 'string') {
-              parsed.workExperiences = JSON.parse(application.work_experiences);
-            } else if (Array.isArray(application.work_experiences)) {
-              parsed.workExperiences = application.work_experiences;
+            let exps = application.work_experiences;
+            console.log("💼 Work Experiences raw:", exps, "Type:", typeof exps);
+            
+            if (typeof exps === 'string') {
+              exps = exps.trim();
+              if ((exps.startsWith('"') && exps.endsWith('"')) || 
+                  (exps.startsWith("'") && exps.endsWith("'"))) {
+                exps = exps.slice(1, -1);
+              }
+              
+              try {
+                exps = JSON.parse(exps);
+              } catch (parseError) {
+                console.warn("⚠️ JSON parse failed for work experiences:", parseError.message);
+                exps = [{ description: exps }];
+              }
             }
+            
+            if (Array.isArray(exps)) {
+              parsed.workExperiences = exps;
+            } else if (exps && typeof exps === 'object') {
+              parsed.workExperiences = [exps];
+            } else {
+              parsed.workExperiences = [{ description: String(exps) }];
+            }
+            
+            console.log("💼 Parsed Work Experiences:", parsed.workExperiences);
           } catch (err) {
-            console.error('Error parsing work experiences:', err);
-            parsed.workExperiences = application.work_experiences ? 
-              [{ description: application.work_experiences }] : [];
+            console.error('❌ Error parsing work experiences:', err);
+            parsed.workExperiences = [];
           }
         }
 
-        // Parse References
+        // Parse References - SIMILAR LOGIC
         if (application.references) {
           try {
-            if (typeof application.references === 'string') {
-              parsed.references = JSON.parse(application.references);
-            } else if (Array.isArray(application.references)) {
-              parsed.references = application.references;
+            let refs = application.references;
+            console.log("👥 References raw:", refs, "Type:", typeof refs);
+            
+            if (typeof refs === 'string') {
+              refs = refs.trim();
+              if ((refs.startsWith('"') && refs.endsWith('"')) || 
+                  (refs.startsWith("'") && refs.endsWith("'"))) {
+                refs = refs.slice(1, -1);
+              }
+              
+              try {
+                refs = JSON.parse(refs);
+              } catch (parseError) {
+                console.warn("⚠️ JSON parse failed for references:", parseError.message);
+                refs = [{ description: refs }];
+              }
             }
+            
+            if (Array.isArray(refs)) {
+              parsed.references = refs;
+            } else if (refs && typeof refs === 'object') {
+              parsed.references = [refs];
+            } else {
+              parsed.references = [{ description: String(refs) }];
+            }
+            
+            console.log("👥 Parsed References:", parsed.references);
           } catch (err) {
-            console.error('Error parsing references:', err);
-            parsed.references = application.references ? 
-              [{ description: application.references }] : [];
+            console.error('❌ Error parsing references:', err);
+            parsed.references = [];
           }
         }
 
         setParsedData(parsed);
+        console.log("✅ Parsed Data Set:", parsed);
 
         // Prepare form data
         const formDataObj = {
           ...application,
-          academic_qualifications: JSON.stringify(parsed.academicQualifications),
-          work_experiences: JSON.stringify(parsed.workExperiences),
-          references: JSON.stringify(parsed.references),
+          academic_qualifications: JSON.stringify(parsed.academicQualifications || []),
+          work_experiences: JSON.stringify(parsed.workExperiences || []),
+          references: JSON.stringify(parsed.references || []),
           open_to_language_course: Boolean(application.open_to_language_course)
         };
 
@@ -188,11 +275,11 @@ const EditApplication = () => {
           }
         });
 
-        console.log("Form Data Object:", formDataObj);
+        console.log("📋 Form Data Object:", formDataObj);
         setFormData(formDataObj);
 
       } catch (err) {
-        console.error("Error fetching application:", err);
+        console.error("❌ Error fetching application:", err);
         setError(err.message);
         Swal.fire({
           icon: 'error',
@@ -202,6 +289,7 @@ const EditApplication = () => {
         });
       } finally {
         setLoading(false);
+        console.log("✅ Loading complete");
       }
     };
 
@@ -295,79 +383,158 @@ const EditApplication = () => {
     }));
   };
 
+  
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to update this application?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3B82F6',
-      cancelButtonColor: '#6B7280',
-      confirmButtonText: 'Yes, update it!',
-      cancelButtonText: 'Cancel'
-    });
+  e.preventDefault();
+  
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to update this application?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3B82F6',
+    cancelButtonColor: '#6B7280',
+    confirmButtonText: 'Yes, update it!',
+    cancelButtonText: 'Cancel'
+  });
 
-    if (!result.isConfirmed) return;
+  if (!result.isConfirmed) return;
 
-    setSubmitting(true);
+  setSubmitting(true);
+  
+  try {
+    const token = localStorage.getItem("admin_token");
     
-    try {
-      const token = localStorage.getItem("admin_token");
-      
-      // Prepare FormData for file uploads
-      const formDataToSend = new FormData();
-      
-      // Add all form fields
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null && formData[key] !== undefined) {
+    // Prepare FormData for file uploads
+    const formDataToSend = new FormData();
+    
+    // Add all form fields
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        // Convert boolean to string
+        if (typeof formData[key] === 'boolean') {
+          formDataToSend.append(key, formData[key] ? '1' : '0');
+        } else {
           formDataToSend.append(key, formData[key]);
         }
-      });
-
-      // Log form data before sending
-      console.log("Sending form data:", Object.fromEntries(formDataToSend));
-
-      const response = await fetch(`${BASE_URL}/admin/agent-applications/update/${id}`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-        body: formDataToSend
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error("Update failed:", result);
-        throw new Error(result.message || "Failed to update application");
       }
+    });
 
-      await Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Application updated successfully!',
-        confirmButtonColor: '#10B981',
-        timer: 2000,
-        timerProgressBar: true
-      });
-
-
-    
-    navigate(`/dashboard/agent-application/application-details/${id}`);
-      
-    } catch (err) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Update Failed!',
-        text: err.message,
-        confirmButtonColor: '#EF4444',
-      });
-    } finally {
-      setSubmitting(false);
+    // Debug: Log form data
+    console.log("📤 Form data to send:");
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value);
     }
-  };
+
+    const url = `${BASE_URL}/admin/agent-applications/update/${id}`;
+    console.log("📡 Update URL:", url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        // REMOVE Content-Type header when using FormData
+        // Browser will set it automatically with boundary
+      },
+      body: formDataToSend
+    });
+
+    console.log("📡 Response Status:", response.status);
+    console.log("📡 Response Headers:", response.headers);
+
+    // Check if response is JSON
+    const contentType = response.headers.get("content-type");
+    console.log("📡 Content-Type:", contentType);
+    
+    let result;
+    
+    if (contentType && contentType.includes("application/json")) {
+      result = await response.json();
+    } else {
+      // If not JSON, get text
+      const textResponse = await response.text();
+      console.error("Non-JSON Response:", textResponse.substring(0, 500));
+      
+      // Check if it's an HTML error page
+      if (textResponse.includes("<!DOCTYPE") || textResponse.includes("<html")) {
+        throw new Error("Server returned HTML error page. Please check server logs.");
+      } else {
+        throw new Error(`Server error: ${textResponse.substring(0, 200)}`);
+      }
+    }
+
+    if (!response.ok) {
+      console.error("❌ Update failed - Response:", result);
+      
+      // Show detailed error message
+      let errorMessage = "Failed to update application";
+      if (result.message) {
+        errorMessage = result.message;
+      } else if (result.errors) {
+        // If there are validation errors
+        const errorList = Object.values(result.errors).flat().join(', ');
+        errorMessage = `Validation errors: ${errorList}`;
+      } else if (result.error) {
+        errorMessage = result.error;
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    console.log("✅ Update successful:", result);
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Application updated successfully!',
+      confirmButtonColor: '#10B981',
+      timer: 2000,
+      timerProgressBar: true
+    });
+
+    // Correct navigation path
+    navigate(`/dashboard/agent-application/application-details/${id}`);
+    
+  } catch (err) {
+    console.error("Update error:", err);
+    
+    let errorMessage = err.message;
+    
+    // Handle specific error cases
+    if (err.message.includes("Unexpected token '<'")) {
+      errorMessage = "Server returned an HTML error page instead of JSON. Please check if the API endpoint is correct.";
+    } else if (err.message.includes("Failed to fetch")) {
+      errorMessage = "Network error. Please check your internet connection.";
+    } else if (err.message.includes("500")) {
+      errorMessage = "Server internal error. Please try again later or contact support.";
+    }
+    
+    await Swal.fire({
+      icon: 'error',
+      title: 'Update Failed!',
+      html: `
+        <div class="text-left">
+          <p class="mb-2"><strong>Error:</strong> ${errorMessage}</p>
+          <p class="text-sm text-gray-600 mt-2">Application ID: ${id}</p>
+          <p class="text-sm text-gray-600">API URL: ${BASE_URL}/admin/agent-applications/update/${id}</p>
+        </div>
+      `,
+      confirmButtonColor: '#EF4444',
+      confirmButtonText: 'OK',
+      showCancelButton: true,
+      cancelButtonText: 'Try Again',
+      cancelButtonColor: '#6B7280'
+    }).then((swalResult) => {
+      if (swalResult.dismiss === Swal.DismissReason.cancel) {
+        // Retry the submission
+        handleSubmit(e);
+      }
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const handleCancel = () => {
     Swal.fire({
@@ -381,8 +548,8 @@ const EditApplication = () => {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        // 🔥 এখানে নেভিগেশন ঠিক করুন
-        navigate(`/agent-application/application-details/${id}`);
+        // ✅ FIXED: Correct navigation path
+        navigate(`/dashboard/agent-application/application-details/${id}`);
       }
     });
   };
@@ -393,6 +560,7 @@ const EditApplication = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading application data...</p>
+          <p className="text-sm text-gray-500 mt-2">Application ID: {id}</p>
         </div>
       </div>
     );
@@ -411,6 +579,7 @@ const EditApplication = () => {
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">Error loading application</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
+              <p className="text-sm text-red-700 mt-1">Application ID: {id}</p>
               <div className="mt-4 space-x-3">
                 <button
                   onClick={() => window.location.reload()}
@@ -431,6 +600,8 @@ const EditApplication = () => {
       </div>
     );
   }
+
+  console.log("🎨 Rendering Edit Form with data:", formData);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -1569,8 +1740,6 @@ const EditApplication = () => {
   );
 };
 
-export default EditApplication
-
-
+export default EditApplication;
 
 
