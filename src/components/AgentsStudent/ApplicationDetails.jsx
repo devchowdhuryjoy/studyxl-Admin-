@@ -1,3 +1,937 @@
+// import { useParams, useNavigate } from "react-router-dom";
+// import { useEffect, useState } from "react";
+// import Swal from "sweetalert2";
+// import BASE_URL from "../../Api/ApiBaseUrl";
+
+// const ApplicationDetails = () => {
+//   const { id } = useParams();
+//   const navigate = useNavigate();
+//   const [application, setApplication] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+//   const [activeTab, setActiveTab] = useState("overview");
+//   const [imagePreview, setImagePreview] = useState({
+//     isOpen: false,
+//     url: null,
+//     title: ""
+//   });
+
+//   useEffect(() => {
+//     const fetchApplication = async () => {
+//       try {
+//         const token = localStorage.getItem("admin_token");
+//         if (!token) {
+//           navigate("/login");
+//           return;
+//         }
+
+//         const res = await fetch(`${BASE_URL}/admin/agent-applications/${id}`, {
+//           headers: {
+//             Accept: "application/json",
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+
+//         const result = await res.json();
+
+//         if (!res.ok) {
+//           throw new Error(result.message || "Failed to fetch application");
+//         }
+
+//         if (!result.success) {
+//           throw new Error(result.message || "API request failed");
+//         }
+
+//         if (!result.data) {
+//           throw new Error("No application data found");
+//         }
+
+//         setApplication(result.data);
+
+//       } catch (err) {
+//         console.error("❌ Fetch Error:", err);
+//         setError(err.message);
+//         Swal.fire({
+//           icon: 'error',
+//           title: 'Error!',
+//           text: err.message,
+//           confirmButtonColor: '#3B82F6',
+//         });
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchApplication();
+//   }, [id, navigate]);
+
+//   const formatDate = (dateString) => {
+//     if (!dateString || dateString === "null" || dateString === "N/A") return "N/A";
+//     try {
+//       return new Date(dateString).toLocaleDateString('en-US', {
+//         year: 'numeric',
+//         month: 'long',
+//         day: 'numeric'
+//       });
+//     } catch (e) {
+//       return dateString;
+//     }
+//   };
+
+//   const formatDateTime = (dateString) => {
+//     if (!dateString || dateString === "null" || dateString === "N/A") return "N/A";
+//     try {
+//       return new Date(dateString).toLocaleString('en-US', {
+//         year: 'numeric',
+//         month: 'long',
+//         day: 'numeric',
+//         hour: '2-digit',
+//         minute: '2-digit'
+//       });
+//     } catch (e) {
+//       return dateString;
+//     }
+//   };
+
+//   const formatCurrency = (amount) => {
+//     if (!amount || amount === "N/A" || amount === "null") return "N/A";
+//     try {
+//       return new Intl.NumberFormat('en-US', {
+//         style: 'currency',
+//         currency: 'USD'
+//       }).format(parseFloat(amount));
+//     } catch (e) {
+//       return amount;
+//     }
+//   };
+
+//   const parseJSONField = (field) => {
+//     if (!field || field === "N/A" || field === "null" || field === "") return [];
+//     try {
+//       let data = field;
+      
+//       if (Array.isArray(data)) return data;
+      
+//       if (typeof data === 'string') {
+//         data = data.trim();
+//         if (data.startsWith('"') && data.endsWith('"')) {
+//           data = data.substring(1, data.length - 1);
+//         }
+        
+//         if (data.startsWith('[') || data.startsWith('{')) {
+//           try {
+//             data = JSON.parse(data);
+//           } catch (parseErr) {
+//             data = data.replace(/\\"/g, '"');
+//             try {
+//               data = JSON.parse(data);
+//             } catch (e) {
+//               return [{ description: data }];
+//             }
+//           }
+//         } else {
+//           return [{ description: data }];
+//         }
+//       }
+      
+//       if (Array.isArray(data)) {
+//         return data;
+//       } else if (data && typeof data === 'object') {
+//         return [data];
+//       }
+      
+//       return [{ description: String(data) }];
+//     } catch (err) {
+//       console.error('Error parsing JSON field:', field, err);
+//       return [{ description: String(field) }];
+//     }
+//   };
+
+//   const renderJSONField = (field, label) => {
+//     const data = parseJSONField(field);
+//     if (data.length === 0) {
+//       return <p className="text-gray-500 italic">No {label.toLowerCase()} provided</p>;
+//     }
+
+//     return (
+//       <div className="space-y-4">
+//         {data.map((item, index) => (
+//           <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+//               {Object.entries(item).map(([key, value]) => (
+//                 <div key={key}>
+//                   <span className="text-sm font-medium text-gray-600 capitalize">
+//                     {key.replace(/_/g, ' ')}:
+//                   </span>
+//                   <div className="mt-1 text-gray-900">
+//                     {key.includes('date') ? formatDate(value) : value || "N/A"}
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     );
+//   };
+
+//   const handleViewFile = (fileUrl, title = "") => {
+//     if (!fileUrl || fileUrl === "null") {
+//       Swal.fire({
+//         icon: 'info',
+//         title: 'No File',
+//         text: 'No file available to view',
+//         confirmButtonColor: '#3B82F6',
+//       });
+//       return;
+//     }
+
+//     let finalUrl = fileUrl;
+    
+//     if (!fileUrl.startsWith('http') && !fileUrl.startsWith('https')) {
+//       if (fileUrl.startsWith('uploads/')) {
+//         finalUrl = `${BASE_URL}/${fileUrl}`;
+//       } else if (fileUrl.includes('/')) {
+//         finalUrl = `${BASE_URL}/${fileUrl}`;
+//       } else {
+//         finalUrl = `${BASE_URL}/uploads/${fileUrl}`;
+//       }
+//     }
+
+//     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+//     const pdfExtensions = ['.pdf'];
+//     const docExtensions = ['.doc', '.docx'];
+    
+//     const fileExtension = '.' + fileUrl.toLowerCase().split('.').pop();
+    
+//     if (imageExtensions.includes(fileExtension)) {
+//       setImagePreview({
+//         isOpen: true,
+//         url: finalUrl,
+//         title: title || "Image Preview"
+//       });
+//     } else if (pdfExtensions.includes(fileExtension)) {
+//       window.open(finalUrl, '_blank');
+//     } else if (docExtensions.includes(fileExtension)) {
+//       window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(finalUrl)}`, '_blank');
+//     } else {
+//       window.open(finalUrl, '_blank');
+//     }
+//   };
+
+//   const closeImagePreview = () => {
+//     setImagePreview({
+//       isOpen: false,
+//       url: null,
+//       title: ""
+//     });
+//   };
+
+//   const ImagePreviewModal = () => {
+//     if (!imagePreview.isOpen) return null;
+
+//     return (
+//       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
+//         <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+//           <div className="flex justify-between items-center p-4 border-b bg-white">
+//             <h3 className="text-lg font-semibold text-gray-900">{imagePreview.title}</h3>
+//             <button
+//               onClick={closeImagePreview}
+//               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+//             >
+//               <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+//               </svg>
+//             </button>
+//           </div>
+//           <div className="p-4 flex items-center justify-center overflow-auto max-h-[calc(90vh-80px)]">
+//             <img
+//               src={imagePreview.url}
+//               alt={imagePreview.title}
+//               className="max-w-full max-h-full object-contain"
+//               onError={(e) => {
+//                 console.error("Image failed to load:", imagePreview.url);
+//                 e.target.onerror = null;
+//                 e.target.src = "https://via.placeholder.com/600x400?text=Image+Not+Available";
+//               }}
+//             />
+//           </div>
+//           <div className="p-4 border-t bg-gray-50 flex justify-between items-center">
+//             <a
+//               href={imagePreview.url}
+//               download
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+//             >
+//               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+//               </svg>
+//               Download
+//             </a>
+//             <button
+//               onClick={closeImagePreview}
+//               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+//             >
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   };
+
+//   const DocumentViewer = ({ url, title, type = "document" }) => {
+//     if (!url || url === "null") {
+//       return (
+//         <div className="flex items-center justify-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+//           <div className="text-center">
+//             <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+//             </svg>
+//             <p className="text-gray-500">No {type} uploaded</p>
+//           </div>
+//         </div>
+//       );
+//     }
+
+//     const getFileType = (filename) => {
+//       if (!filename) return 'other';
+//       const extension = filename.split('.').pop().toLowerCase();
+//       if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension)) return 'image';
+//       if (extension === 'pdf') return 'pdf';
+//       if (['doc', 'docx'].includes(extension)) return 'doc';
+//       return 'other';
+//     };
+
+//     const fileType = getFileType(url);
+//     const fileName = url.split('/').pop();
+
+//     return (
+//       <div className="border border-gray-300 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow">
+//         <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
+//           <div className="flex items-center gap-3">
+//             <div className={`p-2 rounded-lg ${
+//               fileType === 'image' ? 'bg-blue-100' :
+//               fileType === 'pdf' ? 'bg-red-100' :
+//               fileType === 'doc' ? 'bg-green-100' :
+//               'bg-gray-100'
+//             }`}>
+//               <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 {fileType === 'image' ? (
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+//                 ) : (
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+//                 )}
+//               </svg>
+//             </div>
+//             <div>
+//               <h4 className="font-medium text-gray-900">{title}</h4>
+//               <p className="text-sm text-gray-500 truncate max-w-xs">{fileName}</p>
+//             </div>
+//           </div>
+//           <div className="flex items-center gap-2">
+//             <button
+//               onClick={() => handleViewFile(url, title)}
+//               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+//             >
+//               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268 2.943-9.542-7z" />
+//               </svg>
+//               View
+//             </button>
+//             <a
+//               href={`${BASE_URL}/uploads/${url}`}
+//               download={fileName}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+//             >
+//               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+//               </svg>
+//               Download
+//             </a>
+//           </div>
+//         </div>
+        
+//         {fileType === 'image' && (
+//           <div className="p-4">
+//             <div 
+//               className="relative h-64 bg-gray-100 rounded-lg overflow-hidden cursor-pointer group"
+//               onClick={() => handleViewFile(url, title)}
+//             >
+//               <img
+//                 src={`${BASE_URL}/uploads/${url}`}
+//                 alt={title}
+//                 className="w-full h-full object-contain"
+//                 onError={(e) => {
+//                   console.error("Preview image failed to load:", url);
+//                   e.target.onerror = null;
+//                   e.target.src = "https://via.placeholder.com/400x300?text=Image+Preview+Not+Available";
+//                 }}
+//               />
+//               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all flex items-center justify-center">
+//                 <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white bg-opacity-90 p-3 rounded-lg shadow-lg">
+//                   <p className="text-sm font-medium text-gray-900">Click to view full image</p>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     );
+//   };
+
+//   const renderDocumentsTab = () => (
+//     <div className="space-y-6">
+//       <div className="bg-white rounded-xl shadow-lg p-6">
+//         <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Documents & Files</h2>
+        
+//         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+//           <div className="space-y-4">
+//             <h3 className="font-semibold text-lg text-gray-900">Application Documents</h3>
+//             <DocumentViewer 
+//               url={application.sop} 
+//               title="Statement of Purpose (SOP)" 
+//               type="SOP"
+//             />
+//             <DocumentViewer 
+//               url={application.resume} 
+//               title="Resume/CV" 
+//               type="resume"
+//             />
+//             <DocumentViewer 
+//               url={application.transcripts} 
+//               title="Academic Transcripts" 
+//               type="transcripts"
+//             />
+//           </div>
+
+//           <div className="space-y-4">
+//             <h3 className="font-semibold text-lg text-gray-900">Additional Documents</h3>
+//             <DocumentViewer 
+//               url={application.english_test} 
+//               title="English Test Results" 
+//               type="english test"
+//             />
+//             <DocumentViewer 
+//               url={application.passport_copy} 
+//               title="Passport Copy" 
+//               type="passport"
+//             />
+//             <DocumentViewer 
+//               url={application.photo} 
+//               title="Student Photo" 
+//               type="photo"
+//             />
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="bg-white rounded-xl shadow-lg p-6">
+//         <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">References</h2>
+//         {renderJSONField(application.references, "references")}
+//       </div>
+//     </div>
+//   );
+
+//   const LoadingSpinner = () => (
+//     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+//       <div className="text-center">
+//         <div className="relative">
+//           <div className="w-20 h-20 border-4 border-blue-200 rounded-full"></div>
+//           <div className="absolute top-0 left-0 w-20 h-20 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
+//         </div>
+//         <p className="mt-4 text-gray-600 font-medium">Loading application details...</p>
+//         <p className="text-sm text-gray-500 mt-2">Application ID: {id}</p>
+//       </div>
+//     </div>
+//   );
+
+//   const ErrorDisplay = () => (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50 flex items-center justify-center px-4">
+//       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+//         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+//           <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+//           </svg>
+//         </div>
+//         <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Error Loading Application</h3>
+//         <p className="text-gray-600 text-center mb-2">{error}</p>
+//         <p className="text-sm text-gray-500 text-center mb-6">Application ID: {id}</p>
+//         <div className="flex gap-3">
+//           <button
+//             onClick={() => window.location.reload()}
+//             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200"
+//           >
+//             Try Again
+//           </button>
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex-1 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition duration-200"
+//           >
+//             Go Back
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+
+//   const NoDataDisplay = () => (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center px-4">
+//       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+//         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+//           <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+//           </svg>
+//         </div>
+//         <h3 className="text-xl font-bold text-gray-900 mb-2">No Application Found</h3>
+//         <p className="text-gray-600 mb-6">The application with ID {id} was not found.</p>
+//         <button
+//           onClick={() => navigate(-1)}
+//           className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200"
+//         >
+//           Go Back
+//         </button>
+//       </div>
+//     </div>
+//   );
+
+//   const renderField = (label, value, type = "text") => (
+//     <div className="flex justify-between items-start py-3 border-b border-gray-100 last:border-0">
+//       <span className="text-gray-600 font-medium">{label}</span>
+//       <span className="text-gray-900 text-right font-medium ml-4">
+//         {type === 'date' ? formatDate(value) : 
+//          type === 'datetime' ? formatDateTime(value) :
+//          type === 'currency' ? formatCurrency(value) :
+//          type === 'boolean' ? (value ? "Yes" : "No") :
+//          value || "N/A"}
+//       </span>
+//     </div>
+//   );
+
+//   if (loading) return <LoadingSpinner />;
+//   if (error) return <ErrorDisplay />;
+//   if (!application) return <NoDataDisplay />;
+
+//   const tabs = [
+//     { id: "overview", label: "Overview", icon: "📊" },
+//     { id: "student", label: "Student", icon: "👤" },
+//     { id: "program", label: "Program", icon: "🎓" },
+//     { id: "academic", label: "Academic", icon: "📚" },
+//     { id: "work", label: "Work", icon: "💼" },
+//     { id: "documents", label: "Documents", icon: "📄" },
+//     { id: "financial", label: "Financial", icon: "💰" },
+//     { id: "english", label: "English Tests", icon: "🌐" }
+//   ];
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+//       <div className="bg-white shadow-lg border-b border-gray-200">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="py-6">
+//             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+//               <div className="flex items-center gap-4">
+//                 <button
+//                   onClick={() => navigate(-1)}
+//                   className="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
+//                 >
+//                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+//                   </svg>
+//                 </button>
+//                 <div>
+//                   <h1 className="text-2xl font-bold text-gray-900">
+//                     Application #{application.id}
+//                   </h1>
+//                   <p className="text-sm text-gray-600 mt-1">
+//                     <span className="font-medium">Student:</span> {application.student_name} | 
+//                     <span className="font-medium ml-2">Agent:</span> {application.agent_name}
+//                   </p>
+//                 </div>
+//               </div>
+//               <div className="flex flex-wrap items-center gap-3">
+//                 <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
+//                   application.status === 'Reviewed' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+//                   application.status === 'Rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
+//                   'bg-gray-100 text-gray-800 border border-gray-200'
+//                 }`}>
+//                   {application.status || 'Pending'}
+//                 </span>
+//                 <button
+//                   onClick={() => navigate(`/dashboard/agent-application/edit/${id}`)}
+//                   className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium px-5 py-2.5 rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
+//                 >
+//                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+//                   </svg>
+//                   Edit Application
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+//         <div className="flex overflow-x-auto space-x-1">
+//           {tabs.map(tab => (
+//             <button
+//               key={tab.id}
+//               onClick={() => setActiveTab(tab.id)}
+//               className={`flex items-center gap-2 px-4 py-3 font-medium whitespace-nowrap rounded-lg transition duration-200 ${
+//                 activeTab === tab.id 
+//                   ? 'bg-blue-600 text-white shadow-lg' 
+//                   : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
+//               }`}
+//             >
+//               <span className="text-lg">{tab.icon}</span>
+//               <span>{tab.label}</span>
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+//         {activeTab === "overview" && application && (
+//           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+//             <div className="lg:col-span-3">
+//               <div className="bg-white rounded-xl shadow-lg p-6">
+//                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+//                   <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+//                     <div className="text-sm text-blue-700 font-medium">Student ID</div>
+//                     <div className="text-2xl font-bold text-gray-900">{application.student_id}</div>
+//                   </div>
+//                   <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+//                     <div className="text-sm text-green-700 font-medium">Agent ID</div>
+//                     <div className="text-2xl font-bold text-gray-900">{application.agent_id}</div>
+//                   </div>
+//                   <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+//                     <div className="text-sm text-purple-700 font-medium">Program ID</div>
+//                     <div className="text-2xl font-bold text-gray-900">{application.program_id}</div>
+//                   </div>
+//                   <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
+//                     <div className="text-sm text-yellow-700 font-medium">Intake</div>
+//                     <div className="text-2xl font-bold text-gray-900">{application.intake || "N/A"}</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <div className="flex items-center gap-3 mb-4">
+//                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+//                   <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+//                   </svg>
+//                 </div>
+//                 <h2 className="text-xl font-bold text-gray-900">Student Information</h2>
+//               </div>
+//               <div className="space-y-3">
+//                 {renderField("Full Name", application.student_name)}
+//                 {renderField("Email", application.email)}
+//                 {renderField("Phone", application.phone)}
+//                 {renderField("Date of Birth", application.dob, "date")}
+//                 {renderField("Gender", application.gender)}
+//                 {renderField("Country", application.country_of_residence)}
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <div className="flex items-center gap-3 mb-4">
+//                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+//                   <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+//                   </svg>
+//                 </div>
+//                 <h2 className="text-xl font-bold text-gray-900">Program Information</h2>
+//               </div>
+//               <div className="space-y-3">
+//                 {renderField("Program", application.program_name)}
+//                 {renderField("University", application.university_name)}
+//                 {renderField("Study Level", application.study_level)}
+//                 {renderField("Field of Study", application.field_of_study_name)}
+//                 {renderField("Duration", application.duration)}
+//                 {renderField("Intake", application.intake)}
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <div className="flex items-center gap-3 mb-4">
+//                 <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+//                   <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+//                   </svg>
+//                 </div>
+//                 <h2 className="text-xl font-bold text-gray-900">Financial Summary</h2>
+//               </div>
+//               <div className="space-y-3">
+//                 {renderField("Application Fee", application.application_fee, "currency")}
+//                 {renderField("Tuition", application.average_gross_tuition, "currency")}
+//                 {renderField("Living Cost", application.cost_of_living, "currency")}
+//                 {renderField("Success Chance", application.success_chance)}
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {activeTab === "student" && application && (
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Personal Information</h2>
+//               <div className="space-y-4">
+//                 {renderField("Full Name", application.student_name)}
+//                 {renderField("Student ID", application.student_id)}
+//                 {renderField("Email", application.email)}
+//                 {renderField("Phone", application.phone)}
+//                 {renderField("Date of Birth", application.dob, "date")}
+//                 {renderField("Gender", application.gender)}
+//                 {renderField("Address", application.address)}
+//                 {renderField("Nationality", application.student_profile_nationality)}
+//                 {renderField("ELP", application.elp)}
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Passport & Immigration</h2>
+//               <div className="space-y-4">
+//                 {renderField("Passport Number", application.passport)}
+//                 {renderField("Passport Expiry", application.passport_expiry, "date")}
+//                 {renderField("Study Permit/Visa", application.study_permit_or_visa)}
+//                 {renderField("Country of Residence", application.country_of_residence)}
+//                 {renderField("Destination", application.destination)}
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Agent Information</h2>
+//               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//                 <div className="bg-blue-50 p-4 rounded-lg">
+//                   <div className="text-sm text-blue-600 font-medium mb-2">Agent Name</div>
+//                   <div className="text-lg font-bold text-gray-900">{application.agent_name}</div>
+//                 </div>
+//                 <div className="bg-green-50 p-4 rounded-lg">
+//                   <div className="text-sm text-green-600 font-medium mb-2">Agent ID</div>
+//                   <div className="text-lg font-bold text-gray-900">{application.agent_id}</div>
+//                 </div>
+//                 <div className="bg-purple-50 p-4 rounded-lg">
+//                   <div className="text-sm text-purple-600 font-medium mb-2">Company</div>
+//                   <div className="text-lg font-bold text-gray-900">{application.company_name || "N/A"}</div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {activeTab === "program" && application && (
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Program Details</h2>
+//               <div className="space-y-4">
+//                 {renderField("Program Name", application.program_name)}
+//                 {renderField("University", application.university_name)}
+//                 {renderField("Intake", application.intake)}
+//                 {renderField("Study Level", application.study_level)}
+//                 {renderField("Field of Study", application.field_of_study_name)}
+//                 {renderField("Duration", application.duration)}
+//                 {renderField("Program Description", application.program_description)}
+//                 {renderField("Program Summary", application.program_summary)}
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Additional Information</h2>
+//               <div className="space-y-4">
+//                 {renderField("Campus City", application.campus_city)}
+//                 {renderField("Destination", application.destination)}
+//                 {renderField("Grading Scheme", application.grading_scheme)}
+//                 {renderField("Subject", application.subject)}
+//                 {renderField("Specialization", application.specialization)}
+//                 {renderField("Program Level", application.program_level)}
+//                 {renderField("Education Country", application.education_country)}
+//                 {renderField("Last Level of Study", application.last_level_of_study)}
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Important Dates</h2>
+//               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//                 <div className="bg-blue-50 p-4 rounded-lg">
+//                   <div className="text-sm text-blue-600 font-medium mb-2">Program Open Date</div>
+//                   <div className="text-lg font-bold text-gray-900">{formatDate(application.program_open_date)}</div>
+//                 </div>
+//                 <div className="bg-red-50 p-4 rounded-lg">
+//                   <div className="text-sm text-red-600 font-medium mb-2">Submission Deadline</div>
+//                   <div className="text-lg font-bold text-gray-900">{formatDateTime(application.program_submission_deadline)}</div>
+//                 </div>
+//                 <div className="bg-green-50 p-4 rounded-lg">
+//                   <div className="text-sm text-green-600 font-medium mb-2">Application Created</div>
+//                   <div className="text-lg font-bold text-gray-900">{formatDateTime(application.created_at)}</div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {activeTab === "academic" && application && (
+//           <div className="space-y-6">
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Academic Qualifications</h2>
+//               {renderJSONField(application.academic_qualifications, "academic qualifications")}
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Achievements</h2>
+//               {application.achievements ? (
+//                 <div className="bg-gray-50 p-4 rounded-lg">
+//                   <p className="text-gray-900 whitespace-pre-line">{application.achievements}</p>
+//                 </div>
+//               ) : (
+//                 <p className="text-gray-500 italic">No achievements provided</p>
+//               )}
+//             </div>
+//           </div>
+//         )}
+
+//         {activeTab === "work" && application && (
+//           <div className="space-y-6">
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Work Experience</h2>
+//               {renderJSONField(application.work_experiences, "work experience")}
+//             </div>
+//           </div>
+//         )}
+
+//         {activeTab === "documents" && application && renderDocumentsTab()}
+
+//         {activeTab === "financial" && application && (
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Tuition & Fees</h2>
+//               <div className="space-y-4">
+//                 <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-white rounded-lg border border-blue-200">
+//                   <div>
+//                     <div className="text-sm text-blue-600 font-medium">Application Fee</div>
+//                     <div className="text-2xl font-bold text-gray-900">{formatCurrency(application.application_fee)}</div>
+//                   </div>
+//                 </div>
+//                 <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-lg border border-green-200">
+//                   <div>
+//                     <div className="text-sm text-green-600 font-medium">Average Gross Tuition</div>
+//                     <div className="text-2xl font-bold text-gray-900">{formatCurrency(application.average_gross_tuition)}</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Cost of Living</h2>
+//               <div className="space-y-4">
+//                 <div className="flex justify-between items-center p-4 bg-gradient-to-r from-yellow-50 to-white rounded-lg border border-yellow-200">
+//                   <div>
+//                     <div className="text-sm text-yellow-600 font-medium">Annual Living Cost</div>
+//                     <div className="text-2xl font-bold text-gray-900">{formatCurrency(application.cost_of_living)}</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {activeTab === "english" && application && (
+//           <div className="space-y-6">
+//             {application.ielts_required && (
+//               <div className="bg-white rounded-xl shadow-lg p-6">
+//                 <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">IELTS Scores</h2>
+//                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+//                   <div className="bg-blue-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-blue-600 font-medium">Overall</div>
+//                     <div className="text-2xl font-bold text-gray-900">{application.ielts_overall || "N/A"}</div>
+//                   </div>
+//                   <div className="bg-gray-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-gray-600 font-medium">Reading</div>
+//                     <div className="text-xl font-bold text-gray-900">{application.ielts_reading || "N/A"}</div>
+//                   </div>
+//                   <div className="bg-gray-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-gray-600 font-medium">Writing</div>
+//                     <div className="text-xl font-bold text-gray-900">{application.ielts_writing || "N/A"}</div>
+//                   </div>
+//                   <div className="bg-gray-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-gray-600 font-medium">Listening</div>
+//                     <div className="text-xl font-bold text-gray-900">{application.ielts_listening || "N/A"}</div>
+//                   </div>
+//                   <div className="bg-gray-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-gray-600 font-medium">Speaking</div>
+//                     <div className="text-xl font-bold text-gray-900">{application.ielts_speaking || "N/A"}</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+
+//             {application.toefl_required && (
+//               <div className="bg-white rounded-xl shadow-lg p-6">
+//                 <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">TOEFL Scores</h2>
+//                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+//                   <div className="bg-green-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-green-600 font-medium">Overall</div>
+//                     <div className="text-2xl font-bold text-gray-900">{application.toefl_overall || "N/A"}</div>
+//                   </div>
+//                   <div className="bg-gray-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-gray-600 font-medium">Reading</div>
+//                     <div className="text-xl font-bold text-gray-900">{application.toefl_reading || "N/A"}</div>
+//                   </div>
+//                   <div className="bg-gray-50 p-4 rounded-lg text-center">
+//                     <div className="text-sm text-gray-600 font-medium">Writing</div>
+//                     <div className="text-xl font-bold text-gray-900">{application.toefl_writing || "N/A"}</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+
+//             <div className="bg-white rounded-xl shadow-lg p-6">
+//               <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">English Test Requirements</h2>
+//               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+//                 <div className="text-center p-4">
+//                   <div className="text-sm text-gray-600 mb-2">IELTS Required</div>
+//                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.ielts_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+//                     {application.ielts_required ? 'Yes' : 'No'}
+//                   </div>
+//                 </div>
+//                 <div className="text-center p-4">
+//                   <div className="text-sm text-gray-600 mb-2">TOEFL Required</div>
+//                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.toefl_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+//                     {application.toefl_required ? 'Yes' : 'No'}
+//                   </div>
+//                 </div>
+//                 <div className="text-center p-4">
+//                   <div className="text-sm text-gray-600 mb-2">PTE Required</div>
+//                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.pte_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+//                     {application.pte_required ? 'Yes' : 'No'}
+//                   </div>
+//                 </div>
+//                 <div className="text-center p-4">
+//                   <div className="text-sm text-gray-600 mb-2">Duolingo Required</div>
+//                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.duolingo_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+//                     {application.duolingo_required ? 'Yes' : 'No'}
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+
+//       <ImagePreviewModal />
+//     </div>
+//   );
+// };
+
+// export default ApplicationDetails;
+
+
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -9,106 +943,14 @@ const ApplicationDetails = () => {
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
-  const [parsedData, setParsedData] = useState({
-    academicQualifications: [],
-    workExperiences: [],
-    references: []
+  const [activeTab, setActiveTab] = useState("overview");
+  const [imagePreview, setImagePreview] = useState({
+    isOpen: false,
+    url: null,
+    title: ""
   });
 
-  // useEffect(() => {
-  //   const fetchApplication = async () => {
-  //     try {
-  //       const token = localStorage.getItem("admin_token");
-  //       if (!token) {
-  //         navigate("/login");
-  //         return;
-  //       }
-
-  //       const res = await fetch(`${BASE_URL}/admin/agent-applications/${id}`, {
-  //         headers: {
-  //           Accept: "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       const result = await res.json();
-
-  //       if (!res.ok) throw new Error(result.message || "Failed to fetch");
-
-  //       setApplication(result.data);
-        
-  //       // Parse JSON strings if they exist
-  //       if (result.data) {
-  //         const parsed = {
-  //           academicQualifications: [],
-  //           workExperiences: [],
-  //           references: []
-  //         };
-
-  //         // Parse Academic Qualifications
-  //         if (result.data.academic_qualifications) {
-  //           try {
-  //             if (typeof result.data.academic_qualifications === 'string') {
-  //               parsed.academicQualifications = JSON.parse(result.data.academic_qualifications);
-  //             } else if (Array.isArray(result.data.academic_qualifications)) {
-  //               parsed.academicQualifications = result.data.academic_qualifications;
-  //             }
-  //           } catch (err) {
-  //             console.error('Error parsing academic qualifications:', err);
-  //             parsed.academicQualifications = [{ description: result.data.academic_qualifications }];
-  //           }
-  //         }
-
-  //         // Parse Work Experiences
-  //         if (result.data.work_experiences) {
-  //           try {
-  //             if (typeof result.data.work_experiences === 'string') {
-  //               parsed.workExperiences = JSON.parse(result.data.work_experiences);
-  //             } else if (Array.isArray(result.data.work_experiences)) {
-  //               parsed.workExperiences = result.data.work_experiences;
-  //             }
-  //           } catch (err) {
-  //             console.error('Error parsing work experiences:', err);
-  //             parsed.workExperiences = [{ description: result.data.work_experiences }];
-  //           }
-  //         }
-
-  //         // Parse References
-  //         if (result.data.references) {
-  //           try {
-  //             if (typeof result.data.references === 'string') {
-  //               parsed.references = JSON.parse(result.data.references);
-  //             } else if (Array.isArray(result.data.references)) {
-  //               parsed.references = result.data.references;
-  //             }
-  //           } catch (err) {
-  //             console.error('Error parsing references:', err);
-  //             parsed.references = [{ description: result.data.references }];
-  //           }
-  //         }
-
-  //         setParsedData(parsed);
-  //       }
-  //     } catch (err) {
-  //       setError(err.message);
-  //       Swal.fire({
-  //         icon: 'error',
-  //         title: 'Error!',
-  //         text: err.message,
-  //         confirmButtonColor: '#3B82F6',
-  //       });
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchApplication();
-  // }, [id, navigate]);
-
-
-  useEffect(() => {
-  const fetchApplication = async () => {
+  const fetchApplicationData = async () => {
     try {
       const token = localStorage.getItem("admin_token");
       if (!token) {
@@ -116,133 +958,33 @@ const ApplicationDetails = () => {
         return;
       }
 
+      setLoading(true);
       const res = await fetch(`${BASE_URL}/admin/agent-applications/${id}`, {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${token}`,
         },
+        cache: 'no-store'
       });
 
       const result = await res.json();
 
-      if (!res.ok) throw new Error(result.message || "Failed to fetch");
+      if (!res.ok) {
+        throw new Error(result.message || "Failed to fetch application");
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || "API request failed");
+      }
+
+      if (!result.data) {
+        throw new Error("No application data found");
+      }
 
       setApplication(result.data);
-      
-      //FIXED: Better parsing logic with error handling
-      const parsed = {
-        academicQualifications: [],
-        workExperiences: [],
-        references: []
-      };
 
-      // Parse Academic Qualifications - FIXED
-      if (result.data.academic_qualifications) {
-        try {
-          let qualifications = result.data.academic_qualifications;
-          
-          // If it's a string, try to parse it
-          if (typeof qualifications === 'string') {
-            // Remove any extra quotes
-            qualifications = qualifications.replace(/^"|"$/g, '');
-            try {
-              qualifications = JSON.parse(qualifications);
-            } catch (e) {
-              // If JSON parse fails, try to parse as single object
-              qualifications = [JSON.parse(qualifications)];
-            }
-          }
-          
-          // Ensure it's an array
-          if (Array.isArray(qualifications)) {
-            parsed.academicQualifications = qualifications;
-          } else if (qualifications && typeof qualifications === 'object') {
-            // If it's a single object, wrap it in array
-            parsed.academicQualifications = [qualifications];
-          } else {
-            // If it's something else, create a descriptive array
-            parsed.academicQualifications = [{
-              description: String(qualifications)
-            }];
-          }
-        } catch (err) {
-          console.error('Error parsing academic qualifications:', err, result.data.academic_qualifications);
-          parsed.academicQualifications = [{
-            description: String(result.data.academic_qualifications)
-          }];
-        }
-      }
-
-      // Parse Work Experiences - FIXED
-      if (result.data.work_experiences) {
-        try {
-          let experiences = result.data.work_experiences;
-          
-          if (typeof experiences === 'string') {
-            experiences = experiences.replace(/^"|"$/g, '');
-            try {
-              experiences = JSON.parse(experiences);
-            } catch (e) {
-              experiences = [JSON.parse(experiences)];
-            }
-          }
-          
-          if (Array.isArray(experiences)) {
-            parsed.workExperiences = experiences;
-          } else if (experiences && typeof experiences === 'object') {
-            parsed.workExperiences = [experiences];
-          } else {
-            parsed.workExperiences = [{
-              description: String(experiences)
-            }];
-          }
-        } catch (err) {
-          console.error('Error parsing work experiences:', err);
-          parsed.workExperiences = [{
-            description: String(result.data.work_experiences)
-          }];
-        }
-      }
-
-      // Parse References - FIXED
-      if (result.data.references) {
-        try {
-          let refs = result.data.references;
-          
-          if (typeof refs === 'string') {
-            refs = refs.replace(/^"|"$/g, '');
-            try {
-              refs = JSON.parse(refs);
-            } catch (e) {
-              refs = [JSON.parse(refs)];
-            }
-          }
-          
-          if (Array.isArray(refs)) {
-            parsed.references = refs;
-          } else if (refs && typeof refs === 'object') {
-            parsed.references = [refs];
-          } else {
-            parsed.references = [{
-              description: String(refs)
-            }];
-          }
-        } catch (err) {
-          console.error('Error parsing references:', err);
-          parsed.references = [{
-            description: String(result.data.references)
-          }];
-        }
-      }
-
-      // Debug log
-      console.log("Parsed Data:", parsed);
-      console.log("Academic Qualifications type:", typeof parsed.academicQualifications);
-      console.log("Is Array?", Array.isArray(parsed.academicQualifications));
-      
-      setParsedData(parsed);
-      
     } catch (err) {
+      console.error("Fetch Error:", err);
       setError(err.message);
       Swal.fire({
         icon: 'error',
@@ -255,342 +997,416 @@ const ApplicationDetails = () => {
     }
   };
 
-  fetchApplication();
-}, [id, navigate]);
+  useEffect(() => {
+    fetchApplicationData();
+  }, [id, navigate]);
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    if (!dateString || dateString === "null" || dateString === "N/A") return "N/A";
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString || dateString === "null" || dateString === "N/A") return "N/A";
+    try {
+      return new Date(dateString).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      return dateString;
+    }
   };
 
   const formatCurrency = (amount) => {
-    if (!amount) return "N/A";
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+    if (!amount || amount === "N/A" || amount === "null") return "N/A";
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(parseFloat(amount));
+    } catch (e) {
+      return amount;
+    }
   };
 
-  const renderField = (label, value, isBoolean = false, isCurrency = false) => {
-    if (isBoolean) {
-      return (
-        <div className="flex items-center">
-          <span className="font-medium text-gray-700">{label}:</span>
-          <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            {value ? 'Yes' : 'No'}
-          </span>
-        </div>
-      );
+  const parseJSONField = (field) => {
+    if (!field || field === "N/A" || field === "null" || field === "") return [];
+    try {
+      let data = field;
+      
+      if (Array.isArray(data)) return data;
+      
+      if (typeof data === 'string') {
+        data = data.trim();
+        if (data.startsWith('"') && data.endsWith('"')) {
+          data = data.substring(1, data.length - 1);
+        }
+        
+        if (data.startsWith('[') || data.startsWith('{')) {
+          try {
+            data = JSON.parse(data);
+          } catch (parseErr) {
+            data = data.replace(/\\"/g, '"');
+            try {
+              data = JSON.parse(data);
+            } catch (e) {
+              return [{ description: data }];
+            }
+          }
+        } else {
+          return [{ description: data }];
+        }
+      }
+      
+      if (Array.isArray(data)) {
+        return data;
+      } else if (data && typeof data === 'object') {
+        return [data];
+      }
+      
+      return [{ description: String(data) }];
+    } catch (err) {
+      console.error('Error parsing JSON field:', field, err);
+      return [{ description: String(field) }];
     }
-    
-    if (isCurrency) {
-      return (
-        <div>
-          <span className="font-medium text-gray-700">{label}:</span>
-          <span className="ml-2 text-gray-900">{formatCurrency(value)}</span>
-        </div>
-      );
+  };
+
+  const renderJSONField = (field, label) => {
+    const data = parseJSONField(field);
+    if (data.length === 0) {
+      return <p className="text-gray-500 italic">No {label.toLowerCase()} provided</p>;
     }
-    
+
     return (
-      <div>
-        <span className="font-medium text-gray-700">{label}:</span>
-        <span className="ml-2 text-gray-900">{value || "N/A"}</span>
+      <div className="space-y-4">
+        {data.map((item, index) => (
+          <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {Object.entries(item).map(([key, value]) => (
+                <div key={key}>
+                  <span className="text-sm font-medium text-gray-600 capitalize">
+                    {key.replace(/_/g, ' ')}:
+                  </span>
+                  <div className="mt-1 text-gray-900">
+                    {key.includes('date') ? formatDate(value) : value || "N/A"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
 
-  const renderDocumentLink = (label, value) => {
-    if (!value) return renderField(label, null);
+  const handleViewFile = (fileUrl, title = "") => {
+    if (!fileUrl || fileUrl === "null") {
+      Swal.fire({
+        icon: 'info',
+        title: 'No File',
+        text: 'No file available to view',
+        confirmButtonColor: '#3B82F6',
+      });
+      return;
+    }
+
+    let finalUrl = fileUrl;
     
-    const isUrl = value.startsWith('http') || value.startsWith('/');
+    if (!fileUrl.startsWith('http') && !fileUrl.startsWith('https')) {
+      if (fileUrl.startsWith('uploads/')) {
+        finalUrl = `${BASE_URL}/${fileUrl}`;
+      } else if (fileUrl.includes('/')) {
+        finalUrl = `${BASE_URL}/${fileUrl}`;
+      } else {
+        finalUrl = `${BASE_URL}/uploads/${fileUrl}`;
+      }
+    }
+
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const pdfExtensions = ['.pdf'];
+    const docExtensions = ['.doc', '.docx'];
     
+    const fileExtension = '.' + fileUrl.toLowerCase().split('.').pop();
+    
+    if (imageExtensions.includes(fileExtension)) {
+      setImagePreview({
+        isOpen: true,
+        url: finalUrl,
+        title: title || "Image Preview"
+      });
+    } else if (pdfExtensions.includes(fileExtension)) {
+      window.open(finalUrl, '_blank');
+    } else if (docExtensions.includes(fileExtension)) {
+      window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(finalUrl)}`, '_blank');
+    } else {
+      window.open(finalUrl, '_blank');
+    }
+  };
+
+  const closeImagePreview = () => {
+    setImagePreview({
+      isOpen: false,
+      url: null,
+      title: ""
+    });
+  };
+
+  const ImagePreviewModal = () => {
+    if (!imagePreview.isOpen) return null;
+
     return (
-      <div>
-        <span className="font-medium text-gray-700">{label}:</span>
-        {isUrl ? (
-          <a 
-            href={value} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="ml-2 text-blue-600 hover:text-blue-800 hover:underline"
-          >
-            View Document
-          </a>
-        ) : (
-          <span className="ml-2 text-gray-900">{value}</span>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
+        <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+          <div className="flex justify-between items-center p-4 border-b bg-white">
+            <h3 className="text-lg font-semibold text-gray-900">{imagePreview.title}</h3>
+            <button
+              onClick={closeImagePreview}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="p-4 flex items-center justify-center overflow-auto max-h-[calc(90vh-80px)]">
+            <img
+              src={imagePreview.url}
+              alt={imagePreview.title}
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                console.error("Image failed to load:", imagePreview.url);
+                e.target.onerror = null;
+                e.target.src = "https://via.placeholder.com/600x400?text=Image+Not+Available";
+              }}
+            />
+          </div>
+          <div className="p-4 border-t bg-gray-50 flex justify-between items-center">
+            <a
+              href={imagePreview.url}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download
+            </a>
+            <button
+              onClick={closeImagePreview}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const DocumentViewer = ({ url, title, type = "document" }) => {
+    if (!url || url === "null") {
+      return (
+        <div className="flex items-center justify-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="text-center">
+            <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-gray-500">No {type} uploaded</p>
+          </div>
+        </div>
+      );
+    }
+
+    const getFileType = (filename) => {
+      if (!filename) return 'other';
+      const extension = filename.split('.').pop().toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension)) return 'image';
+      if (extension === 'pdf') return 'pdf';
+      if (['doc', 'docx'].includes(extension)) return 'doc';
+      return 'other';
+    };
+
+    const fileType = getFileType(url);
+    const fileName = url.split('/').pop();
+
+    return (
+      <div className="border border-gray-300 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg ${
+              fileType === 'image' ? 'bg-blue-100' :
+              fileType === 'pdf' ? 'bg-red-100' :
+              fileType === 'doc' ? 'bg-green-100' :
+              'bg-gray-100'
+            }`}>
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {fileType === 'image' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                )}
+              </svg>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900">{title}</h4>
+              <p className="text-sm text-gray-500 truncate max-w-xs">{fileName}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleViewFile(url, title)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268 2.943-9.542-7z" />
+              </svg>
+              View
+            </button>
+            <a
+              href={`${BASE_URL}/uploads/${url}`}
+              download={fileName}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download
+            </a>
+          </div>
+        </div>
+        
+        {fileType === 'image' && (
+          <div className="p-4">
+            <div 
+              className="relative h-64 bg-gray-100 rounded-lg overflow-hidden cursor-pointer group"
+              onClick={() => handleViewFile(url, title)}
+            >
+              <img
+                src={`${BASE_URL}/uploads/${url}`}
+                alt={title}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  console.error("Preview image failed to load:", url);
+                  e.target.onerror = null;
+                  e.target.src = "https://via.placeholder.com/400x300?text=Image+Preview+Not+Available";
+                }}
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white bg-opacity-90 p-3 rounded-lg shadow-lg">
+                  <p className="text-sm font-medium text-gray-900">Click to view full image</p>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     );
   };
 
-  const renderAcademicQualifications = () => {
-    if (!parsedData.academicQualifications || parsedData.academicQualifications.length === 0) {
-      return <p className="text-gray-500">No academic qualifications provided</p>;
-    }
-
-    return (
-      <div className="space-y-3">
-        {parsedData.academicQualifications.map((qual, index) => (
-          <div key={index} className="bg-gray-50 p-3 rounded-lg">
-            <h4 className="font-medium text-gray-900">Qualification {index + 1}</h4>
-            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-              {qual.degree && <div><span className="text-sm text-gray-600">Degree:</span> <span className="font-medium">{qual.degree}</span></div>}
-              {qual.institution && <div><span className="text-sm text-gray-600">Institution:</span> <span className="font-medium">{qual.institution}</span></div>}
-              {qual.year && <div><span className="text-sm text-gray-600">Year:</span> <span className="font-medium">{qual.year}</span></div>}
-              {qual.cgpa && <div><span className="text-sm text-gray-600">CGPA:</span> <span className="font-medium">{qual.cgpa}</span></div>}
-              {qual.gpa && <div><span className="text-sm text-gray-600">GPA:</span> <span className="font-medium">{qual.gpa}</span></div>}
-              {qual.percentage && <div><span className="text-sm text-gray-600">Percentage:</span> <span className="font-medium">{qual.percentage}%</span></div>}
-              {qual.major && <div><span className="text-sm text-gray-600">Major:</span> <span className="font-medium">{qual.major}</span></div>}
-              {qual.description && !qual.degree && !qual.institution && (
-                <div><span className="text-sm text-gray-600">Description:</span> <span className="font-medium">{qual.description}</span></div>
-              )}
-            </div>
+  const renderDocumentsTab = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Documents & Files</h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg text-gray-900">Application Documents</h3>
+            <DocumentViewer 
+              url={application.sop} 
+              title="Statement of Purpose (SOP)" 
+              type="SOP"
+            />
+            <DocumentViewer 
+              url={application.resume} 
+              title="Resume/CV" 
+              type="resume"
+            />
+            <DocumentViewer 
+              url={application.transcripts} 
+              title="Academic Transcripts" 
+              type="transcripts"
+            />
           </div>
-        ))}
-      </div>
-    );
-  };
 
-  const renderWorkExperiences = () => {
-    if (!parsedData.workExperiences || parsedData.workExperiences.length === 0) {
-      return <p className="text-gray-500">No work experience provided</p>;
-    }
-
-    return (
-      <div className="space-y-3">
-        {parsedData.workExperiences.map((exp, index) => (
-          <div key={index} className="bg-gray-50 p-3 rounded-lg">
-            <h4 className="font-medium text-gray-900">Experience {index + 1}</h4>
-            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-              {exp.organization && <div><span className="text-sm text-gray-600">Organization:</span> <span className="font-medium">{exp.organization}</span></div>}
-              {exp.position && <div><span className="text-sm text-gray-600">Position:</span> <span className="font-medium">{exp.position}</span></div>}
-              {exp.start_date && <div><span className="text-sm text-gray-600">Start Date:</span> <span className="font-medium">{formatDate(exp.start_date)}</span></div>}
-              {exp.end_date && <div><span className="text-sm text-gray-600">End Date:</span> <span className="font-medium">{formatDate(exp.end_date)}</span></div>}
-              {exp.current && <div><span className="text-sm text-gray-600">Current:</span> <span className={`px-2 py-1 text-xs rounded-full ${exp.current ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>{exp.current ? 'Yes' : 'No'}</span></div>}
-              {exp.duration && <div><span className="text-sm text-gray-600">Duration:</span> <span className="font-medium">{exp.duration}</span></div>}
-            </div>
-            {exp.description && (
-              <div className="mt-2">
-                <span className="text-sm text-gray-600">Description:</span>
-                <p className="mt-1 text-gray-700">{exp.description}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderReferences = () => {
-    if (!parsedData.references || parsedData.references.length === 0) {
-      return <p className="text-gray-500">No references provided</p>;
-    }
-
-    return (
-      <div className="space-y-3">
-        {parsedData.references.map((ref, index) => (
-          <div key={index} className="bg-gray-50 p-3 rounded-lg">
-            <h4 className="font-medium text-gray-900">Reference {index + 1}</h4>
-            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-              {ref.name && <div><span className="text-sm text-gray-600">Name:</span> <span className="font-medium">{ref.name}</span></div>}
-              {ref.email && (
-                <div>
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <a href={`mailto:${ref.email}`} className="ml-1 font-medium text-blue-600 hover:text-blue-800">
-                    {ref.email}
-                  </a>
-                </div>
-              )}
-              {ref.phone && (
-                <div>
-                  <span className="text-sm text-gray-600">Phone:</span>
-                  <a href={`tel:${ref.phone}`} className="ml-1 font-medium text-blue-600 hover:text-blue-800">
-                    {ref.phone}
-                  </a>
-                </div>
-              )}
-              {ref.relationship && <div><span className="text-sm text-gray-600">Relationship:</span> <span className="font-medium">{ref.relationship}</span></div>}
-              {ref.position && <div><span className="text-sm text-gray-600">Position:</span> <span className="font-medium">{ref.position}</span></div>}
-              {ref.organization && <div><span className="text-sm text-gray-600">Organization:</span> <span className="font-medium">{ref.organization}</span></div>}
-              {ref.description && !ref.name && !ref.email && !ref.phone && (
-                <div><span className="text-sm text-gray-600">Description:</span> <span className="font-medium">{ref.description}</span></div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const handleAction = async (action) => {
-    const result = await Swal.fire({
-      title: `Are you sure?`,
-      text: `You want to ${action.toLowerCase()} this application?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: action === 'Approve' ? '#10B981' : '#EF4444',
-      cancelButtonColor: '#6B7280',
-      confirmButtonText: `Yes, ${action} it!`,
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
-    });
-
-    if (!result.isConfirmed) return;
-
-    setActionLoading(true);
-    try {
-      const token = localStorage.getItem("admin_token");
-      const res = await fetch(`${BASE_URL}/admin/agent-applications/${id}/${action.toLowerCase()}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) throw new Error(result.message || `Failed to ${action}`);
-
-      // Refresh application data
-      const updatedRes = await fetch(`${BASE_URL}/admin/agent-applications/${id}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      const updatedResult = await updatedRes.json();
-      setApplication(updatedResult.data);
-      
-      await Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: `Application ${action.toLowerCase()} successfully!`,
-        confirmButtonColor: '#3B82F6',
-      });
-    } catch (err) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: err.message,
-        confirmButtonColor: '#EF4444',
-      });
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleDownloadPDF = async () => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      const res = await fetch(`${BASE_URL}/admin/agent-applications/${id}/export-pdf`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Failed to download PDF");
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `application-${id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      await Swal.fire({
-        icon: 'success',
-        title: 'Download Started!',
-        text: 'PDF download has started.',
-        confirmButtonColor: '#3B82F6',
-      });
-    } catch (err) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Download Failed!',
-        text: err.message,
-        confirmButtonColor: '#EF4444',
-      });
-    }
-  };
-
-  const handleEdit = () => {
-    
-    // navigate(`/dashboard/admin/applications/edit/${id}`);
-    navigate(`/dashboard/agent-application/edit/${id}`);
-  };
-
-  const handleCancel = () => {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Any unsaved changes will be lost.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#EF4444',
-    cancelButtonColor: '#6B7280',
-    confirmButtonText: 'Yes, discard changes',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      navigate(`/dashboard/agent-application/application-details/${id}`);
-    }
-  });
-};
-
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading application details...</p>
-      </div>
-    </div>
-  );
-  
-  if (error) return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error loading application</h3>
-            <p className="text-sm text-red-700 mt-1">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 text-sm text-red-700 hover:text-red-600 font-medium"
-            >
-              Try again
-            </button>
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg text-gray-900">Additional Documents</h3>
+            <DocumentViewer 
+              url={application.english_test} 
+              title="English Test Results" 
+              type="english test"
+            />
+            <DocumentViewer 
+              url={application.passport_copy} 
+              title="Passport Copy" 
+              type="passport"
+            />
+            <DocumentViewer 
+              url={application.photo} 
+              title="Student Photo" 
+              type="photo"
+            />
           </div>
         </div>
       </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">References</h2>
+        {renderJSONField(application.references, "references")}
+      </div>
     </div>
   );
-  
-  if (!application) return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="text-center">
-        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No application found</h3>
-        <p className="mt-1 text-sm text-gray-500">The application you're looking for doesn't exist.</p>
-        <div className="mt-6">
+        <div className="relative">
+          <div className="w-20 h-20 border-4 border-blue-200 rounded-full"></div>
+          <div className="absolute top-0 left-0 w-20 h-20 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
+        </div>
+        <p className="mt-4 text-gray-600 font-medium">Loading application details...</p>
+        <p className="text-sm text-gray-500 mt-2">Application ID: {id}</p>
+      </div>
+    </div>
+  );
+
+  const ErrorDisplay = () => (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50 flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Error Loading Application</h3>
+        <p className="text-gray-600 text-center mb-2">{error}</p>
+        <p className="text-sm text-gray-500 text-center mb-6">Application ID: {id}</p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => fetchApplicationData()}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200"
+          >
+            Try Again
+          </button>
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="flex-1 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition duration-200"
           >
             Go Back
           </button>
@@ -599,329 +1415,458 @@ const ApplicationDetails = () => {
     </div>
   );
 
+  const NoDataDisplay = () => (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">No Application Found</h3>
+        <p className="text-gray-600 mb-6">The application with ID {id} was not found.</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200"
+        >
+          Go Back
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderField = (label, value, type = "text") => (
+    <div className="flex justify-between items-start py-3 border-b border-gray-100 last:border-0">
+      <span className="text-gray-600 font-medium">{label}</span>
+      <span className="text-gray-900 text-right font-medium ml-4">
+        {type === 'date' ? formatDate(value) : 
+         type === 'datetime' ? formatDateTime(value) :
+         type === 'currency' ? formatCurrency(value) :
+         type === 'boolean' ? (value ? "Yes" : "No") :
+         value || "N/A"}
+      </span>
+    </div>
+  );
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorDisplay />;
+  if (!application) return <NoDataDisplay />;
+
+  const tabs = [
+    { id: "overview", label: "Overview", icon: "📊" },
+    { id: "student", label: "Student", icon: "👤" },
+    { id: "program", label: "Program", icon: "🎓" },
+    { id: "academic", label: "Academic", icon: "📚" },
+    { id: "work", label: "Work", icon: "💼" },
+    { id: "documents", label: "Documents", icon: "📄" },
+    { id: "financial", label: "Financial", icon: "💰" },
+    { id: "english", label: "English Tests", icon: "🌐" }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8 bg-white rounded-lg shadow p-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div>
-              <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="bg-white shadow-lg border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => navigate(-1)}
-                  className="p-2 rounded-full hover:bg-gray-100"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
                 >
                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
                 </button>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Application Details</h1>
-                  <p className="mt-1 text-sm text-gray-600">ID: {application.id}</p>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    Application #{application.id}
+                  </h1>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="font-medium">Student:</span> {application.student_name} | 
+                    <span className="font-medium ml-2">Agent:</span> {application.agent_name}
+                  </p>
                 </div>
               </div>
-              <div className="mt-4">
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Submitted:</span> {formatDate(application.created_at)}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-                application.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                application.status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                application.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {application.status}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Student & Program Info */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Student Information Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <div className="flex flex-wrap items-center gap-3">
+                <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
+                  application.status === 'Reviewed' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                  application.status === 'Accepted' ? 'bg-green-100 text-green-800 border border-green-200' :
+                  application.status === 'Rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
+                  'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                }`}>
+                  {application.status || 'Pending'}
+                </span>
+                <button
+                  onClick={() => navigate(`/dashboard/agent-application/edit/${id}`)}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium px-5 py-2.5 rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  Student Information
-                </h2>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-blue-900 mb-2">Personal Details</h3>
-                      {renderField("Full Name", application.student_name)}
-                      {renderField("Student ID", application.student_id)}
-                      {renderField("Email", application.email)}
-                      {renderField("Phone", application.phone)}
-                      {renderField("Date of Birth", application.dob)}
-                      {renderField("Gender", application.gender)}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-blue-900 mb-2">Documentation</h3>
-                      {renderField("Passport Number", application.passport)}
-                      {renderField("Passport Expiry", application.passport_expiry)}
-                      {renderField("Study Permit/Visa", application.study_permit_or_visa)}
-                      {renderField("Country of Residence", application.country_of_residence || application.country_of_resence)}
-                      {renderField("Address", application.address)}
-                    </div>
-                  </div>
-                </div>
+                  Edit Application
+                </button>
               </div>
             </div>
-
-            {/* Program Information Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                  </svg>
-                  Program Information
-                </h2>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-green-900 mb-2">Program Details</h3>
-                      {renderField("Program", application.program?.name || application.program_name)}
-                      {renderField("University", application.university?.name || application.university_name)}
-                      {renderField("Intake", application.intake)}
-                      {renderField("Study Level", application.study_level)}
-                      {renderField("Field of Study", application.field_of_study_name)}
-                      {renderField("Duration", application.duration)}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-green-900 mb-2">Additional Details</h3>
-                      {renderField("Campus City", application.campus_city)}
-                      {renderField("Destination", application.destination)}
-                      {renderField("Grading Scheme", application.grading_scheme)}
-                      {renderField("Subject", application.subject)}
-                      {renderField("Specialization", application.specialization)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Academic Qualifications Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                  </svg>
-                  Academic Qualifications
-                </h2>
-              </div>
-              <div className="p-6">
-                {renderAcademicQualifications()}
-              </div>
-            </div>
-
-            {/* Work Experience Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  Work Experience
-                </h2>
-              </div>
-              <div className="p-6">
-                {renderWorkExperiences()}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Agent & Documents */}
-          <div className="space-y-6">
-            {/* Agent Information Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Agent Information
-                </h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  {renderField("Agent Name", application.agent_name)}
-                  {renderField("Agent ID", application.agent_id)}
-                  {renderField("Company Name", application.company_name)}
-                </div>
-              </div>
-            </div>
-
-            {/* Financial Information Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Financial Information
-                </h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <div className="bg-yellow-50 p-4 rounded-lg space-y-2">
-                  {renderField("Application Fee", application.application_fee, false, true)}
-                  {renderField("Average Gross Tuition", application.average_gross_tuition, false, true)}
-                  {renderField("Cost of Living", application.cost_of_living, false, true)}
-                  {renderField("Average UG Program", application.average_undergraduate_program, false, true)}
-                  {renderField("Average Graduate Program", application.average_graduate_program, false, true)}
-                </div>
-              </div>
-            </div>
-
-            {/* Achievements Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  Achievements
-                </h2>
-              </div>
-              <div className="p-6">
-                <div className="bg-pink-50 p-4 rounded-lg">
-                  {application.achievements ? (
-                    <div>
-                      <span className="font-medium text-gray-700">Achievements:</span>
-                      <p className="mt-2 text-gray-900 whitespace-pre-line">{application.achievements}</p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">No achievements provided</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* References Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  References
-                </h2>
-              </div>
-              <div className="p-6">
-                {renderReferences()}
-              </div>
-            </div>
-
-            {/* Documents Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Documents
-                </h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <div className="bg-red-50 p-4 rounded-lg space-y-2">
-                  {renderDocumentLink("SOP", application.sop)}
-                  {renderDocumentLink("Resume", application.resume)}
-                  {renderDocumentLink("Transcripts", application.transcripts)}
-                  {renderDocumentLink("Test Scores", application.test_scores)}
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Info Card */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Additional Information
-                </h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                  {renderField("Name Difference", application.has_name_difference)}
-                  {renderField("Open to Language Course", application.open_to_language_course, true)}
-                  {renderField("Success Chance", application.success_chance)}
-                </div>
-              </div>
-            </div>
-
-            {/* Important Dates */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Important Dates
-                </h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <div className="bg-blue-50 p-4 rounded-lg space-y-2">
-                  {renderField("Program Open Date", application.program_open_date)}
-                  {renderField("Submission Deadline", application.program_submission_deadline)}
-                  {renderField("Last Updated", formatDate(application.updated_at))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="flex flex-wrap justify-end gap-3">
-            <button
-              onClick={handleDownloadPDF}
-              disabled={actionLoading}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download PDF
-            </button>
-            <button
-              onClick={handleEdit}
-              disabled={actionLoading}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              Edit Application
-            </button>
-           
           </div>
         </div>
       </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex overflow-x-auto space-x-1">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-3 font-medium whitespace-nowrap rounded-lg transition duration-200 ${
+                activeTab === tab.id 
+                  ? 'bg-blue-600 text-white shadow-lg' 
+                  : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
+              }`}
+            >
+              <span className="text-lg">{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {activeTab === "overview" && application && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-3">
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                    <div className="text-sm text-blue-700 font-medium">Student ID</div>
+                    <div className="text-2xl font-bold text-gray-900">{application.student_id}</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                    <div className="text-sm text-green-700 font-medium">Agent ID</div>
+                    <div className="text-2xl font-bold text-gray-900">{application.agent_id}</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+                    <div className="text-sm text-purple-700 font-medium">Program ID</div>
+                    <div className="text-2xl font-bold text-gray-900">{application.program_id}</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
+                    <div className="text-sm text-yellow-700 font-medium">Intake</div>
+                    <div className="text-2xl font-bold text-gray-900">{application.intake || "N/A"}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Student Information</h2>
+              </div>
+              <div className="space-y-3">
+                {renderField("Full Name", application.student_name)}
+                {renderField("Email", application.email)}
+                {renderField("Phone", application.phone)}
+                {renderField("Date of Birth", application.dob, "date")}
+                {renderField("Gender", application.gender)}
+                {renderField("Country", application.country_of_residence)}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Program Information</h2>
+              </div>
+              <div className="space-y-3">
+                {renderField("Program", application.program_name)}
+                {renderField("University", application.university_name)}
+                {renderField("Study Level", application.study_level)}
+                {renderField("Field of Study", application.field_of_study_name)}
+                {renderField("Duration", application.duration)}
+                {renderField("Intake", application.intake)}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Financial Summary</h2>
+              </div>
+              <div className="space-y-3">
+                {renderField("Application Fee", application.application_fee, "currency")}
+                {renderField("Tuition", application.average_gross_tuition, "currency")}
+                {renderField("Living Cost", application.cost_of_living, "currency")}
+                {renderField("Success Chance", application.success_chance)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "student" && application && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Personal Information</h2>
+              <div className="space-y-4">
+                {renderField("Full Name", application.student_name)}
+                {renderField("Student ID", application.student_id)}
+                {renderField("Email", application.email)}
+                {renderField("Phone", application.phone)}
+                {renderField("Date of Birth", application.dob, "date")}
+                {renderField("Gender", application.gender)}
+                {renderField("Address", application.address)}
+                {renderField("Nationality", application.student_profile_nationality)}
+                {renderField("ELP", application.elp)}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Passport & Immigration</h2>
+              <div className="space-y-4">
+                {renderField("Passport Number", application.passport)}
+                {renderField("Passport Expiry", application.passport_expiry, "date")}
+                {renderField("Study Permit/Visa", application.study_permit_or_visa)}
+                {renderField("Country of Residence", application.country_of_residence)}
+                {renderField("Destination", application.destination)}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Agent Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="text-sm text-blue-600 font-medium mb-2">Agent Name</div>
+                  <div className="text-lg font-bold text-gray-900">{application.agent_name}</div>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="text-sm text-green-600 font-medium mb-2">Agent ID</div>
+                  <div className="text-lg font-bold text-gray-900">{application.agent_id}</div>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <div className="text-sm text-purple-600 font-medium mb-2">Company</div>
+                  <div className="text-lg font-bold text-gray-900">{application.company_name || "N/A"}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "program" && application && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Program Details</h2>
+              <div className="space-y-4">
+                {renderField("Program Name", application.program_name)}
+                {renderField("University", application.university_name)}
+                {renderField("Intake", application.intake)}
+                {renderField("Study Level", application.study_level)}
+                {renderField("Field of Study", application.field_of_study_name)}
+                {renderField("Duration", application.duration)}
+                {renderField("Program Description", application.program_description)}
+                {renderField("Program Summary", application.program_summary)}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Additional Information</h2>
+              <div className="space-y-4">
+                {renderField("Campus City", application.campus_city)}
+                {renderField("Destination", application.destination)}
+                {renderField("Grading Scheme", application.grading_scheme)}
+                {renderField("Subject", application.subject)}
+                {renderField("Specialization", application.specialization)}
+                {renderField("Program Level", application.program_level)}
+                {renderField("Education Country", application.education_country)}
+                {renderField("Last Level of Study", application.last_level_of_study)}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Important Dates</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="text-sm text-blue-600 font-medium mb-2">Program Open Date</div>
+                  <div className="text-lg font-bold text-gray-900">{formatDate(application.program_open_date)}</div>
+                </div>
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <div className="text-sm text-red-600 font-medium mb-2">Submission Deadline</div>
+                  <div className="text-lg font-bold text-gray-900">{formatDateTime(application.program_submission_deadline)}</div>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="text-sm text-green-600 font-medium mb-2">Application Created</div>
+                  <div className="text-lg font-bold text-gray-900">{formatDateTime(application.created_at)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "academic" && application && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Academic Qualifications</h2>
+              {renderJSONField(application.academic_qualifications, "academic qualifications")}
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Achievements</h2>
+              {application.achievements ? (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-gray-900 whitespace-pre-line">{application.achievements}</p>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No achievements provided</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "work" && application && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Work Experience</h2>
+              {renderJSONField(application.work_experiences, "work experience")}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "documents" && application && renderDocumentsTab()}
+
+        {activeTab === "financial" && application && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Tuition & Fees</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-white rounded-lg border border-blue-200">
+                  <div>
+                    <div className="text-sm text-blue-600 font-medium">Application Fee</div>
+                    <div className="text-2xl font-bold text-gray-900">{formatCurrency(application.application_fee)}</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-lg border border-green-200">
+                  <div>
+                    <div className="text-sm text-green-600 font-medium">Average Gross Tuition</div>
+                    <div className="text-2xl font-bold text-gray-900">{formatCurrency(application.average_gross_tuition)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Cost of Living</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 bg-gradient-to-r from-yellow-50 to-white rounded-lg border border-yellow-200">
+                  <div>
+                    <div className="text-sm text-yellow-600 font-medium">Annual Living Cost</div>
+                    <div className="text-2xl font-bold text-gray-900">{formatCurrency(application.cost_of_living)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "english" && application && (
+          <div className="space-y-6">
+            {application.ielts_required && (
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">IELTS Scores</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-blue-600 font-medium">Overall</div>
+                    <div className="text-2xl font-bold text-gray-900">{application.ielts_overall || "N/A"}</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-gray-600 font-medium">Reading</div>
+                    <div className="text-xl font-bold text-gray-900">{application.ielts_reading || "N/A"}</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-gray-600 font-medium">Writing</div>
+                    <div className="text-xl font-bold text-gray-900">{application.ielts_writing || "N/A"}</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-gray-600 font-medium">Listening</div>
+                    <div className="text-xl font-bold text-gray-900">{application.ielts_listening || "N/A"}</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-gray-600 font-medium">Speaking</div>
+                    <div className="text-xl font-bold text-gray-900">{application.ielts_speaking || "N/A"}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {application.toefl_required && (
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">TOEFL Scores</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  <div className="bg-green-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-green-600 font-medium">Overall</div>
+                    <div className="text-2xl font-bold text-gray-900">{application.toefl_overall || "N/A"}</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-gray-600 font-medium">Reading</div>
+                    <div className="text-xl font-bold text-gray-900">{application.toefl_reading || "N/A"}</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-sm text-gray-600 font-medium">Writing</div>
+                    <div className="text-xl font-bold text-gray-900">{application.toefl_writing || "N/A"}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">English Test Requirements</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4">
+                  <div className="text-sm text-gray-600 mb-2">IELTS Required</div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.ielts_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {application.ielts_required ? 'Yes' : 'No'}
+                  </div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-sm text-gray-600 mb-2">TOEFL Required</div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.toefl_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {application.toefl_required ? 'Yes' : 'No'}
+                  </div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-sm text-gray-600 mb-2">PTE Required</div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.pte_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {application.pte_required ? 'Yes' : 'No'}
+                  </div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-sm text-gray-600 mb-2">Duolingo Required</div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${application.duolingo_required ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {application.duolingo_required ? 'Yes' : 'No'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <ImagePreviewModal />
     </div>
   );
 };
 
 export default ApplicationDetails;
+
 
 
 
