@@ -395,7 +395,7 @@ const ProgramCreate = () => {
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/admin/university-programs/${selectedIds.university_id}/${selectedIds.program_level_id}/${selectedIds.intake_id}/${selectedIds.program_tag_id}/${selectedIds.field_of_study_id}/${selectedIds.month_id}/store`,
+        `${BASE_URL}/admin/university-programs/${selectedIds.university_id}/${selectedIds.program_level_id}/${selectedIds.field_of_study_id}/${selectedIds.intake_id}/${selectedIds.month_id}/${selectedIds.program_tag_id}/store`,
         submissionData,
         {
           headers: {
