@@ -204,6 +204,7 @@ const ProgramEdit = () => {
     } = formData;
 
     const updateUrl = `${BASE_URL}/admin/university-programs/${university_id}/${program_level_id}/${intake_id}/${program_tag_id}/${field_of_study_id}/${monthId}/store`;
+    // const updateUrl = `${BASE_URL}/admin/university-programs/${university_id}/${program_level_id}/${field_of_study_id}/${intake_id}/${monthId}/${program_tag_id}/store`;
 
     const data = new FormData();
 
@@ -804,3 +805,6 @@ const ProgramEdit = () => {
 };
 
 export default ProgramEdit;
+
+
+

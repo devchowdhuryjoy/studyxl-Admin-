@@ -66,7 +66,7 @@ function App() {
             path="agent-application/application-details/:id"
             element={<ApplicationDetails />}
           />
-          {/* <Route path="admin/applications/edit/:id" element={<EditApplication />} /> */}
+          
           <Route 
             path="agent-application/edit/:id"  
             element={<EditApplication />} 
@@ -98,10 +98,7 @@ function App() {
           <Route path="manage-commision" element={<ManageCommision />} />
           <Route path="manage-commision/:id" element={<ManageCommision />} />
 
-          {/* <Route
-            path="agent-application/application-details/:id"
-            element={<ApplicationDetails />}
-          /> */}
+         
           
           
           

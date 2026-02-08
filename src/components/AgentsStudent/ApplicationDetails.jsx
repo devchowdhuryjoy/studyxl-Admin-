@@ -1,7 +1,4 @@
 
-
-
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -936,6 +933,7 @@ const ApplicationDetails = () => {
 };
 
 export default ApplicationDetails;
+
 
 
 

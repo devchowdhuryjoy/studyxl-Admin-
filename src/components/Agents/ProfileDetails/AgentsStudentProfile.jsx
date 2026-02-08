@@ -10,71 +10,94 @@ const AgentsStudentProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-useEffect(() => {
-  if (!id) {
-    setError("Invalid student ID");
-    setLoading(false);
-    return;
-  }
-
-  const fetchStudent = async () => {
+  const safeParse = (value) => {
     try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        setError("Authorization token missing");
-        setLoading(false);
-        return;
+      if (!value || value === "null") return [];
+      if (typeof value === "string") {
+        return JSON.parse(value);
       }
-
-      const response = await fetch(`${BASE_URL}/agent/agent-student/edit/${id}`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data) {
-        setError(data?.message || "Failed to fetch student data");
-        setLoading(false);
-        return;
-      }
-
-      const profile = data.profile || null;
-
-      if (!profile) {
-        setError("Student not found");
-        setLoading(false);
-        return;
-      }
-
-      const parsedStudent = {
-        ...profile,
-        academic_qualifications: profile.academic_qualifications
-          ? JSON.parse(profile.academic_qualifications)
-          : [],
-        work_experiences: profile.work_experiences
-          ? JSON.parse(profile.work_experiences)
-          : [],
-        test_scores: profile.test_scores
-          ? JSON.parse(profile.test_scores)
-          : [],
-        references: profile.references
-          ? JSON.parse(profile.references)
-          : [],
-      };
-
-      setStudent(parsedStudent);
-    } catch (err) {
-      console.error("Error fetching student:", err);
-      setError("Error loading student profile");
-    } finally {
-      setLoading(false);
+      return value;
+    } catch (e) {
+      return [];
     }
   };
 
-  fetchStudent();
-}, [id]);
+  useEffect(() => {
+    if (!id) {
+      setError("Invalid student ID");
+      setLoading(false);
+      return;
+    }
 
+    const fetchStudent = async () => {
+      try {
+        const token = localStorage.getItem("admin_token");
+        if (!token) {
+          setError("Authorization token missing");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          `${BASE_URL}/agent/agent-student/edit/${id}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        const data = await response.json();
+        console.log();
+
+        if (!response.ok || !data) {
+          setError(data?.message || "Failed to fetch student data");
+          setLoading(false);
+          return;
+        }
+
+        const profile = data.profile || null;
+
+        if (!profile) {
+          setError("Student not found");
+          setLoading(false);
+          return;
+        }
+
+        // const parsedStudent = {
+        //   ...profile,
+        //   academic_qualifications: profile.academic_qualifications
+        //     ? JSON.parse(profile.academic_qualifications)
+        //     : [],
+        //   work_experiences: profile.work_experiences
+        //     ? JSON.parse(profile.work_experiences)
+        //     : [],
+        //   test_scores: profile.test_scores
+        //     ? JSON.parse(profile.test_scores)
+        //     : [],
+        //   references: profile.references
+        //     ? JSON.parse(profile.references)
+        //     : [],
+        // };
+
+        const parsedStudent = {
+          ...profile,
+          academic_qualifications: safeParse(profile.academic_qualifications),
+          work_experiences: safeParse(profile.work_experiences),
+          test_scores: safeParse(profile.test_scores),
+          references: safeParse(profile.references),
+        };
+
+        setStudent(parsedStudent);
+      } catch (err) {
+        console.error("Error fetching student:", err);
+        setError("Error loading student profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudent();
+  }, [id]);
 
   // Loading state
   if (loading) {
@@ -126,28 +149,32 @@ useEffect(() => {
   }
 
   // Helper function to handle empty values
-  const displayValue = (value) => value || "Not provided";
+  // const displayValue = (value) => value || "Not provided";
 
-
+  const displayValue = (value) => {
+    if (value === null || value === undefined || value === "") {
+      return "N/A";
+    }
+    return value;
+  };
 
   const getFileUrl = (filePath) => {
-  if (!filePath) return null;
-  
-  // If it's already a full URL, return as is
-  if (filePath.startsWith("http")) {
-    return filePath;
-  }
-  
-  // Remove leading slashes
-  let cleanPath = filePath.replace(/^\//, '');
-  
-  // If the path already starts with uploads/, use it as is
-  if (cleanPath.startsWith('uploads/')) {
-    return `${BASE_URL.replace('/api', '')}/${cleanPath}`;
-  }
-  
+    if (!filePath) return null;
 
-};
+    // If it's already a full URL, return as is
+    if (filePath.startsWith("http")) {
+      return filePath;
+    }
+
+    // Remove leading slashes
+    let cleanPath = filePath.replace(/^\//, "");
+
+    // If the path already starts with uploads/, use it as is
+    if (cleanPath.startsWith("uploads/")) {
+      // return `${BASE_URL.replace("/api", "")}/${cleanPath}`;
+      return `${BASE_URL.replace("/api", "")}/${cleanPath}`;
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -362,9 +389,7 @@ useEffect(() => {
 
       {/* Documents Section */}
       <div className="bg-gray-50 p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">
-          Documents
-        </h2>
+        <h2 className="text-lg font-semibold mb-3 text-[#f16f22]">Documents</h2>
         <div className="space-y-2">
           {student.resume && (
             <p>
@@ -407,19 +432,8 @@ useEffect(() => {
           )}
         </div>
       </div>
-      
     </div>
   );
 };
 
 export default AgentsStudentProfile;
-
-
-
-
-
-
-
-
-
-
