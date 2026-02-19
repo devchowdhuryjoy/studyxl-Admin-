@@ -48,7 +48,7 @@ const StudentsProfile = () => {
         }
       } catch (error) {
         console.error("Error fetching student:", error);
-        setError("Error loading student profile");
+        setError("No Student Data Found");
       } finally {
         setLoading(false);
       }
