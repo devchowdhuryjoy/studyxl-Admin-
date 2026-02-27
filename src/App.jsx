@@ -27,6 +27,8 @@ import EditApplication from "./components/AgentsStudent/EditApplication";
 import UniversityEdit from "./components/University/UniversityEdit/UniversityEdit"
 import AllProgram from "./components/Program/AllProgram"
 import ProgramEdit from "./components/Program/ProgramEdit"
+import Announcements from "./components/Announcements/Announcements";
+import CreateSection from "./components/Announcements/CreateSection";
 function App() {
   return (
     <Router>
@@ -98,10 +100,9 @@ function App() {
           <Route path="manage-commision" element={<ManageCommision />} />
           <Route path="manage-commision/:id" element={<ManageCommision />} />
 
-         
-          
-          
-          
+          {/* Announcements */}
+          <Route path="announcements" element={<Announcements />} />
+          <Route path="createsection" element={<CreateSection />} />
 
           {/* Create User */}
           <Route path="create-user" element={<UserCreate />} />

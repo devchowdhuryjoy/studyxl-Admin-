@@ -536,6 +536,68 @@ const Sidebar = ({ open, setOpen }) => {
               )}
             </div>
           )}
+
+          {/* Announcements -  */}
+          {hasAnyPermission(menuPermissions.announcements) && (
+            <div>
+              <button
+                onClick={() => toggleMenu("Announcements")}
+                className="flex items-center justify-between w-full p-2 hover:bg-gray-100 rounded"
+              >
+                <span className="flex items-center gap-2">
+                  <Receipt size={20} /> Announcements
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    activeMenu === "Announcements" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+            
+
+              {activeMenu === "Announcements" && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {hasPermission("transaction.create") && (
+                    <Link
+                      to="/dashboard/announcements"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/announcements")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Announcements
+                    </Link>
+                  )}
+
+                 
+                </div>
+              )}
+              {activeMenu === "Announcements" && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {hasPermission("transaction.create") && (
+                    <Link
+                      to="/dashboard/createsection"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/createsection")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                     Create Section
+                    </Link>
+                  )}
+
+                 
+                </div>
+              )}
+             
+            </div>
+          )}
         </nav>
       </aside>
     </>

@@ -1,5 +1,7 @@
+
+
 // import React, { useState, useEffect } from "react";
-// import { ChevronDown, ChevronRight, User, School } from "lucide-react";
+// import { ChevronDown, ChevronRight, User } from "lucide-react";
 // import { useNavigate } from "react-router-dom";
 // import BASE_URL from "../../Api/ApiBaseUrl";
 
@@ -17,21 +19,23 @@
 //         });
 
 //         const result = await response.json();
-//         // console.log("API result:", result);
-
 //         const students = result.data || [];
 
-//         // Group students by agent
+//         // ✅ CHANGED: Better grouping logic with company_name fix
 //         const grouped = students.reduce((acc, student) => {
 //           const agentId = student.agent_id;
-//           const agentName = student.company_name;
 
 //           if (!acc[agentId]) {
 //             acc[agentId] = {
 //               agentId,
-//               agentName,
+//               company_name: student.company_name || null, //CHANGED
 //               students: [],
 //             };
+//           }
+
+//           // CHANGED:
+//           if (!acc[agentId].company_name && student.company_name) {
+//             acc[agentId].company_name = student.company_name;
 //           }
 
 //           acc[agentId].students.push({
@@ -42,7 +46,6 @@
 //           return acc;
 //         }, {});
 
-//         // Convert grouped object to array
 //         setAgents(Object.values(grouped));
 //       } catch (error) {
 //         console.error("Error fetching agents:", error);
@@ -70,7 +73,12 @@
 //             <React.Fragment key={index}>
 //               <tr className="hover:bg-gray-50">
 //                 <td className="p-3 border">{agent.agentId}</td>
-//                 <td className="p-3 border">{agent.agentName}</td>
+
+//                 {/*CHANGED: */}
+//                 <td className="p-3 border">
+//                   {agent.company_name || "N/A"} {/*CHANGED */}
+//                 </td>
+
 //                 <td
 //                   className="p-3 border text-center cursor-pointer"
 //                   onClick={() =>
@@ -105,7 +113,6 @@
 //                         >
 //                           <User size={18} />
 //                         </span>
-                       
 //                       </div>
 //                     </td>
 //                   </tr>
@@ -135,34 +142,32 @@ const AgentStudentProfile = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/agent/all/agent-student`, {
-          method: "GET",
-          redirect: "follow",
-        });
-
+        const response = await fetch(`${BASE_URL}/agent/all/agent-student`);
         const result = await response.json();
+
         const students = result.data || [];
 
-        // ✅ CHANGED: Better grouping logic with company_name fix
+        // ✅ Group students by agent
         const grouped = students.reduce((acc, student) => {
           const agentId = student.agent_id;
 
           if (!acc[agentId]) {
             acc[agentId] = {
               agentId,
-              company_name: student.company_name || null, // ✅ CHANGED
+              company_name: student.company_name || "N/A",
               students: [],
             };
           }
 
-          // ✅ CHANGED: যদি আগে null থাকে আর পরে valid name আসে
-          if (!acc[agentId].company_name && student.company_name) {
-            acc[agentId].company_name = student.company_name;
-          }
+          // ✅ Safe Full Name Handling
+          const fullName =
+            student.student_name ||
+            `${student.first_name || ""} ${student.family_name || ""}`.trim() ||
+            "No Name";
 
           acc[agentId].students.push({
             studentId: student.id,
-            fullName: student.name,
+            fullName: fullName,
           });
 
           return acc;
@@ -193,19 +198,19 @@ const AgentStudentProfile = () => {
         <tbody>
           {agents.map((agent, index) => (
             <React.Fragment key={index}>
+              {/* Agent Row */}
               <tr className="hover:bg-gray-50">
                 <td className="p-3 border">{agent.agentId}</td>
-
-                {/* ✅ CHANGED: এখানে আগে agent.company_name না থাকায় undefined আসছিল */}
                 <td className="p-3 border">
-                  {agent.company_name || "N/A"} {/* ✅ CHANGED */}
+                  {agent.company_name || "N/A"}
                 </td>
-
                 <td
                   className="p-3 border text-center cursor-pointer"
                   onClick={() =>
                     setExpandedAgent(
-                      expandedAgent === agent.agentId ? null : agent.agentId
+                      expandedAgent === agent.agentId
+                        ? null
+                        : agent.agentId
                     )
                   }
                 >
@@ -217,6 +222,7 @@ const AgentStudentProfile = () => {
                 </td>
               </tr>
 
+              {/* Student Rows */}
               {expandedAgent === agent.agentId &&
                 agent.students.map((student, sIndex) => (
                   <tr key={sIndex} className="bg-gray-50">
@@ -224,7 +230,7 @@ const AgentStudentProfile = () => {
                       {student.studentId} - {student.fullName}
                     </td>
                     <td className="p-3 border text-center whitespace-nowrap">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center">
                         <span
                           className="cursor-pointer hover:text-blue-600"
                           onClick={() =>
