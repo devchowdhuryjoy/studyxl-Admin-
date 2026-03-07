@@ -612,7 +612,7 @@ const renderDocumentsTab = () => {
 
   console.log("Documents from API:", documents);
 
-  // Helper to build full URL - FIXED VERSION
+  // Helper to build full URL
   const buildUrl = (path) => {
     if (!path) return null;
     
@@ -684,7 +684,7 @@ const renderDocumentsTab = () => {
               {fileName}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              {isPdf ? 'PDF Document' : isImage ? 'Image' : 'Document'}
+              {docType} {index > 0 ? `(File ${index})` : ''}
             </p>
           </div>
 
@@ -735,25 +735,15 @@ const renderDocumentsTab = () => {
     );
   };
 
-  // Document Card Component
+  // Document Card Component - UPDATED to handle file_path array correctly
   const DocCard = ({ doc }) => {
-    // Collect all file paths
-    const allFilePaths = [];
+    // Get file_path which is an array from the backend
+    const filePaths = doc?.file_path || [];
     
-    // Add file_path if exists
-    if (doc?.file_path) {
-      allFilePaths.push(doc.file_path);
-    }
-    
-    // Add file array if exists
-    if (doc?.file && Array.isArray(doc.file)) {
-      allFilePaths.push(...doc.file);
-    }
+    // Ensure it's an array
+    const pathsArray = Array.isArray(filePaths) ? filePaths : (filePaths ? [filePaths] : []);
 
-    // Remove duplicates (if any)
-    const uniquePaths = [...new Set(allFilePaths)];
-
-    if (uniquePaths.length === 0) {
+    if (pathsArray.length === 0) {
       return (
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <p className="text-sm font-semibold text-gray-700 mb-2">
@@ -770,15 +760,15 @@ const renderDocumentsTab = () => {
           <p className="text-sm font-semibold text-gray-800">
             {doc.document_type || "Document"}
           </p>
-          {uniquePaths.length > 1 && (
+          {pathsArray.length > 1 && (
             <span className="text-xs bg-green-200 text-green-800 px-2.5 py-1 rounded-full font-medium">
-              {uniquePaths.length} Files
+              {pathsArray.length} Files
             </span>
           )}
         </div>
         
         <div className="space-y-3">
-          {uniquePaths.map((filePath, idx) => (
+          {pathsArray.map((filePath, idx) => (
             <FileItem 
               key={idx} 
               filePath={filePath} 

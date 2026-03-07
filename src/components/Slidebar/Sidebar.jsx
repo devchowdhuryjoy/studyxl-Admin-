@@ -350,6 +350,21 @@ const Sidebar = ({ open, setOpen }) => {
                       Agent Tasks
                     </Link>
                   )}
+                  {(hasPermission("task.view.agent") ||
+                    hasPermission("task.view")) && (
+                    <Link
+                      to="/dashboard/admin-user-create"
+                      onClick={handleMainLinkClick}
+                      className={`block p-2 text-sm rounded ${
+                        isActive("/dashboard/admin-user-create")
+                          ? "bg-[#f16f22] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      Agent Permission
+                    </Link>
+                  )}
+                  
                 </div>
               )}
             </div>

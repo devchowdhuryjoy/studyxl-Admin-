@@ -29,6 +29,9 @@ import AllProgram from "./components/Program/AllProgram"
 import ProgramEdit from "./components/Program/ProgramEdit"
 import Announcements from "./components/Announcements/Announcements";
 import CreateSection from "./components/Announcements/CreateSection";
+import AdminUserCreate from "./components/Agents/Employee/AdminUserCreate";
+import AdminUserList from "./components/Agents/Employee/AdminUserList";
+
 function App() {
   return (
     <Router>
@@ -63,6 +66,7 @@ function App() {
             element={<AgentsStudentProfile />}
           />
           <Route path="agent-task" element={<AgentTask />} />
+          
           <Route path="agent-application" element={<Application />} />
           <Route
             path="agent-application/application-details/:id"
@@ -73,6 +77,9 @@ function App() {
             path="agent-application/edit/:id"  
             element={<EditApplication />} 
           />
+
+          <Route path="admin-user-create" element={<AdminUserCreate />} />
+          <Route path="admin-user-list" element={<AdminUserList/>} />
 
           {/* Agents */}
 
